@@ -1,0 +1,28 @@
+buildscript {
+	repositories {
+		mavenLocal()
+	}
+	dependencies {
+		classpath 'com.eriwen:gradle-js-plugin:0.1-SNAPSHOT'
+	}
+}
+
+apply plugin: 'js'
+
+combineJs {
+	input = "${projectDir}/js"
+	output = "${jsOutputDir}/all.${version}.js"
+}
+
+minifyJs {
+	dependsOn << 'combineJs'
+	input = "${jsOutputDir}/all.${version}.js"
+	output = "${jsOutputDir}/${jsOutputFile}"
+	lineBreakPos = 0
+}
+
+gzipJs {
+	dependsOn << 'minifyJs'
+	input = "${jsOutputDir}/${jsOutputFile}"
+	output = input
+}

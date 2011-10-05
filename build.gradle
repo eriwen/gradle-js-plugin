@@ -1,0 +1,130 @@
+apply plugin: 'groovy'
+apply plugin: 'maven'
+apply plugin: 'signing'
+apply plugin: 'idea'
+
+defaultTasks 'clean', 'build'
+
+version = '0.1-SNAPSHOT'
+group = 'com.eriwen'
+artifact = 'gradle-js-plugin'
+
+configurations { 
+	deployment
+	published.extendsFrom archives, signatures
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	groovy 'org.codehaus.groovy:groovy:1.8.2'
+	compile gradleApi()
+	compile 'com.google.javascript:closure-compiler:r1352'
+	runtime 'org.codehaus.groovy:groovy:1.8.2'
+	deployment 'org.apache.maven.wagon:wagon-webdav-jackrabbit:1.0-beta-7'
+}
+
+ideaModule {
+	gradleCacheVariable = 'GRADLE_CACHE'
+	downloadJavadoc = true
+	outputDir = "${rootProject.projectDir}/intellij/out" as File
+	testOutputDir = "${rootProject.projectDir}/intellij/testOut" as File
+}
+
+ideaProject {
+	withXml { provider ->
+		def node = provider.asNode()
+		// Use git
+		def vcsConfig = node.component.find { it.'@name' == 'VcsDirectoryMappings' }
+		vcsConfig.mapping[0].'@vcs' = 'Git'
+
+		// Set gradle home
+		def gradleSettings = node.appendNode('component', [name: 'GradleSettings'])
+		gradleSettings.appendNode('option', [name: 'SDK_HOME', value: gradle.gradleHomeDir.absolutePath])
+	}
+}
+
+jar {
+	baseName = artifact
+}
+
+task sourceJar(type: Jar) {
+	description = 'An archive of the source code for Maven Central'
+	baseName = artifact
+	classifier = 'sources'
+	from sourceSets.main.groovy
+}
+
+task groovydocJar(type: Jar, dependsOn: groovydoc) {
+	description = 'An archive of the GroovyDocs for Maven Central'
+	baseName = artifact
+	classifier = 'javadoc'
+	from fileTree(groovydoc.destinationDir)
+}
+
+task wrapper(type: Wrapper) {
+	gradleVersion = '1.0-milestone-4'
+}
+
+artifacts { 
+	archives groovydocJar, sourceJar
+}
+
+signing {
+	sign configurations.archives
+}
+
+install {
+	repositories.mavenInstaller {
+		pom.project(pomConfiguration)
+	}
+}
+
+uploadPublished {
+	dependsOn << [signArchives]
+	repositories.mavenDeployer {
+		beforeDeployment { deployment ->
+			signPom(deployment)
+		}
+		name = 'mavenCentralReleaseDeployer'
+		repository(url: 'https://oss.sonatype.org/content/repositories/snapshots/') {
+			authentication(userName: mavenCentralUsername, password: mavenCentralPassword)
+			releases(updatePolicy: 'always')
+			snapshots()
+		}
+		pom.project(pomConfiguration)
+	}
+}
+
+/**
+ * Create POM config and return for use by other tasks.
+ */
+def getPomConfiguration() { 
+	return {
+		name('Gradle CSS Plugin')
+		description('A Gradle plugin for working with CSS.')
+		url('https://github.com/eriwen/gradle-js-plugin')
+		licenses {
+			license {
+				name 'The Apache Software License, Version 2.0'
+				url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+				distribution 'repo'
+			}
+		}
+		developers {
+			developer {
+				id('eriwen')
+				name('Eric Wendelin')
+				email('emwendelin@gmail.com')
+			}
+		}
+		scm {
+			connection('scm:https://eriwen@github.com/eriwen/gradle-js-plugin')
+			developerConnection('scm:git@github.com:eriwen/gradle-js-plugin.git')
+			url('https://github.com/eriwen/gradle-js-plugin')
+		}
+	}
+}
+

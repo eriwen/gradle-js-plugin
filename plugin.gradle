@@ -9,20 +9,21 @@ buildscript {
 
 apply plugin: 'js'
 
+// Combine JS files
 combineJs {
-	input = "${projectDir}/js"
-	output = "${jsOutputDir}/all.${version}.js"
+    input = fileTree(dir: "${projectDir}/js", include: "**/*.js")
+    output = file("${buildDir}/all.js")
 }
 
+// Minify with Google Closure Compiler
 minifyJs {
-	dependsOn << 'combineJs'
-	input = "${jsOutputDir}/all.${version}.js"
-	output = "${jsOutputDir}/${jsOutputFile}"
-	lineBreakPos = 0
+    input = file("${buildDir}/all.js")
+    output = file("${buildDir}/all-min.js")
+    warningLevel = 'QUIET'
 }
 
+// GZip it!
 gzipJs {
-	dependsOn << 'minifyJs'
-	input = "${jsOutputDir}/${jsOutputFile}"
-	output = input
+    input = file("${buildDir}/all-min.js")
+    output = input
 }

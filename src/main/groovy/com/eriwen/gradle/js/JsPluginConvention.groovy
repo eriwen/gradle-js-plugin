@@ -15,12 +15,12 @@
  */
 package com.eriwen.gradle.js
 
-import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputFile
 import com.google.javascript.jscomp.CompilerOptions
 
 class JsPluginConvention {
-    @InputFile
+    @Input
 	def input
     @OutputFile
 	def output

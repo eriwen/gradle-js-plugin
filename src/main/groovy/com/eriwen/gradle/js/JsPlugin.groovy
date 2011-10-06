@@ -24,7 +24,7 @@ import com.eriwen.gradle.js.tasks.*
 class JsPlugin implements Plugin<Project> {
     private Project project
     private Logger logger
-    private JsPluginConvention jsPluginConvention
+    protected JsPluginConvention jsPluginConvention
 
     void apply(final Project project) {
         this.project = project

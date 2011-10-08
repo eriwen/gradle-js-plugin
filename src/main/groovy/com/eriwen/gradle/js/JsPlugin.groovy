@@ -56,7 +56,7 @@ class JsPlugin implements Plugin<Project> {
 
         // TODO: project.task('jshint', type: JsHintTask) {}
 
-        project.task('processJs', type: ProcessJsTask) {
+        project.task('js', type: JsTask) {
             input = project.convention.plugins.js.input
             output = project.convention.plugins.js.output
             options = project.convention.plugins.js.options

@@ -27,7 +27,7 @@ import com.google.javascript.jscomp.JSSourceFile
 import com.google.javascript.jscomp.Result
 import com.google.javascript.jscomp.WarningLevel
 
-class ProcessJsTask extends DefaultTask {
+class JsTask extends DefaultTask {
     CompilerOptions options = new CompilerOptions()
     String compilationLevel = 'SIMPLE_OPTIMIZATIONS'
     String warningLevel = 'DEFAULT'

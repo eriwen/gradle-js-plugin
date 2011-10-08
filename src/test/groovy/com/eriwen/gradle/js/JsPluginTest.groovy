@@ -34,7 +34,7 @@ class JsPluginTest {
         assertEquals 1, project.getTasksByName('combineJs', false).size()
         assertEquals 1, project.getTasksByName('minifyJs', false).size()
         assertEquals 1, project.getTasksByName('gzipJs', false).size()
-        assertEquals 1, project.getTasksByName('processJs', false).size()
+        assertEquals 1, project.getTasksByName('js', false).size()
         assertEquals 0, project.getTasksByName('bogus', false).size()
     }
 

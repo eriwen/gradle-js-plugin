@@ -24,6 +24,7 @@ dependencies {
 	compile 'com.google.javascript:closure-compiler:r1352'
 	runtime 'org.codehaus.groovy:groovy:1.8.2'
 	deployment 'org.apache.maven.wagon:wagon-webdav-jackrabbit:1.0-beta-7'
+    testCompile 'junit:junit:4.8.2'
 }
 
 ideaModule {
@@ -65,7 +66,7 @@ task groovydocJar(type: Jar, dependsOn: groovydoc) {
 }
 
 task wrapper(type: Wrapper) {
-	gradleVersion = '1.0-milestone-4'
+	gradleVersion = '1.0-milestone-5'
 }
 
 artifacts { 
@@ -90,7 +91,7 @@ uploadPublished {
 		}
 		name = 'mavenCentralReleaseDeployer'
 		repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2') {
-			authentication(userName: mavenCentralUsername, password: mavenCentralPassword)
+			authentication(userName: System.properties['mavenCentralUsername'], password: System.properties['mavenCentralPassword'])
 			releases(updatePolicy: 'always')
 			snapshots()
 		}

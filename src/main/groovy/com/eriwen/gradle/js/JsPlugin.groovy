@@ -32,6 +32,7 @@ class JsPlugin implements Plugin<Project> {
         this.jsPluginConvention = new JsPluginConvention()
 
         project.convention.plugins.js = jsPluginConvention
+        configureDependencies()
         applyTasks(project)
     }
 
@@ -54,7 +55,7 @@ class JsPlugin implements Plugin<Project> {
             output = project.convention.plugins.js.output
         }
 
-        // TODO: project.task('jshint', type: JsHintTask) {}
+        project.task('jshint', type: JsHintTask) {}
 
         project.task('js', type: JsTask) {
             input = project.convention.plugins.js.input
@@ -62,6 +63,18 @@ class JsPlugin implements Plugin<Project> {
             options = project.convention.plugins.js.options
             compilationLevel = project.convention.plugins.js.compilationLevel
             warningLevel = project.convention.plugins.js.warningLevel
+        }
+    }
+
+    void configureDependencies() {
+        project.configurations {
+            rhino
+        }
+        project.repositories {
+            mavenCentral()
+        }
+        project.dependencies {
+            rhino 'org.mozilla:rhino:1.7R3'
         }
     }
 }

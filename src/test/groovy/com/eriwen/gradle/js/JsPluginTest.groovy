@@ -35,6 +35,7 @@ class JsPluginTest {
         assertEquals 1, project.getTasksByName('minifyJs', false).size()
         assertEquals 1, project.getTasksByName('gzipJs', false).size()
         assertEquals 1, project.getTasksByName('js', false).size()
+        assertEquals 1, project.getTasksByName('jshint', false).size()
         assertEquals 0, project.getTasksByName('bogus', false).size()
     }
 
@@ -42,12 +43,6 @@ class JsPluginTest {
     void shouldFailOnDownstreamTaskFailure() {
         plugin.apply(project)
 
-        JsPluginConvention pluginConvention = plugin.jsPluginConvention
-        pluginConvention.with {
-            // combine task will fail with no input or output
-            input = null
-            output = null
-        }
         project.getTasksByName('combineJs', false).iterator().next().execute()
 
         fail 'Should have gotten a TaskExecutionException'

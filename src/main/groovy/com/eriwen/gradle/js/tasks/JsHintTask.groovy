@@ -15,20 +15,34 @@
  */
 package com.eriwen.gradle.js.tasks
 
-import org.gradle.api.tasks.Exec
 import org.gradle.api.tasks.TaskAction
+import org.gradle.api.DefaultTask
 
-class JsHintTask extends Exec {
-    String input
-    String outputFilePath
-    def options = []
+class JsHintTask extends DefaultTask {
+    private static final String JSHINT_PATH = 'jshint-rhino.js'
+    private static final String TMP_DIR = 'tmp/js'
 
     @TaskAction
     def run() {
-        // FIXME: writes too late
-        new File(outputFilePath).write('')
-        // TODO: package jslint.js with the plugin
-        commandLine = ["jslint"] + options + input.split(' ')
-        standardOutput = new BufferedOutputStream(new FileOutputStream(new File("${outputFilePath}/jslint.xml")))
+        File jshintJsFile = loadJsHintJs()
+        String outputPath = (getOutputs().files.files.toArray()[0] as File).canonicalPath
+        ant.java(jar: project.configurations.rhino.asPath, fork: true, output: outputPath) {
+            arg(value: jshintJsFile.canonicalPath)
+            getInputs().files.files.each {
+                arg(value: it.canonicalPath)
+            }
+        }
+    }
+
+    File loadJsHintJs() {
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(JSHINT_PATH)
+        File tempDir = new File(project.buildDir, TMP_DIR)
+        tempDir.mkdirs()
+        File jshintJsFile = new File(tempDir, JSHINT_PATH)
+        if (!jshintJsFile.exists()) {
+            jshintJsFile << inputStream
+        }
+        inputStream.close()
+        return jshintJsFile
     }
 }

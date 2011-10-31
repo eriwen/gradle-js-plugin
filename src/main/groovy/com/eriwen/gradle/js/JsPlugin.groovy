@@ -38,28 +38,18 @@ class JsPlugin implements Plugin<Project> {
 
     void applyTasks(final Project project) {
         project.task('minifyJs', type: MinifyJsTask) {
-            input = project.convention.plugins.js.input
-            output = project.convention.plugins.js.output
             options = project.convention.plugins.js.options
             compilationLevel = project.convention.plugins.js.compilationLevel
             warningLevel = project.convention.plugins.js.warningLevel
         }
 
-        project.task('combineJs', type: CombineJsTask) {
-            input = project.convention.plugins.js.input
-            output = project.convention.plugins.js.output
-        }
+        project.task('combineJs', type: CombineJsTask) {}
 
-        project.task('gzipJs', type: GzipJsTask) {
-            input = project.convention.plugins.js.input
-            output = project.convention.plugins.js.output
-        }
+        project.task('gzipJs', type: GzipJsTask) {}
 
         project.task('jshint', type: JsHintTask) {}
 
         project.task('js', type: JsTask) {
-            input = project.convention.plugins.js.input
-            output = project.convention.plugins.js.output
             options = project.convention.plugins.js.options
             compilationLevel = project.convention.plugins.js.compilationLevel
             warningLevel = project.convention.plugins.js.warningLevel

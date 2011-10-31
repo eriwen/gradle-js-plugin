@@ -24,13 +24,18 @@ class JsHintTask extends DefaultTask {
 
     @TaskAction
     def run() {
-        File jshintJsFile = loadJsHintJs()
-        String outputPath = (getOutputs().files.files.toArray()[0] as File).canonicalPath
-        ant.java(jar: project.configurations.rhino.asPath, fork: true, output: outputPath) {
-            arg(value: jshintJsFile.canonicalPath)
-            getInputs().files.files.each {
-                arg(value: it.canonicalPath)
+        def outputFiles = getOutputs().files
+        if (outputFiles.files.size() == 1) {
+            final File jshintJsFile = loadJsHintJs()
+            final String outputPath = (outputFiles.files.toArray()[0] as File).canonicalPath
+            ant.java(jar: project.configurations.rhino.asPath, fork: true, output: outputPath) {
+                arg(value: jshintJsFile.canonicalPath)
+                getInputs().files.files.each {
+                    arg(value: it.canonicalPath)
+                }
             }
+        } else {
+            throw new IllegalArgumentException('Output must be exactly 1 File object. Example: outputs.file = file("myFile")')
         }
     }
 

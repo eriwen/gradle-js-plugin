@@ -17,18 +17,19 @@ package com.eriwen.gradle.js.tasks
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
-import org.gradle.api.file.FileCollection
 
 class CombineJsTask extends DefaultTask {
-    FileCollection input
-    File output
-
     @TaskAction
     def run() {
-        ant.concat(destfile: output) {
-            input.files.each {
-                fileset(file: it.canonicalPath)
+        def outputFiles = getOutputs().files
+        if (outputFiles.files.size() == 1) {
+            ant.concat(destfile: outputFiles.asPath) {
+                getInputs().files.each {
+                    fileset(file: it.canonicalPath)
+                }
             }
+        } else {
+            throw new IllegalArgumentException('Output must be exactly 1 File object. Example: outputs.file = file("myFile")')
         }
     }
 }

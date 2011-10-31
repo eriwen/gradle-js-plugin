@@ -18,39 +18,26 @@ package com.eriwen.gradle.js.tasks
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
-import com.google.javascript.jscomp.CommandLineRunner
-import com.google.javascript.jscomp.CompilationLevel
-import com.google.javascript.jscomp.Compiler
 import com.google.javascript.jscomp.CompilerOptions
-import com.google.javascript.jscomp.JSSourceFile
-import com.google.javascript.jscomp.Result
-import com.google.javascript.jscomp.WarningLevel
-import org.gradle.api.file.FileCollection
+import com.eriwen.gradle.js.JsMinifier
 
 class MinifyJsTask extends DefaultTask {
+    private static final JsMinifier MINIFIER = new JsMinifier()
+
     CompilerOptions options = new CompilerOptions()
     String compilationLevel = 'SIMPLE_OPTIMIZATIONS'
     String warningLevel = 'DEFAULT'
-	File input
-	File output
 
 	@TaskAction
 	def run() {
-		Compiler compiler = new Compiler()
-		CompilerOptions options = new CompilerOptions()
-		CompilationLevel.valueOf(compilationLevel).setOptionsForCompilationLevel(options)
-		WarningLevel level = WarningLevel.valueOf(warningLevel)
-		level.setOptionsForWarningLevel(options)
-		List<JSSourceFile> externs = CommandLineRunner.getDefaultExterns()
-        List<JSSourceFile> inputs = new ArrayList<JSSourceFile>()
-        inputs.add(JSSourceFile.fromFile(input))
-		Result result = compiler.compile(externs, inputs, options)
-		if (result.success) {
-			output.write(compiler.toSource())
-		} else {
-			result.errors.each {
-				println "${it.sourceName}:${it.lineNumber} - ${it.description}"
-			}
-		}
+        def inputFiles = getInputs().files.files.toArray()
+        def outputFiles = getOutputs().files.files.toArray()
+        if (outputFiles.size() == inputFiles.size()) {
+            for (int i = 0; i < inputFiles.size(); i++) {
+                MINIFIER.minifyJsFile(inputFiles[i] as File, outputFiles[i] as File, warningLevel, compilationLevel)
+            }
+        } else {
+            throw new IllegalArgumentException("Could not map input files to output files. Found ${inputFiles.size()} inputs and ${outputFiles.size()} outputs")
+        }
 	}
 }

@@ -15,15 +15,9 @@
  */
 package com.eriwen.gradle.js
 
-import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.OutputFile
 import com.google.javascript.jscomp.CompilerOptions
 
 class JsPluginConvention {
-    @Input
-	def input
-    @OutputFile
-	def output
     CompilerOptions options = new CompilerOptions()
     String compilationLevel = 'SIMPLE_OPTIMIZATIONS'
     String warningLevel = 'DEFAULT'

@@ -19,10 +19,10 @@ repositories {
 }
 
 dependencies {
-	groovy 'org.codehaus.groovy:groovy:1.8.2'
+	groovy 'org.codehaus.groovy:groovy:1.8.3'
 	compile gradleApi()
 	compile 'com.google.javascript:closure-compiler:r1352'
-	runtime 'org.codehaus.groovy:groovy:1.8.2'
+	runtime 'org.codehaus.groovy:groovy:1.8.3'
 	deployment 'org.apache.maven.wagon:wagon-webdav-jackrabbit:1.0-beta-7'
     testCompile 'junit:junit:4.8.2'
 }
@@ -83,6 +83,8 @@ install {
 	}
 }
 
+// NOTE: Must still rename build/pom-default.xml to pom.xml
+// NOTE: Must rename pom-default.xml.asc to gradle-js-plugin-${version}.pom.asc
 uploadPublished {
 	dependsOn << [signArchives]
 	repositories.mavenDeployer {
@@ -93,7 +95,7 @@ uploadPublished {
 		repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2') {
 			authentication(userName: System.properties['mavenCentralUsername'], password: System.properties['mavenCentralPassword'])
 			releases(updatePolicy: 'always')
-			snapshots()
+			snapshots(updatePolicy: 'always')
 		}
 		pom.project(pomConfiguration)
 	}

@@ -11,7 +11,7 @@ Wrangling your JS in a [Gradle](http://gradle.org) build is easy! Just add this 
             mavenCentral()
         }
         dependencies {
-            classpath 'com.eriwen:gradle-js-plugin:0.1'
+            classpath 'com.eriwen:gradle-js-plugin:0.2'
         }
     }
     // Invoke the plugin
@@ -19,8 +19,8 @@ Wrangling your JS in a [Gradle](http://gradle.org) build is easy! Just add this 
 
     // Specify a collection of files to be combined, then minified and finally GZip compressed.
     js {
-        input = fileTree(dir: "${projectDir}/js", include: "**/*.js")
-        output = file("${buildDir}/combinedMinifiedAndGzipped.js")
+        input.files fileTree(dir: "${projectDir}/js", include: "**/*.js")
+        output.file file("${buildDir}/combinedMinifiedAndGzipped.js")
     }
 ```
 
@@ -28,8 +28,8 @@ Wrangling your JS in a [Gradle](http://gradle.org) build is easy! Just add this 
 
 ```groovy
     js {
-        input = fileTree(dir: "${projectDir}/otherdir", includes: ["file1.js", "file2.js"])
-        output = file("${buildDir}/teenytiny.js")
+        input.files fileTree(dir: "${projectDir}/otherdir", includes: ["file1.js", "file2.js"])
+        output.file file("${buildDir}/teenytiny.js")
     }
 ```
 
@@ -38,46 +38,58 @@ Wrangling your JS in a [Gradle](http://gradle.org) build is easy! Just add this 
 ```groovy
     // Combine JS files
     combineJs {
-        input = fileTree(dir: "${projectDir}/js", include: "**/*.js")
-        output = file("${buildDir}/all.js")
+        input.files fileTree(dir: "${projectDir}/js", include: "**/*.js")
+        output.file file("${buildDir}/all.js")
     }
     
     // Minify with Google Closure Compiler
     minifyJs {
-        input = file("${buildDir}/all.js")
-        output = file("${buildDir}/all-min.js")
+        input.file file("${buildDir}/all.js")
+        output.file file("${buildDir}/all-min.js")
         warningLevel = 'QUIET'
     }
     
     // GZip it!
     gzipJs {
-        input = file("${buildDir}/all-min.js")
-        output = input
+        input.file file("${buildDir}/all-min.js")
+        output.file input
     }
+```
+
+**[JSHint](http://jshint.com) support**
+```groovy
+jshint {
+	inputs.files files('js/main.js')
+	outputs.file file("${buildDir}/jshint.out")
+}
 ```
 
 # Available Tasks and Options #
 ### combineJs ###
- - input = [FileCollection](http://gradle.org/current/docs/javadoc/org/gradle/api/file/FileCollection.html) of files to merge
- - output = File for combined output
+ - input.files [FileCollection](http://gradle.org/current/docs/javadoc/org/gradle/api/file/FileCollection.html) of files to merge
+ - output.file File for combined output
 
 ### minifyJs (Uses the [Google Closure Compiler](http://code.google.com/closure/compiler/)) ###
- - input = File to minify
- - output = File for minified output
+ - input.file File to minify
+ - output.file File for minified output
  - *(Optional)* compilationLevel = 'WHITESPACE_ONLY', 'SIMPLE_OPTIMIZATIONS' (default), or 'ADVANCED_OPTIMIZATIONS' (are you *hardcore*?)
  - *(Optional)* warningLevel = 'QUIET', 'DEFAULT' (default), or 'VERBOSE'
  - *(Optional)* options = [CompilerOptions](http://code.google.com/p/closure-compiler/source/browse/trunk/src/com/google/javascript/jscomp/CompilerOptions.java?r=1187) object
 
 ### gzipJs ###
- - input = File to compress
- - output = File for compressed output
+ - input.file File to compress
+ - output.file File for compressed output
 
 ### js ###
- - input = File to minify
- - output = File for minified output
+ - input.files Files to combine, minify and gzip
+ - output.file File for tiny output :)
  - *(Optional)* compilationLevel = 'WHITESPACE_ONLY', 'SIMPLE_OPTIMIZATIONS' (default), or 'ADVANCED_OPTIMIZATIONS' (are you *hardcore*?)
  - *(Optional)* warningLevel = 'QUIET', 'DEFAULT' (default), or 'VERBOSE'
  - *(Optional)* options = [CompilerOptions](http://code.google.com/p/closure-compiler/source/browse/trunk/src/com/google/javascript/jscomp/CompilerOptions.java?r=1187) object
+
+## jshint ##
+- input.files Files to assess with JSHint
+- output.file File for report output
 
 What, you want more? [Tell me then!](https://github.com/eriwen/gradle-js-plugin/issues)
 

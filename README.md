@@ -57,11 +57,12 @@ Wrangling your JS in a [Gradle](http://gradle.org) build is easy! Just add this 
 ```
 
 **[JSHint](http://jshint.com) support**
+
 ```groovy
-jshint {
-	inputs.files files('js/main.js')
-	outputs.file file("${buildDir}/jshint.out")
-}
+    jshint {
+	    inputs.files files('js/main.js')
+	    outputs.file file("${buildDir}/jshint.out")
+    }
 ```
 
 # Available Tasks and Options #
@@ -87,7 +88,7 @@ jshint {
  - *(Optional)* warningLevel = 'QUIET', 'DEFAULT' (default), or 'VERBOSE'
  - *(Optional)* options = [CompilerOptions](http://code.google.com/p/closure-compiler/source/browse/trunk/src/com/google/javascript/jscomp/CompilerOptions.java?r=1187) object
 
-## jshint ##
+### jshint ###
 - input.files Files to assess with JSHint
 - output.file File for report output
 

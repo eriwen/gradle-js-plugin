@@ -19,8 +19,8 @@ Wrangling your JS in a [Gradle](http://gradle.org) build is easy! Just add this 
 
     // Specify a collection of files to be combined, then minified and finally GZip compressed.
     js {
-        input.files fileTree(dir: "${projectDir}/js", include: "**/*.js")
-        output.file file("${buildDir}/combinedMinifiedAndGzipped.js")
+        inputs.files fileTree(dir: "${projectDir}/js", include: "**/*.js")
+        outputs.file file("${buildDir}/combinedMinifiedAndGzipped.js")
     }
 ```
 
@@ -28,8 +28,8 @@ Wrangling your JS in a [Gradle](http://gradle.org) build is easy! Just add this 
 
 ```groovy
     js {
-        input.files fileTree(dir: "${projectDir}/otherdir", includes: ["file1.js", "file2.js"])
-        output.file file("${buildDir}/teenytiny.js")
+        inputs.files fileTree(dir: "${projectDir}/otherdir", includes: ["file1.js", "file2.js"])
+        outputs.file file("${buildDir}/teenytiny.js")
     }
 ```
 
@@ -38,21 +38,21 @@ Wrangling your JS in a [Gradle](http://gradle.org) build is easy! Just add this 
 ```groovy
     // Combine JS files
     combineJs {
-        input.files fileTree(dir: "${projectDir}/js", include: "**/*.js")
-        output.file file("${buildDir}/all.js")
+        inputs.files fileTree(dir: "${projectDir}/js", include: "**/*.js")
+        outputs.file file("${buildDir}/all.js")
     }
     
     // Minify with Google Closure Compiler
     minifyJs {
-        input.file file("${buildDir}/all.js")
-        output.file file("${buildDir}/all-min.js")
+        inputs.file file("${buildDir}/all.js")
+        outputs.file file("${buildDir}/all-min.js")
         warningLevel = 'QUIET'
     }
     
     // GZip it!
     gzipJs {
-        input.file file("${buildDir}/all-min.js")
-        output.file input
+        inputs.file file("${buildDir}/all-min.js")
+        outputs.file input
     }
 ```
 

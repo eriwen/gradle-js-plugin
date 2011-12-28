@@ -19,17 +19,17 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.api.DefaultTask
 
 class JsDocTask extends DefaultTask {
-    private static final String JSHINT_PATH = 'jshint-rhino.js'
+    private static final String JSDOC_PATH = 'run.js'
     private static final String TMP_DIR = 'tmp/js'
 
     @TaskAction
     def run() {
         def outputFiles = getOutputs().files
         if (outputFiles.files.size() == 1) {
-            final File jshintJsFile = loadJsHintJs()
+            final File jsdocJsFile = loadJsDocJs()
             final String outputPath = (outputFiles.files.toArray()[0] as File).canonicalPath
-            ant.java(jar: project.configurations.rhino.asPath, fork: true, output: outputPath) {
-                arg(value: jshintJsFile.canonicalPath)
+            ant.java(jar: project.configurations.jsdoc.asPath, fork: true, output: outputPath) {
+                arg(value: jsdocJsFile.canonicalPath)
                 getInputs().files.files.each {
                     arg(value: it.canonicalPath)
                 }
@@ -39,15 +39,15 @@ class JsDocTask extends DefaultTask {
         }
     }
 
-    File loadJsHintJs() {
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(JSHINT_PATH)
+    File loadJsDocJs() {
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(JSDOC_PATH)
         File tempDir = new File(project.buildDir, TMP_DIR)
         tempDir.mkdirs()
-        File jshintJsFile = new File(tempDir, JSHINT_PATH)
-        if (!jshintJsFile.exists()) {
-            jshintJsFile << inputStream
+        File jsdocJsFile = new File(tempDir, JSDOC_PATH)
+        if (!jsdocJsFile.exists()) {
+            jsdocJsFile << inputStream
         }
         inputStream.close()
-        return jshintJsFile
+        return jsdocJsFile
     }
 }

@@ -33,6 +33,18 @@ Wrangling your JS in a [Gradle](http://gradle.org) build is easy! Just add this 
     }
 ```
 
+**What if I want my JS files combined in a certain order?**
+This is how you do it (kludgy) for now, but we're working on a more elegant solution (see progress on [Issue #4](https://github.com/eriwen/gradle-js-plugin/issues/4)):
+
+```groovy
+    js {
+        file2 = fileTree(dir: "${projectDir}/js", includes: ['file2.js'])
+        file1 = fileTree(dir: "${projectDir}/js", includes: ['file1.js'])
+        inputs.files file2 + file1
+        outputs.file file("${buildDir}/all.js")
+    }
+```
+
 **Want more fine-grained control or just want to combine, minify or zip your files?**
 
 ```groovy

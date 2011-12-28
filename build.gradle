@@ -5,7 +5,7 @@ apply plugin: 'idea'
 
 defaultTasks 'clean', 'build'
 
-version = '0.2'
+version = '0.3'
 group = 'com.eriwen'
 artifact = 'gradle-js-plugin'
 
@@ -106,8 +106,8 @@ uploadPublished {
  */
 def getPomConfiguration() { 
 	return {
-		name('Gradle CSS Plugin')
-		description('A Gradle plugin for working with CSS.')
+		name('Gradle JS Plugin')
+		description('A Gradle plugin for working with JS.')
 		url('https://github.com/eriwen/gradle-js-plugin')
 		licenses {
 			license {

@@ -43,7 +43,12 @@ class JsTask extends DefaultTask {
 
         ant.concat(destfile: tempPath, fixlastline: 'yes') {
             getInputs().files.each {
-                fileset(file: it.canonicalPath)
+                if (it.exists()) {
+                    fileset(file: it.canonicalPath)
+                } else {
+                    // FIXME: does not print anything, explore Gradle logging
+                    logger.warn("Tried to process file that does not exist: ${it.canonicalPath}")
+                }
             }
         }
 

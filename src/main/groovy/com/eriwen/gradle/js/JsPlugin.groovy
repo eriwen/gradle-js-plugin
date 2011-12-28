@@ -49,6 +49,8 @@ class JsPlugin implements Plugin<Project> {
 
         project.task('jshint', type: JsHintTask) {}
 
+        project.task('jsdoc', type: JsDocTask) {}
+
         project.task('js', type: JsTask) {
             options = project.convention.plugins.js.options
             compilationLevel = project.convention.plugins.js.compilationLevel
@@ -59,12 +61,14 @@ class JsPlugin implements Plugin<Project> {
     void configureDependencies() {
         project.configurations {
             rhino
+            jsdoc
         }
         project.repositories {
             mavenCentral()
         }
         project.dependencies {
             rhino 'org.mozilla:rhino:1.7R3'
+            jsdoc 'org.jsdoctoolkit:jsdoc:2.1.0'
         }
     }
 }

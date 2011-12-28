@@ -23,7 +23,7 @@ class CombineJsTask extends DefaultTask {
     def run() {
         def outputFiles = getOutputs().files
         if (outputFiles.files.size() == 1) {
-            ant.concat(destfile: outputFiles.asPath) {
+            ant.concat(destfile: outputFiles.asPath, fixlastline: 'yes') {
                 getInputs().files.each {
                     fileset(file: it.canonicalPath)
                 }

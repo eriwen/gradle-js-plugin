@@ -41,7 +41,7 @@ class JsTask extends DefaultTask {
             throw new IllegalArgumentException('Output must be exactly 1 File object. Example: outputs.file = file("myFile")')
         }
 
-        ant.concat(destfile: tempPath) {
+        ant.concat(destfile: tempPath, fixlastline: 'yes') {
             getInputs().files.each {
                 fileset(file: it.canonicalPath)
             }

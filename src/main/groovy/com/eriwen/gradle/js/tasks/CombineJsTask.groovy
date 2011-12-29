@@ -17,6 +17,7 @@ package com.eriwen.gradle.js.tasks
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
+import org.gradle.api.logging.Logger
 
 class CombineJsTask extends DefaultTask {
     @TaskAction
@@ -25,12 +26,8 @@ class CombineJsTask extends DefaultTask {
         if (outputFiles.files.size() == 1) {
             ant.concat(destfile: outputFiles.asPath, fixlastline: 'yes') {
                 getInputs().files.each {
-                    if (it.exists()) {
-                        fileset(file: it.canonicalPath)
-                    } else {
-                        // FIXME: does not print anything, explore Gradle logging
-                        logger.warn("Tried to process file that does not exist: ${it.canonicalPath}")
-                    }
+                    logger.info("Adding to fileset: ${it.canonicalPath}")
+                    fileset(file: it.canonicalPath)
                 }
             }
         } else {

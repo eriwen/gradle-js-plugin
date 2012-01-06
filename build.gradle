@@ -66,7 +66,7 @@ task groovydocJar(type: Jar, dependsOn: groovydoc) {
 }
 
 task wrapper(type: Wrapper) {
-	gradleVersion = '1.0-milestone-6'
+	gradleVersion = '1.0-milestone-7'
 }
 
 artifacts { 

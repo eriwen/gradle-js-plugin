@@ -71,23 +71,32 @@ artifacts {
 	archives groovydocJar, sourceJar
 }
 
-signing {
-	sign configurations.archives
+if (project.hasProperty('sign')) {
+	signing {
+		sign configurations.archives
+	}
 }
 
-install {
-	repositories.mavenInstaller {
-		pom.project(pomConfiguration)
+install.repositories.mavenInstaller {
+	pom.project(pomConfiguration)
+	if (project.hasProperty('sign')) {
+		beforeDeployment {
+			MavenDeployment deployment -> signPom(deployment)
+		}
 	}
 }
 
 // NOTE: Must still rename build/pom-default.xml to pom.xml
 // NOTE: Must rename pom-default.xml.asc to gradle-js-plugin-${version}.pom.asc
 uploadPublished {
-	dependsOn << [signArchives]
+	if (project.hasProperty('sign')) {
+		dependsOn << [signArchives]
+	}
 	repositories.mavenDeployer {
 		beforeDeployment { deployment ->
-			signPom(deployment)
+			if (project.hasProperty('sign')) {
+				signPom(deployment)
+			}
 		}
 		name = 'mavenCentralReleaseDeployer'
 		repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2/') {

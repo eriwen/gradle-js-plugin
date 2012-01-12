@@ -1,5 +1,5 @@
 /**
- * Copyright 2011 Eric Wendelin
+ * Copyright 2012 Eric Wendelin
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.api.DefaultTask
 
 class JsDocTask extends DefaultTask {
-    private static final String JSDOC_PATH = 'run.js'
+    private static final String JSDOC_PATH = 'jsdoc.js'
     private static final String TMP_DIR = 'tmp/js'
 
     @TaskAction
@@ -28,7 +28,7 @@ class JsDocTask extends DefaultTask {
         if (outputFiles.files.size() == 1) {
             final File jsdocJsFile = loadJsDocJs()
             final String outputPath = (outputFiles.files.toArray()[0] as File).canonicalPath
-            ant.java(jar: project.configurations.jsdoc.asPath, fork: true, output: outputPath) {
+            ant.java(jar: project.configurations.rhino.asPath, fork: true, output: outputPath) {
                 arg(value: jsdocJsFile.canonicalPath)
                 getInputs().files.files.each {
                     arg(value: it.canonicalPath)

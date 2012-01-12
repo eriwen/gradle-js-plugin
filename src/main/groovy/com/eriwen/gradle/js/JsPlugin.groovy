@@ -61,14 +61,12 @@ class JsPlugin implements Plugin<Project> {
     void configureDependencies() {
         project.configurations {
             rhino
-            jsdoc
         }
         project.repositories {
             mavenCentral()
         }
         project.dependencies {
             rhino 'org.mozilla:rhino:1.7R3'
-            jsdoc 'org.jsdoctoolkit:jsdoc:2.1.0'
         }
     }
 }

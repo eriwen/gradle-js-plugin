@@ -4,8 +4,16 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.eriwen:gradle-js-plugin:0.3'
+        classpath 'com.eriwen:gradle-js-plugin:0.3.5'
     }
+}
+
+configurations {
+    rhino
+}
+
+dependencies {
+    rhino 'org.mozilla:rhino:1.7R3'
 }
 
 apply plugin: 'js'
@@ -29,4 +37,18 @@ minifyJs {
 gzipJs {
     inputs.file file("${buildDir}/all-min.js")
     outputs.file file("${buildDir}/all-min.js")
+}
+
+jshint {
+    inputs.files fileTree(dir: "${projectDir}/src/test/resources", includes: ['file1.js'])
+    outputs.file file("${buildDir}/jshint.out")
+}
+
+task jsdocz {
+    println "java -cp ${project.configurations.rhino.asPath} org.mozilla.javascript.tools.shell.Main -modules ./rhino_modules -modules . ./jsdoc.js --dirname=. -T".execute().text
+}
+
+jsdoc {
+    inputs.files fileTree(dir: "${projectDir}/src/test/resources", includes: ['file1.js'])
+    outputs.file file("${buildDir}/jsdoc.html")
 }

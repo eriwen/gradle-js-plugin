@@ -5,7 +5,7 @@ apply plugin: 'idea'
 
 defaultTasks 'clean', 'build'
 
-version = '0.3'
+version = '0.3.5'
 group = 'com.eriwen'
 artifact = 'gradle-js-plugin'
 
@@ -19,46 +19,44 @@ repositories {
 }
 
 dependencies {
-	groovy 'org.codehaus.groovy:groovy:1.8.3'
+	groovy 'org.codehaus.groovy:groovy:1.8.4'
 	compile gradleApi()
-	compile 'com.google.javascript:closure-compiler:r1352'
-	runtime 'org.codehaus.groovy:groovy:1.8.3'
-	deployment 'org.apache.maven.wagon:wagon-webdav-jackrabbit:1.0-beta-7'
+	compile 'com.google.javascript:closure-compiler:r1592'
+	runtime 'org.codehaus.groovy:groovy:1.8.4'
+	deployment 'org.apache.maven.wagon:wagon-webdav-jackrabbit:2.2'
     testCompile 'junit:junit:4.8.2'
 }
 
-ideaModule {
+idea.module {
 	gradleCacheVariable = 'GRADLE_CACHE'
 	downloadJavadoc = true
 	outputDir = "${rootProject.projectDir}/intellij/out" as File
 	testOutputDir = "${rootProject.projectDir}/intellij/testOut" as File
 }
 
-ideaProject {
-	withXml { provider ->
-		def node = provider.asNode()
-		// Use git
-		def vcsConfig = node.component.find { it.'@name' == 'VcsDirectoryMappings' }
-		vcsConfig.mapping[0].'@vcs' = 'Git'
+idea.project.ipr.withXml { provider ->
+	def node = provider.asNode()
+	// Use git
+	def vcsConfig = node.component.find { it.'@name' == 'VcsDirectoryMappings' }
+	vcsConfig.mapping[0].'@vcs' = 'Git'
 
-		// Set gradle home
-		def gradleSettings = node.appendNode('component', [name: 'GradleSettings'])
-		gradleSettings.appendNode('option', [name: 'SDK_HOME', value: gradle.gradleHomeDir.absolutePath])
-	}
+	// Set gradle home
+	def gradleSettings = node.appendNode('component', [name: 'GradleSettings'])
+	gradleSettings.appendNode('option', [name: 'SDK_HOME', value: gradle.gradleHomeDir.absolutePath])
 }
 
 jar {
 	baseName = artifact
 }
 
-task sourceJar(type: Jar) {
+task sourceJar(type: org.gradle.api.tasks.bundling.Jar) {
 	description = 'An archive of the source code for Maven Central'
 	baseName = artifact
 	classifier = 'sources'
 	from sourceSets.main.groovy
 }
 
-task groovydocJar(type: Jar, dependsOn: groovydoc) {
+task groovydocJar(type: org.gradle.api.tasks.bundling.Jar, dependsOn: groovydoc) {
 	description = 'An archive of the GroovyDocs for Maven Central'
 	baseName = artifact
 	classifier = 'javadoc'
@@ -66,7 +64,7 @@ task groovydocJar(type: Jar, dependsOn: groovydoc) {
 }
 
 task wrapper(type: Wrapper) {
-	gradleVersion = '1.0-milestone-6'
+	gradleVersion = '1.0-milestone-7'
 }
 
 artifacts { 
@@ -92,12 +90,27 @@ uploadPublished {
 			signPom(deployment)
 		}
 		name = 'mavenCentralReleaseDeployer'
-		repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2') {
+		repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2/') {
 			authentication(userName: System.properties['mavenCentralUsername'], password: System.properties['mavenCentralPassword'])
 			releases(updatePolicy: 'always')
 			snapshots(updatePolicy: 'always')
 		}
 		pom.project(pomConfiguration)
+
+        // Fix the generated pom to set the 'packaging' tag
+        pom.withXml { XmlProvider xmlProvider ->
+            def xml = xmlProvider.asString()
+            def pomXml = new XmlParser().parse(new ByteArrayInputStream(xml.toString().bytes))
+
+            pomXml.version[0] + { packaging('jar') }
+
+            def newXml = new StringWriter()
+            def printer = new XmlNodePrinter(new PrintWriter(newXml))
+            printer.preserveWhitespace = true
+            printer.print(pomXml)
+            xml.setLength(0)
+            xml.append(newXml.toString())
+        }
 	}
 }
 
@@ -106,9 +119,10 @@ uploadPublished {
  */
 def getPomConfiguration() { 
 	return {
-		name('Gradle JS Plugin')
-		description('A Gradle plugin for working with JS.')
-		url('https://github.com/eriwen/gradle-js-plugin')
+		name 'Gradle JS Plugin'
+        packaging 'jar'
+		description 'A Gradle plugin for working with JS.'
+		url 'https://github.com/eriwen/gradle-js-plugin'
 		licenses {
 			license {
 				name 'The Apache Software License, Version 2.0'
@@ -118,15 +132,15 @@ def getPomConfiguration() {
 		}
 		developers {
 			developer {
-				id('eriwen')
-				name('Eric Wendelin')
-				email('emwendelin@gmail.com')
+				id 'eriwen'
+				name 'Eric Wendelin'
+				email 'emwendelin@gmail.com'
 			}
 		}
 		scm {
-			connection('scm:https://eriwen@github.com/eriwen/gradle-js-plugin')
-			developerConnection('scm:git@github.com:eriwen/gradle-js-plugin.git')
-			url('https://github.com/eriwen/gradle-js-plugin')
+			connection 'scm:https://eriwen@github.com/eriwen/gradle-js-plugin'
+			developerConnection 'scm:git@github.com:eriwen/gradle-js-plugin.git'
+			url 'https://github.com/eriwen/gradle-js-plugin'
 		}
 	}
 }

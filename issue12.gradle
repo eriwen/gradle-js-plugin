@@ -32,3 +32,18 @@ js {
     inputs.files file2 + file1
     outputs.file file("${buildDir}/all.js")
 }
+
+task jsDev(type: com.eriwen.gradle.js.tasks.JsTask) {
+    file2 = fileTree(dir: "${projectDir}/src/test/resources", includes: ['file2.js'])
+    file1 = fileTree(dir: "${projectDir}/src/test/resources", includes: ['file1.js'])
+    inputs.files file2 + file1
+    outputs.file file("${buildDir}/all-debug.js")
+    compilationLevel = 'WHITESPACE_ONLY'
+}
+
+task jsProd(type: com.eriwen.gradle.js.tasks.JsTask) {
+    file2 = fileTree(dir: "${projectDir}/src/test/resources", includes: ['file2.js'])
+    file1 = fileTree(dir: "${projectDir}/src/test/resources", includes: ['file1.js'])
+    inputs.files file2 + file1
+    outputs.file file("${buildDir}/all.js")
+}

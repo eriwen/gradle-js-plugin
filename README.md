@@ -24,13 +24,23 @@ Wrangling your JS in a [Gradle](http://gradle.org) build is easy! Just add this 
     }
 ```
 
-**Need more than 1 set of files generated? Just add another *js* block:**
+**Need more than 1 set of files generated? We'll have to declare our tasks a bit differently:**
 
 ```groovy
-    js {
-        inputs.files fileTree(dir: "${projectDir}/otherdir", includes: ["file1.js", "file2.js"])
-        outputs.file file("${buildDir}/teenytiny.js")
-    }
+task jsDev(type: com.eriwen.gradle.js.tasks.JsTask) {
+    file2 = fileTree(dir: "${projectDir}/src/test/resources", includes: ['file2.js'])
+    file1 = fileTree(dir: "${projectDir}/src/test/resources", includes: ['file1.js'])
+    inputs.files file2 + file1
+    outputs.file file("${buildDir}/all-debug.js")
+    compilationLevel = 'WHITESPACE_ONLY'
+}
+
+task jsProd(type: com.eriwen.gradle.js.tasks.JsTask) {
+    file2 = fileTree(dir: "${projectDir}/src/test/resources", includes: ['file2.js'])
+    file1 = fileTree(dir: "${projectDir}/src/test/resources", includes: ['file1.js'])
+    inputs.files file2 + file1
+    outputs.file file("${buildDir}/all.js")
+}
 ```
 
 **What if I want my JS files combined in a certain order?**

@@ -38,7 +38,7 @@ class JsPlugin implements Plugin<Project> {
 
     void applyTasks(final Project project) {
         project.task('minifyJs', type: MinifyJsTask) {
-            options = project.convention.plugins.js.options
+            compilerOptions = project.convention.plugins.js.compilerOptions
             compilationLevel = project.convention.plugins.js.compilationLevel
             warningLevel = project.convention.plugins.js.warningLevel
         }
@@ -49,10 +49,13 @@ class JsPlugin implements Plugin<Project> {
 
         project.task('jshint', type: JsHintTask) {}
 
-        project.task('jsdoc', type: JsDocTask) {}
+        project.task('jsdoc', type: JsDocTask) {
+//            project.convention.plugins.js.outputs
+            options = project.convention.plugins.js.options
+        }
 
         project.task('js', type: JsTask) {
-            options = project.convention.plugins.js.options
+            compilerOptions = project.convention.plugins.js.compilerOptions
             compilationLevel = project.convention.plugins.js.compilationLevel
             warningLevel = project.convention.plugins.js.warningLevel
         }
@@ -69,4 +72,21 @@ class JsPlugin implements Plugin<Project> {
             rhino 'org.mozilla:rhino:1.7R3'
         }
     }
+    /*
+    repositories {
+    mavenRepo (name: "JQuery", url: "http://code.jquery.com") {
+        pattern = "[module]-[revision](.[classifier]).[ext]"
+    }
+}
+configurations {
+    js
+}
+dependencies {
+    js group: 'jquery', name: 'jquery', version: '1.6.4', classifier: 'min', ext: "js"
+}
+task fetchJs(type: Copy) {
+    from configurations.js
+    into "$buildDir/js"
+}
+     */
 }

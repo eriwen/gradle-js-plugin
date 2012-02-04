@@ -18,7 +18,8 @@ package com.eriwen.gradle.js
 import com.google.javascript.jscomp.CompilerOptions
 
 class JsPluginConvention {
-    CompilerOptions options = new CompilerOptions()
+    CompilerOptions compilerOptions = new CompilerOptions()
     String compilationLevel = 'SIMPLE_OPTIMIZATIONS'
     String warningLevel = 'DEFAULT'
+    Iterable<String> options = []
 }

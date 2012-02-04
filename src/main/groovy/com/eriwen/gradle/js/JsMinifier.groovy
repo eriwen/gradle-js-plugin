@@ -9,16 +9,17 @@ import com.google.javascript.jscomp.Result
 import com.google.javascript.jscomp.WarningLevel
 
 /**
- * 
+ * Util to minify JS files with Google Closure Compiler.
  *
  * @author Eric Wendelin
  * @date 10/30/11
  */
 class JsMinifier {
-    void minifyJsFile(final File inputFile, final File outputFile,
+
+
+    void minifyJsFile(final File inputFile, final File outputFile, final CompilerOptions options,
             final String warningLevel, final String compilationLevel) {
 		Compiler compiler = new Compiler()
-		CompilerOptions options = new CompilerOptions()
 		CompilationLevel.valueOf(compilationLevel).setOptionsForCompilationLevel(options)
 		WarningLevel level = WarningLevel.valueOf(warningLevel)
 		level.setOptionsForWarningLevel(options)

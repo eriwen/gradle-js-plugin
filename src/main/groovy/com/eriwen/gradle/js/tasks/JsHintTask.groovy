@@ -17,16 +17,18 @@ package com.eriwen.gradle.js.tasks
 
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.DefaultTask
+import com.eriwen.gradle.js.ResourceUtil
 
 class JsHintTask extends DefaultTask {
     private static final String JSHINT_PATH = 'jshint-rhino.js'
     private static final String TMP_DIR = 'tmp/js'
+    private static final ResourceUtil RESOURCE_UTIL = new ResourceUtil()
 
     @TaskAction
     def run() {
         def outputFiles = getOutputs().files
         if (outputFiles.files.size() == 1) {
-            final File jshintJsFile = loadJsHintJs()
+            final File jshintJsFile = RESOURCE_UTIL.extractFileToDirectory(new File(project.buildDir, TMP_DIR), JSHINT_PATH)
             final String outputPath = (outputFiles.files.toArray()[0] as File).canonicalPath
             ant.java(jar: project.configurations.rhino.asPath, fork: true, output: outputPath) {
                 arg(value: jshintJsFile.canonicalPath)
@@ -37,17 +39,5 @@ class JsHintTask extends DefaultTask {
         } else {
             throw new IllegalArgumentException('Output must be exactly 1 File object. Example: outputs.file = file("myFile")')
         }
-    }
-
-    File loadJsHintJs() {
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(JSHINT_PATH)
-        File tempDir = new File(project.buildDir, TMP_DIR)
-        tempDir.mkdirs()
-        File jshintJsFile = new File(tempDir, JSHINT_PATH)
-        if (!jshintJsFile.exists()) {
-            jshintJsFile << inputStream
-        }
-        inputStream.close()
-        return jshintJsFile
     }
 }

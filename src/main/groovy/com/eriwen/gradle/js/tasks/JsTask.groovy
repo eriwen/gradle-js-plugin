@@ -22,7 +22,7 @@ import com.google.javascript.jscomp.CompilerOptions
 import com.eriwen.gradle.js.JsMinifier
 
 class JsTask extends DefaultTask {
-    CompilerOptions options = new CompilerOptions()
+    CompilerOptions compilerOptions = new CompilerOptions()
     String compilationLevel = 'SIMPLE_OPTIMIZATIONS'
     String warningLevel = 'DEFAULT'
 
@@ -50,7 +50,7 @@ class JsTask extends DefaultTask {
             }
         }
 
-        MINIFIER.minifyJsFile(new File(tempPath), outputFiles[0] as File, warningLevel, compilationLevel)
+        MINIFIER.minifyJsFile(new File(tempPath), outputFiles[0] as File, compilerOptions, warningLevel, compilationLevel)
 
         ant.gzip(src: outputPath, destfile: "${outputPath}.gz")
         ant.move(file: "${outputPath}.gz", tofile: outputPath)

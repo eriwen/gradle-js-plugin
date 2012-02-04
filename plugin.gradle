@@ -4,8 +4,13 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.eriwen:gradle-js-plugin:0.3.5'
+        classpath 'com.eriwen:gradle-js-plugin:0.3.16'
     }
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
 }
 
 configurations {
@@ -44,11 +49,8 @@ jshint {
     outputs.file file("${buildDir}/jshint.out")
 }
 
-task jsdocz {
-    println "java -cp ${project.configurations.rhino.asPath} org.mozilla.javascript.tools.shell.Main -modules ./rhino_modules -modules . ./jsdoc.js --dirname=. -T".execute().text
-}
-
 jsdoc {
-    inputs.files fileTree(dir: "${projectDir}/src/test/resources", includes: ['file1.js'])
+    inputs.files fileTree(dir: "${projectDir}/src/test/resources", includes: ['file2.js'])
     outputs.file file("${buildDir}/jsdoc.html")
+    options = ["-t=templates/jsdoc"]
 }

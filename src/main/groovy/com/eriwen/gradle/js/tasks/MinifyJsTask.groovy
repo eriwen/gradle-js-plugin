@@ -1,5 +1,5 @@
 /**
- * Copyright 2011 Eric Wendelin
+ * Copyright 2012 Eric Wendelin
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import com.eriwen.gradle.js.JsMinifier
 class MinifyJsTask extends DefaultTask {
     private static final JsMinifier MINIFIER = new JsMinifier()
 
-    CompilerOptions options = new CompilerOptions()
+    CompilerOptions compilerOptions = new CompilerOptions()
     String compilationLevel = 'SIMPLE_OPTIMIZATIONS'
     String warningLevel = 'DEFAULT'
 
@@ -34,7 +34,7 @@ class MinifyJsTask extends DefaultTask {
         def outputFiles = getOutputs().files.files.toArray()
         if (outputFiles.size() == inputFiles.size()) {
             for (int i = 0; i < inputFiles.size(); i++) {
-                MINIFIER.minifyJsFile(inputFiles[i] as File, outputFiles[i] as File, warningLevel, compilationLevel)
+                MINIFIER.minifyJsFile(inputFiles[i] as File, outputFiles[i] as File, compilerOptions, warningLevel, compilationLevel)
             }
         } else {
             throw new IllegalArgumentException("Could not map input files to output files. Found ${inputFiles.size()} inputs and ${outputFiles.size()} outputs")

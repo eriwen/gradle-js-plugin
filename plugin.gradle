@@ -4,7 +4,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.eriwen:gradle-js-plugin:0.3'
+        classpath 'com.eriwen:gradle-js-plugin:0.4.1'
     }
 }
 
@@ -53,4 +53,11 @@ jsdoc {
     inputs.files fileTree(dir: "${projectDir}/src/test/resources", includes: ['file2.js'])
     outputs.dir "${buildDir}/jsdoc"
     options = []
+}
+
+props2js {
+    inputs.file file("${projectDir}/src/test/resources/test.properties")
+    outputs.file file("${buildDir}/props.jsonp")
+    type = 'json'
+    functionName = 'fn'
 }

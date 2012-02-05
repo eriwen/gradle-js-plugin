@@ -21,5 +21,7 @@ class JsPluginConvention {
     CompilerOptions compilerOptions = new CompilerOptions()
     String compilationLevel = 'SIMPLE_OPTIMIZATIONS'
     String warningLevel = 'DEFAULT'
+    String type = 'json'
+    String functionName = ''
     Iterable<String> options = []
 }

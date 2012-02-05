@@ -1,5 +1,5 @@
 /**
- * Copyright 2011 Eric Wendelin
+ * Copyright 2012 Eric Wendelin
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import org.gradle.api.Project
 import org.gradle.api.Plugin
 
 import com.eriwen.gradle.js.tasks.*
+import com.eriwen.gradle.js.tasks.Props2JsTask
 
 class JsPlugin implements Plugin<Project> {
     private Project project
@@ -50,7 +51,6 @@ class JsPlugin implements Plugin<Project> {
         project.task('jshint', type: JsHintTask) {}
 
         project.task('jsdoc', type: JsDocTask) {
-//            project.convention.plugins.js.outputs
             options = project.convention.plugins.js.options
         }
 
@@ -58,6 +58,11 @@ class JsPlugin implements Plugin<Project> {
             compilerOptions = project.convention.plugins.js.compilerOptions
             compilationLevel = project.convention.plugins.js.compilationLevel
             warningLevel = project.convention.plugins.js.warningLevel
+        }
+
+        project.task('props2js', type: Props2JsTask) {
+            type = project.convention.plugins.js.type
+            functionName = project.convention.plugins.js.functionName
         }
     }
 
@@ -72,21 +77,4 @@ class JsPlugin implements Plugin<Project> {
             rhino 'org.mozilla:rhino:1.7R3'
         }
     }
-    /*
-    repositories {
-    mavenRepo (name: "JQuery", url: "http://code.jquery.com") {
-        pattern = "[module]-[revision](.[classifier]).[ext]"
-    }
-}
-configurations {
-    js
-}
-dependencies {
-    js group: 'jquery', name: 'jquery', version: '1.6.4', classifier: 'min', ext: "js"
-}
-task fetchJs(type: Copy) {
-    from configurations.js
-    into "$buildDir/js"
-}
-     */
 }

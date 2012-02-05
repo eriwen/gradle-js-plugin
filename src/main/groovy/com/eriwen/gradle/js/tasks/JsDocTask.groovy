@@ -27,30 +27,38 @@ class JsDocTask extends DefaultTask {
     private static final String RHINO_MAIN_CLASS = 'org.mozilla.javascript.tools.shell.Main'
     Iterable<String> modulePaths = ['node_modules', 'rhino_modules', '.']
     Iterable<String> options = []
+    Boolean debug = false
 
     @TaskAction
     def run() {
         def outputFiles = getOutputs().files
         if (outputFiles.files.size() == 1) {
-            RESOURCE_UTIL.extractZipFile(RESOURCE_UTIL.extractFileToDirectory(new File(project.buildDir, TMP_DIR), JSDOC_PATH))
-            final String outputPath = (outputFiles.files.toArray()[0] as File).canonicalPath
-            //java -cp ../../idealib/js.jar org.mozilla.javascript.tools.shell.Main -modules ./node_modules -modules ./rhino_modules -modules . jsdoc.js ../../src/test/resources/file2.js
+            final File zipFile = RESOURCE_UTIL.extractFileToDirectory(new File(project.buildDir, TMP_DIR), JSDOC_PATH)
+            final File jsdocDir = RESOURCE_UTIL.extractZipFile(zipFile)
+            final String outputPath = (outputFiles.files.toArray()[0] as File).absolutePath
+            final String workingDir = "${jsdocDir.absolutePath}${File.separator}jsdoc"
 
-            ant.java(classpath: project.configurations.rhino.asPath, classname: RHINO_MAIN_CLASS, fork: true, output: outputPath) {
+            ant.java(classpath: project.configurations.rhino.asPath, classname: RHINO_MAIN_CLASS, fork: true,
+                    dir: workingDir) {
+                if (debug) {
+                    arg(value: '-debug')
+                }
                 modulePaths.each { String modulePath ->
                     arg(value: '-modules')
                     arg(value: modulePath)
                 }
-                arg(value: 'jsdoc.js')
+                arg(value: "${workingDir}${File.separator}jsdoc.js")
                 getInputs().files.files.each {
                     arg(value: it.canonicalPath)
                 }
+                arg(value: '-d')
+                arg(value: outputPath)
                 options.each {
                     arg(value: it)
                 }
             }
         } else {
-            throw new IllegalArgumentException('Output must be exactly 1 File object. Example: outputs.file = file("myFile")')
+            throw new IllegalArgumentException('Output must be exactly 1 File object. Example: outputs.dir = file("outputDir")')
         }
     }
 }

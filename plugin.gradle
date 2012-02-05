@@ -4,7 +4,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.eriwen:gradle-js-plugin:0.3.16'
+        classpath 'com.eriwen:gradle-js-plugin:0.3'
     }
 }
 
@@ -51,6 +51,6 @@ jshint {
 
 jsdoc {
     inputs.files fileTree(dir: "${projectDir}/src/test/resources", includes: ['file2.js'])
-    outputs.file file("${buildDir}/jsdoc.html")
-    options = ["-t=templates/jsdoc"]
+    outputs.dir "${buildDir}/jsdoc"
+    options = []
 }

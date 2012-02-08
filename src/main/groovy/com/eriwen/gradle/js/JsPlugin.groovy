@@ -22,15 +22,9 @@ import com.eriwen.gradle.js.tasks.*
 import com.eriwen.gradle.js.tasks.Props2JsTask
 
 class JsPlugin implements Plugin<Project> {
-    private Project project
-    protected JsPluginConvention jsPluginConvention
 
     void apply(final Project project) {
-        this.project = project
-        this.jsPluginConvention = new JsPluginConvention()
-
-        project.convention.plugins.js = jsPluginConvention
-        configureDependencies()
+        project.convention.plugins.js = new JsPluginConvention()
         applyTasks(project)
     }
 
@@ -63,7 +57,7 @@ class JsPlugin implements Plugin<Project> {
         }
     }
 
-    void configureDependencies() {
+    void configureDependencies(Project project) {
         project.configurations {
             rhino
         }

@@ -20,11 +20,16 @@ import org.gradle.api.Plugin
 
 import com.eriwen.gradle.js.tasks.*
 import com.eriwen.gradle.js.tasks.Props2JsTask
+import org.gradle.api.internal.Instantiator
 
 class JsPlugin implements Plugin<Project> {
 
     void apply(final Project project) {
         project.convention.plugins.js = new JsPluginConvention()
+        
+        Instantiator instantiator = project.services.get(Instantiator)
+        project.extensions.add(JavaScriptExtension.NAME, instantiator.newInstance(JavaScriptExtension, project))
+        
         applyTasks(project)
     }
 

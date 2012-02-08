@@ -12,13 +12,15 @@ isSnapshot = version.endsWith("-SNAPSHOT")
 
 repositories {
 	mavenCentral()
+    maven { url 'http://m2repo.spockframework.org/snapshots/' }
 }
 
 dependencies {
 	groovy localGroovy()
 	compile gradleApi()
 	compile 'com.google.javascript:closure-compiler:r1592'
-    testCompile 'junit:junit:4.8.2'
+    testCompile 'org.spockframework:spock-core:0.6-groovy-1.8-SNAPSHOT'
+
 }
 
 idea.module {

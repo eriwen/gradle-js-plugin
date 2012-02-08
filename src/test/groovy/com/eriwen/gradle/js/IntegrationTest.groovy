@@ -97,19 +97,24 @@ class IntegrationTest extends Specification {
                     }
                 }
             }
+
+            task copyProcessed(type: Copy) {
+                from javascript.source.custom.processed
+                into "build/out"
+            }
         """
         and:
         file("src/custom/js/stuff.js") << ""
 
         when:
-        launcher("secondTask").run()
+        launcher("copyProcessed").run()
 
         then:
         task("customTest").state.executed
         task("secondTask").state.executed
 
         when:
-        launcher("secondTask").run()
+        launcher("copyProcessed").run()
 
         then:
         task("customTest").state.upToDate

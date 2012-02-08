@@ -92,28 +92,13 @@ uploadArchives {
 			snapshots(updatePolicy: 'always')
 		}
 		pom.project(pomConfiguration)
-
-        // Fix the generated pom to set the 'packaging' tag
-        pom.withXml { XmlProvider xmlProvider ->
-            def xml = xmlProvider.asString()
-            def pomXml = new XmlParser().parse(new ByteArrayInputStream(xml.toString().bytes))
-
-            pomXml.version[0] + { packaging('jar') }
-
-            def newXml = new StringWriter()
-            def printer = new XmlNodePrinter(new PrintWriter(newXml))
-            printer.preserveWhitespace = true
-            printer.print(pomXml)
-            xml.setLength(0)
-            xml.append(newXml.toString())
-        }
 	}
 }
 
 /**
  * Create POM config and return for use by other tasks.
  */
-def getPomConfiguration() { 
+def getPomConfiguration() {
 	return {
 		name 'Gradle JS Plugin'
         packaging 'war'

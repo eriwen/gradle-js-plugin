@@ -15,7 +15,6 @@
  */
 package com.eriwen.gradle.js
 
-import org.gradle.api.logging.Logger
 import org.gradle.api.Project
 import org.gradle.api.Plugin
 
@@ -24,12 +23,10 @@ import com.eriwen.gradle.js.tasks.Props2JsTask
 
 class JsPlugin implements Plugin<Project> {
     private Project project
-    private Logger logger
     protected JsPluginConvention jsPluginConvention
 
     void apply(final Project project) {
         this.project = project
-        this.logger = logger
         this.jsPluginConvention = new JsPluginConvention()
 
         project.convention.plugins.js = jsPluginConvention

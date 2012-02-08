@@ -45,16 +45,16 @@ idea.project.ipr.withXml { provider ->
 	gradleSettings.appendNode('option', [name: 'SDK_HOME', value: gradle.gradleHomeDir.absolutePath])
 }
 
-task sourceJar(type: org.gradle.api.tasks.bundling.Jar) {
+task sourceJar(type: Jar) {
 	description = 'An archive of the source code for Maven Central'
 	classifier = 'sources'
 	from sourceSets.main.groovy
 }
 
-task groovydocJar(type: org.gradle.api.tasks.bundling.Jar, dependsOn: groovydoc) {
+task groovydocJar(type: Jar) {
 	description = 'An archive of the GroovyDocs for Maven Central'
 	classifier = 'javadoc'
-	from fileTree(groovydoc.destinationDir)
+	from groovydoc
 }
 
 task wrapper(type: Wrapper) {

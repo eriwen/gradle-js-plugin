@@ -18,4 +18,6 @@ public class DefaultJavaScriptSourceSetContainer extends AbstractNamedDomainObje
     protected JavaScriptSourceSet doCreate(String name) {
         return getInstantiator().newInstance(DefaultJavaScriptSourceSet.class, name, project);
     }
+
+
 }

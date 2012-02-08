@@ -5,11 +5,15 @@ class SourcesTest extends ProjectTest {
     def setup() {
         apply plugin: JsPlugin
     }
-    
+
+    def createSource(String name = "main") {
+        def srcRoot = newFolder("src", name, "js")
+        (new File(srcRoot, "source.js") << "").canonicalFile
+    }
+
     def "can add to the source set container"() {
         given:
-        def srcRoot = newFolder("src", "custom", "js")
-        def src = (new File(srcRoot, "source.js") << "").canonicalFile
+        def src = createSource("custom")
 
         when:
         javascript {
@@ -27,4 +31,7 @@ class SourcesTest extends ProjectTest {
         javascript.source.custom.js.files.toList() == [src]
 
     }
+
+
 }
+

@@ -1,5 +1,6 @@
 package com.eriwen.gradle.js.source.internal
 
+import com.eriwen.gradle.js.source.JavaScriptProcessingChain
 import com.eriwen.gradle.js.source.JavaScriptSourceSet
 import org.gradle.api.Action
 import org.gradle.api.Project
@@ -13,11 +14,13 @@ class DefaultJavaScriptSourceSet implements JavaScriptSourceSet {
     private final String name
     private final String displayName
     private final DefaultSourceDirectorySet js
+    private final JavaScriptProcessingChain processing
     
     DefaultJavaScriptSourceSet(String name, Project project) {
         this.name = name
         this.displayName = GUtil.toWords(name)
         this.js = new DefaultSourceDirectorySet(name, String.format("%s JavaScript source", displayName), InternalGradle.toFileResolver(project))
+        this.processing = InternalGradle.toInstantiator(project).newInstance(DefaultJavaScriptProcessingChain, project, this)
     }
 
     String getName() {
@@ -37,5 +40,13 @@ class DefaultJavaScriptSourceSet implements JavaScriptSourceSet {
         ConfigureUtil.configure(closure, this, false)
     }
 
+    JavaScriptProcessingChain getProcessing() {
+        processing
+    }
+
+    JavaScriptProcessingChain processing(Action<JavaScriptProcessingChain> action) {
+        action.execute(processing)
+        processing
+    }
 
 }

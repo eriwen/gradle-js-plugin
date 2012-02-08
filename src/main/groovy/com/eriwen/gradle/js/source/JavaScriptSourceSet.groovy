@@ -11,4 +11,7 @@ interface JavaScriptSourceSet extends Named, Configurable<JavaScriptSourceSet> {
 
     SourceDirectorySet js(Action<SourceDirectorySet> action)
 
+    JavaScriptProcessingChain getProcessing()
+
+    JavaScriptProcessingChain processing(Action<JavaScriptProcessingChain> action)
 }

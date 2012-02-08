@@ -18,8 +18,13 @@ repositories {
 dependencies {
 	groovy localGroovy()
 	compile gradleApi()
-	compile 'com.google.javascript:closure-compiler:r1592'
-    testCompile 'org.spockframework:spock-core:0.6-groovy-1.8-SNAPSHOT'
+	compile ('com.google.javascript:closure-compiler:r1592') {
+        exclude module: "junit"
+    }
+    testCompile ('org.spockframework:spock-core:0.6-groovy-1.8-SNAPSHOT') {
+        exclude module: "junit-dep"
+        exclude module: "groovy-all"
+    }
 
 }
 

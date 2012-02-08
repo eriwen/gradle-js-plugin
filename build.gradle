@@ -7,7 +7,7 @@ defaultTasks 'clean', 'build'
 
 version = '0.4.1'
 group = 'com.eriwen'
-artifact = 'gradle-js-plugin'
+archivesBaseName = 'gradle-js-plugin'
 
 configurations { 
 	deployment
@@ -45,20 +45,14 @@ idea.project.ipr.withXml { provider ->
 	gradleSettings.appendNode('option', [name: 'SDK_HOME', value: gradle.gradleHomeDir.absolutePath])
 }
 
-jar {
-	baseName = artifact
-}
-
 task sourceJar(type: org.gradle.api.tasks.bundling.Jar) {
 	description = 'An archive of the source code for Maven Central'
-	baseName = artifact
 	classifier = 'sources'
 	from sourceSets.main.groovy
 }
 
 task groovydocJar(type: org.gradle.api.tasks.bundling.Jar, dependsOn: groovydoc) {
 	description = 'An archive of the GroovyDocs for Maven Central'
-	baseName = artifact
 	classifier = 'javadoc'
 	from fileTree(groovydoc.destinationDir)
 }

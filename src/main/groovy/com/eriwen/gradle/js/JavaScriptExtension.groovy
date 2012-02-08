@@ -2,8 +2,8 @@ package com.eriwen.gradle.js
 
 import com.eriwen.gradle.js.source.JavaScriptSourceSetContainer
 import com.eriwen.gradle.js.source.internal.DefaultJavaScriptSourceSetContainer
+import com.eriwen.gradle.js.source.internal.InternalGradle
 import org.gradle.api.Project
-import org.gradle.api.internal.Instantiator
 import org.gradle.util.ConfigureUtil
 
 class JavaScriptExtension {
@@ -13,8 +13,7 @@ class JavaScriptExtension {
     final JavaScriptSourceSetContainer source
 
     JavaScriptExtension(Project project) {
-        Instantiator instantiator = project.services.get(Instantiator)
-        source = instantiator.newInstance(DefaultJavaScriptSourceSetContainer, instantiator)
+        source = InternalGradle.toInstantiator(project).newInstance(DefaultJavaScriptSourceSetContainer, project)
     }
 
     void source(Closure closure) {

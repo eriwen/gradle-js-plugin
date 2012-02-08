@@ -25,8 +25,8 @@ idea.module {
 	gradleCacheVariable = 'GRADLE_CACHE'
 	downloadJavadoc = true
     downloadSource = true
-	outputDir = "${rootProject.projectDir}/intellij/out" as File
-	testOutputDir = "${rootProject.projectDir}/intellij/testOut" as File
+	outputDir = file("intellij/out")
+	testOutputDir = file("intellij/testOut")
 }
 
 idea.project.ipr.withXml { provider ->

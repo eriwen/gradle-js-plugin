@@ -5,14 +5,10 @@ apply plugin: 'idea'
 
 defaultTasks 'clean', 'build'
 
-version = '0.4.1'
+version = '0.4.1-SNAPSHOT'
 group = 'com.eriwen'
 archivesBaseName = 'gradle-js-plugin'
-
-configurations { 
-	deployment
-	published.extendsFrom archives, signatures
-}
+isSnapshot = version.endsWith("-SNAPSHOT")
 
 repositories {
 	mavenCentral()
@@ -22,13 +18,13 @@ dependencies {
 	groovy localGroovy()
 	compile gradleApi()
 	compile 'com.google.javascript:closure-compiler:r1592'
-	deployment 'org.apache.maven.wagon:wagon-webdav-jackrabbit:2.2'
     testCompile 'junit:junit:4.8.2'
 }
 
 idea.module {
 	gradleCacheVariable = 'GRADLE_CACHE'
 	downloadJavadoc = true
+    downloadSource = true
 	outputDir = "${rootProject.projectDir}/intellij/out" as File
 	testOutputDir = "${rootProject.projectDir}/intellij/testOut" as File
 }
@@ -64,33 +60,31 @@ artifacts {
 	archives groovydocJar, sourceJar
 }
 
-if (project.hasProperty('sign')) {
-	signing {
-		sign configurations.archives
-	}
+signing {
+    sign configurations.archives
+}
+
+// Only *require* signing if we are uploading a non snapshot version
+gradle.taskGraph.whenReady { taskGraph ->
+    tasks.withType(org.gradle.plugins.signing.Sign).all {
+        required = taskGraph.hasTask(":uploadArchives") && !isSnapshot
+    }
 }
 
 install.repositories.mavenInstaller {
 	pom.project(pomConfiguration)
-	if (project.hasProperty('sign')) {
-		beforeDeployment {
-			MavenDeployment deployment -> signPom(deployment)
-		}
+	if (signing.signatory) {
+		beforeDeployment { signPom(it) }
 	}
 }
 
 // NOTE: Must still rename build/pom-default.xml to pom.xml
 // NOTE: Must rename pom-default.xml.asc to gradle-js-plugin-${version}.pom.asc
-uploadPublished {
-	if (project.hasProperty('sign')) {
-		dependsOn << [signArchives]
-	}
+uploadArchives {
 	repositories.mavenDeployer {
-		beforeDeployment { deployment ->
-			if (project.hasProperty('sign')) {
-				signPom(deployment)
-			}
-		}
+        if (signing.signatory) {
+            beforeDeployment { signPom(it) }
+        }
 		name = 'mavenCentralReleaseDeployer'
 		repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2/') {
 			authentication(userName: System.properties['mavenCentralUsername'], password: System.properties['mavenCentralPassword'])
@@ -122,7 +116,7 @@ uploadPublished {
 def getPomConfiguration() { 
 	return {
 		name 'Gradle JS Plugin'
-        packaging 'jar'
+        packaging 'war'
 		description 'A Gradle plugin for working with JS.'
 		url 'https://github.com/eriwen/gradle-js-plugin'
 		licenses {

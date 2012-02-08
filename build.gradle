@@ -19,10 +19,9 @@ repositories {
 }
 
 dependencies {
-	groovy 'org.codehaus.groovy:groovy:1.8.4'
+	groovy localGroovy()
 	compile gradleApi()
 	compile 'com.google.javascript:closure-compiler:r1592'
-	runtime 'org.codehaus.groovy:groovy:1.8.4'
 	deployment 'org.apache.maven.wagon:wagon-webdav-jackrabbit:2.2'
     testCompile 'junit:junit:4.8.2'
 }

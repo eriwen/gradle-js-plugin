@@ -87,12 +87,12 @@ class IntegrationTest extends Specification {
                             srcDir "src/custom/js"    
                         }
                         processing {
-                            add(task("s1", type: TestTask) {
+                            task(TestTask) {
                                 destination project.file("build/\$name")
-                            })
-                            add(task("s2", type: TestTask) {
+                            }
+                            task("secondTask", TestTask) {
                                 destination project.file("build/\$name")
-                            })
+                            }
                         }
                     }
                 }
@@ -102,17 +102,17 @@ class IntegrationTest extends Specification {
         file("src/custom/js/stuff.js") << ""
 
         when:
-        launcher("s2").run()
+        launcher("secondTask").run()
 
         then:
-        task("s1").state.executed
-        task("s2").state.executed
+        task("customTest").state.executed
+        task("secondTask").state.executed
 
         when:
-        launcher("s2").run()
+        launcher("secondTask").run()
 
         then:
-        task("s1").state.upToDate
-        task("s2").state.upToDate
+        task("customTest").state.upToDate
+        task("secondTask").state.upToDate
     }
 }

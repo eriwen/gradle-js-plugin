@@ -5,7 +5,7 @@ apply plugin: 'idea'
 
 defaultTasks 'clean', 'build'
 
-version = '0.4.1-SNAPSHOT'
+version = '0.3.13-SNAPSHOT'
 group = 'com.eriwen'
 archivesBaseName = 'gradle-js-plugin'
 isSnapshot = version.endsWith("-SNAPSHOT")
@@ -60,7 +60,7 @@ task groovydocJar(type: Jar) {
 }
 
 task wrapper(type: Wrapper) {
-	gradleVersion = '1.0-milestone-7'
+	gradleVersion = '1.0-milestone-8a'
 }
 
 artifacts { 

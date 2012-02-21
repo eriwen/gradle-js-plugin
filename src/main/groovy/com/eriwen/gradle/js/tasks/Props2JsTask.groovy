@@ -44,17 +44,14 @@ class Props2JsTask extends DefaultTask {
 
         if (outputFiles.size() == 1 && inputFiles.size() == 1) {
             final File props2JsJar = RESOURCE_UTIL.extractFileToDirectory(new File(project.buildDir, TMP_DIR), PROPS2JS_JAR)
-            // Equivalent to java -jar tmp/js/props2js-0.1.0.jar [inputFile] -t [type] (--name [functionName]) -o [outputFile]
-            ant.java(jar: props2JsJar.canonicalPath, fork: true) {
-                arg(value: (inputFiles[0] as File).canonicalPath)
-                arg(value: '-t')
-                arg(value: type)
-                if (functionName) {
-                    arg(value: '--name')
-                    arg(value: functionName)
-                }
-                arg(value: '-o')
-                arg(value: outputFiles[0])
+            final List<String> props2JsArgs = [props2JsJar.canonicalPath, (inputFiles[0] as File).canonicalPath, '-t', type]
+            if (functionName) {
+                props2JsArgs.addAll(['--name', functionName])
+            }
+            props2JsArgs.addAll(['-o', (outputFiles[0] as File).canonicalPath])
+            project.javaexec {
+                main = '-jar'
+                args = props2JsArgs
             }
         } else {
             throw new IllegalArgumentException("Could not map input files to output files. Found ${inputFiles.size()} inputs and ${outputFiles.size()} outputs")

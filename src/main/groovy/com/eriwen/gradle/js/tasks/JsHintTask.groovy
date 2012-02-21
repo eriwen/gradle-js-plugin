@@ -1,5 +1,5 @@
 /**
- * Copyright 2011 Eric Wendelin
+ * Copyright 2012 Eric Wendelin
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,11 +18,13 @@ package com.eriwen.gradle.js.tasks
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.DefaultTask
 import com.eriwen.gradle.js.ResourceUtil
+import com.eriwen.gradle.js.RhinoExec
 
 class JsHintTask extends DefaultTask {
     private static final String JSHINT_PATH = 'jshint-rhino.js'
     private static final String TMP_DIR = 'tmp/js'
     private static final ResourceUtil RESOURCE_UTIL = new ResourceUtil()
+    private final RhinoExec rhino = new RhinoExec(project)
 
     @TaskAction
     def run() {
@@ -30,12 +32,9 @@ class JsHintTask extends DefaultTask {
         if (outputFiles.files.size() == 1) {
             final File jshintJsFile = RESOURCE_UTIL.extractFileToDirectory(new File(project.buildDir, TMP_DIR), JSHINT_PATH)
             final String outputPath = (outputFiles.files.toArray()[0] as File).canonicalPath
-            ant.java(jar: project.configurations.rhino.asPath, fork: true, output: outputPath) {
-                arg(value: jshintJsFile.canonicalPath)
-                getInputs().files.files.each {
-                    arg(value: it.canonicalPath)
-                }
-            }
+            final List<String> args = [jshintJsFile.canonicalPath]
+            args.addAll(getInputs().files.files.collect { it.canonicalPath })
+            rhino.execute(args)
         } else {
             throw new IllegalArgumentException('Output must be exactly 1 File object. Example: outputs.file = file("myFile")')
         }

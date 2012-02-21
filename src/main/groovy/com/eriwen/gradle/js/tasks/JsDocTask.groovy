@@ -18,13 +18,15 @@ package com.eriwen.gradle.js.tasks
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.DefaultTask
 import com.eriwen.gradle.js.ResourceUtil
-import java.util.zip.ZipFile
+
+import com.eriwen.gradle.js.RhinoExec
 
 class JsDocTask extends DefaultTask {
     private static final String JSDOC_PATH = 'jsdoc.zip'
     private static final String TMP_DIR = "tmp${File.separator}js"
     private static final ResourceUtil RESOURCE_UTIL = new ResourceUtil()
-    private static final String RHINO_MAIN_CLASS = 'org.mozilla.javascript.tools.shell.Main'
+    private final RhinoExec rhino = new RhinoExec(project)
+
     Iterable<String> modulePaths = ['node_modules', 'rhino_modules', '.']
     Iterable<String> options = []
     Boolean debug = false
@@ -35,28 +37,21 @@ class JsDocTask extends DefaultTask {
         if (outputFiles.files.size() == 1) {
             final File zipFile = RESOURCE_UTIL.extractFileToDirectory(new File(project.buildDir, TMP_DIR), JSDOC_PATH)
             final File jsdocDir = RESOURCE_UTIL.extractZipFile(zipFile)
-            final String outputPath = (outputFiles.files.toArray()[0] as File).absolutePath
             final String workingDir = "${jsdocDir.absolutePath}${File.separator}jsdoc"
-
-            ant.java(classpath: project.configurations.rhino.asPath, classname: RHINO_MAIN_CLASS, fork: true,
-                    dir: workingDir) {
-                if (debug) {
-                    arg(value: '-debug')
-                }
-                modulePaths.each { String modulePath ->
-                    arg(value: '-modules')
-                    arg(value: modulePath)
-                }
-                arg(value: "${workingDir}${File.separator}jsdoc.js")
-                getInputs().files.files.each {
-                    arg(value: it.canonicalPath)
-                }
-                arg(value: '-d')
-                arg(value: outputPath)
-                options.each {
-                    arg(value: it)
-                }
+            
+            final List<String> args = []
+            if (debug) {
+                args << '-debug'
             }
+            modulePaths.each {
+                args.addAll(['-modules', it])
+            }
+            args.add("${workingDir}${File.separator}jsdoc.js")
+            args.addAll(getInputs().files.files.collect { it.canonicalPath })
+            args.addAll(['-d', (outputFiles.files.toArray()[0] as File).absolutePath])
+            args.addAll(options.collect { it })
+            
+            rhino.execute(args, workingDir)
         } else {
             throw new IllegalArgumentException('Output must be exactly 1 File object. Example: outputs.dir = file("outputDir")')
         }

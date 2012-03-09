@@ -19,7 +19,6 @@ package com.eriwen.gradle.js
  * Operations to handle zip files and other resources on the classpath.
  *
  * @author Eric Wendelin
- * @date 2/3/12
  */
 class ResourceUtil {
     /**

@@ -4,7 +4,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.eriwen:gradle-js-plugin:0.3.38-SNAPSHOT'
+        classpath 'com.eriwen:gradle-js-plugin:0.3.41-SNAPSHOT'
     }
 }
 
@@ -21,6 +21,16 @@ dependencies {
     rhino 'org.mozilla:rhino:1.7R3'
 }
 
+//javascript {
+//    source {
+//        custom {
+//            js {
+//                srcDir "src/test/resources"
+//            }
+//        }
+//    }
+//}
+
 apply plugin: 'js'
 
 // Combine JS files
@@ -32,6 +42,7 @@ combineJs {
 }
 
 task combine(type: com.eriwen.gradle.js.tasks.CombineJsTask) {
+    //javascript.source.custom.js.files.toList()
     source = ["${projectDir}/src/test/resources/file1.js", "${projectDir}/src/test/resources/file2.js"]
     dest = file("${buildDir}/all.js")
 }
@@ -75,7 +86,7 @@ jsdoc {
 
 task jsdocz(type: com.eriwen.gradle.js.tasks.JsDocTask) {
     source = ["${projectDir}/src/test/resources/file1.js", "${projectDir}/src/test/resources/file2.js"]
-    destDir = file("${buildDir}/jsdoc")
+    destinationDir = file("${buildDir}/jsdoc")
 }
 
 props2js {

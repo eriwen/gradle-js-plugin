@@ -22,7 +22,7 @@ import com.eriwen.gradle.js.RhinoExec
 
 class JsHintTask extends DefaultTask {
     private static final String JSHINT_PATH = 'jshint-rhino.js'
-    private static final String TMP_DIR = 'tmp/js'
+    private static final String TMP_DIR = "tmp${File.separator}js"
     private static final ResourceUtil RESOURCE_UTIL = new ResourceUtil()
     private final RhinoExec rhino = new RhinoExec(project)
 
@@ -39,7 +39,7 @@ class JsHintTask extends DefaultTask {
         final File jshintJsFile = RESOURCE_UTIL.extractFileToDirectory(
                 new File(project.buildDir, TMP_DIR), JSHINT_PATH)
         final List<String> args = [jshintJsFile.canonicalPath]
-        args.addAll()
+        args.addAll(source)
         rhino.execute(args)
     }
 }

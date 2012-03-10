@@ -30,30 +30,38 @@ class JsDocTask extends DefaultTask {
     Iterable<String> modulePaths = ['node_modules', 'rhino_modules', '.']
     Iterable<String> options = []
     Boolean debug = false
+    def source
+    File destinationDir
 
     @TaskAction
     def run() {
-        def outputFiles = getOutputs().files
-        if (outputFiles.files.size() == 1) {
-            final File zipFile = RESOURCE_UTIL.extractFileToDirectory(new File(project.buildDir, TMP_DIR), JSDOC_PATH)
-            final File jsdocDir = RESOURCE_UTIL.extractZipFile(zipFile)
-            final String workingDir = "${jsdocDir.absolutePath}${File.separator}jsdoc"
-            
-            final List<String> args = []
-            if (debug) {
-                args << '-debug'
-            }
-            modulePaths.each {
-                args.addAll(['-modules', it])
-            }
-            args.add("${workingDir}${File.separator}jsdoc.js")
-            args.addAll(getInputs().files.files.collect { it.canonicalPath })
-            args.addAll(['-d', (outputFiles.files.toArray()[0] as File).absolutePath])
-            args.addAll(options.collect { it })
-            
-            rhino.execute(args, workingDir)
-        } else {
-            throw new IllegalArgumentException('Output must be exactly 1 File object. Example: outputs.dir = file("outputDir")')
+        if (!source) {
+            logger.warn('The syntax "inputs.files ..." is deprecated! Please use `source = ["path1", "path2"]`')
+            logger.warn('This will be removed in the next version of the JS plugin')
+            source = getInputs().files.files.collect { it.canonicalPath }
         }
+
+        if (!destinationDir) {
+            logger.warn('The syntax "outputs.file file(..)" is deprecated! Please use `destinationDir = file("dest/file.js")`')
+            destinationDir = getOutputs().files.files.toArray()[0] as File
+        }
+
+        final File zipFile = RESOURCE_UTIL.extractFileToDirectory(new File(project.buildDir, TMP_DIR), JSDOC_PATH)
+        final File jsdocDir = RESOURCE_UTIL.extractZipFile(zipFile)
+        final String workingDir = "${jsdocDir.absolutePath}${File.separator}jsdoc"
+
+        final List<String> args = []
+        if (debug) {
+            args << '-debug'
+        }
+        modulePaths.each {
+            args.addAll(['-modules', it])
+        }
+        args.add("${workingDir}${File.separator}jsdoc.js")
+        args.addAll(source)
+        args.addAll(['-d', destinationDir.absolutePath])
+        args.addAll(options.collect { it })
+
+        rhino.execute(args, workingDir)
     }
 }

@@ -28,7 +28,7 @@ class MinifyJsTask extends DefaultTask {
     CompilerOptions compilerOptions = new CompilerOptions()
     String compilationLevel = 'SIMPLE_OPTIMIZATIONS'
     String warningLevel = 'DEFAULT'
-    File source
+    def source
     File dest
 
 	@TaskAction

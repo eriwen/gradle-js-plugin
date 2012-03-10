@@ -5,7 +5,6 @@ import org.gradle.testfixtures.ProjectBuilder
 import org.junit.rules.TemporaryFolder
 
 class TestProjectRule extends TemporaryFolder {
-
     Project project
 
     @Override
@@ -13,7 +12,4 @@ class TestProjectRule extends TemporaryFolder {
         super.before()
         project = ProjectBuilder.builder().withProjectDir(getRoot()).build()
     }
-
-
-
 }

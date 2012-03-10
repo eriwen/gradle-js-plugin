@@ -29,9 +29,6 @@ class SourcesTest extends ProjectTest {
         then:
         javascript.source.custom.name == "custom"
         javascript.source.custom.js.files.toList() == [src]
-
     }
-
-
 }
 

@@ -26,5 +26,4 @@ class ProjectTest extends Specification {
     def propertyMissing(String name, arg) {
         project."$name" = arg
     }
-
 }

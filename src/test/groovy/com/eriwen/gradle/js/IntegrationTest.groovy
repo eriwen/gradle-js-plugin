@@ -60,7 +60,6 @@ class IntegrationTest extends Specification {
         """
     }
 
-
     def "basic processing chain"() {
         given:        
         buildFile << """
@@ -119,5 +118,38 @@ class IntegrationTest extends Specification {
         then:
         task("customTest").state.upToDate
         task("secondTask").state.upToDate
+    }
+
+    def "combine, minify, gzip"() {
+        given:
+        buildFile << """
+            apply plugin: JsPlugin
+
+            javascript {
+                source {
+                    custom {
+                        js {
+                            srcDir "src/custom/js"
+                        }
+                    }
+                }
+            }
+
+            task combine(type: CombineJsTask) {
+                //javascript.source.custom.js.files
+                inputs.files fileTree(dir: javascript.source.custom.js.srcDir, includes: ['file2.js'])
+                outputs.file file("build/all.js")
+            }
+        """
+        and:
+        file("src/custom/js/file1.js") << "function fn1() { console.log('1'); }"
+        and:
+        file("src/custom/js/file2.js") << "function fn2() { console.log('2'); }"
+
+        when:
+        launcher('combine').run()
+
+        then:
+        file('build/all.js').exists()
     }
 }

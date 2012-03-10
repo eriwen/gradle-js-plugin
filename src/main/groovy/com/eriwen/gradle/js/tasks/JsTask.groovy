@@ -37,6 +37,25 @@ class JsTask extends DefaultTask {
         final String outputPath = (outputFiles[0] as File).canonicalPath
         final String tempPath = "${tempDir.canonicalPath}/${COMBINED_JS_FILE}"
 
+        def deprecationMessage = """
+        The js is deprecated and will be removed in the next version of the Gradle JS plugin.
+
+        It is recommended to use Gradle 1.0m9+ ability to reference other tasks' outputs like so:
+
+        combineJs {
+            source = ["foo.js", "bar.js"]
+            dest = "all.js"
+        }
+
+        task minify(type: MinifyJsTask) {
+            source = combineJs.outputs
+            dest = "all-min.js"
+        }
+
+        """
+
+        logger.warn(deprecationMessage)
+
         if (outputFiles.size() != 1) {
             throw new IllegalArgumentException('Output must be exactly 1 File object. Example: outputs.file = file("myFile")')
         }

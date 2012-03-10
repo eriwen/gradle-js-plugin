@@ -1,5 +1,5 @@
 /**
- * Copyright 2011 Eric Wendelin
+ * Copyright 2012 Eric Wendelin
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -17,21 +17,34 @@ package com.eriwen.gradle.js.tasks
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
-import org.gradle.api.logging.Logger
 
 class CombineJsTask extends DefaultTask {
+    def source
+    def dest
+
     @TaskAction
     def run() {
-        def outputFiles = getOutputs().files
-        if (outputFiles.files.size() == 1) {
-            ant.concat(destfile: outputFiles.asPath, fixlastline: 'yes') {
-                getInputs().files.each {
-                    logger.info("Adding to fileset: ${it.canonicalPath}")
-                    fileset(file: it.canonicalPath)
-                }
+        if (!getInputs().files.files.empty) {
+            logger.warn('The syntax "inputs.files ..." is deprecated! Please use `source = ["path1", "path2"]`')
+            logger.warn('This will be removed very soon')
+            source = getInputs().files.files.collect { it.canonicalPath }
+        }
+
+        if (!getOutputs().files.files.empty) {
+            logger.warn('The syntax "outputs.files ..." is deprecated! Please use `dest = "dest/filename.js"`')
+            def outputFiles = getOutputs().files.files
+            if (outputFiles.size() == 1) {
+                dest = (outputFiles.toArray()[0] as File).canonicalPath
+            } else if (!dest) {
+                throw new IllegalArgumentException('Output must be exactly 1 File object. Example: dest = "myFile"')
             }
-        } else {
-            throw new IllegalArgumentException('Output must be exactly 1 File object. Example: outputs.file = file("myFile")')
+        }
+
+        ant.concat(destfile: dest, fixlastline: 'yes') {
+            source.each {
+                logger.info("Adding to fileset: ${it}")
+                fileset(file: it)
+            }
         }
     }
 }

@@ -4,7 +4,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.eriwen:gradle-js-plugin:0.3.41-SNAPSHOT'
+        classpath 'com.eriwen:gradle-js-plugin:0.3.42-SNAPSHOT'
     }
 }
 
@@ -97,7 +97,7 @@ props2js {
 }
 
 task props(type: com.eriwen.gradle.js.tasks.Props2JsTask) {
-    source = file("${projectDir}/src/test/resources/test.properties")
+    propertiesFile = file("${projectDir}/src/test/resources/test.properties")
     dest = file("${buildDir}/props.jsonp")
     type = 'jsonp'
     functionName = 'fn'

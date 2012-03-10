@@ -42,7 +42,7 @@ class JsDocTask extends DefaultTask {
         }
 
         if (!destinationDir) {
-            logger.warn('The syntax "outputs.file file(..)" is deprecated! Please use `destinationDir = file("dest/file.js")`')
+            logger.warn('The syntax "outputs.file file(..)" is deprecated! Please use `destinationDir = file(buildDir)`')
             destinationDir = getOutputs().files.files.toArray()[0] as File
         }
 

@@ -25,13 +25,24 @@ class Props2JsTask extends DefaultTask {
     private static final ResourceUtil RESOURCE_UTIL = new ResourceUtil()
     private static final Set<String> AVAILABLE_TYPES = ['js', 'json', 'jsonp']
 
+    File propertiesFile
+    File dest
+    // FIXME: populate defaults using plugin convention (issue #14)
     String functionName = ''
     String type = 'json'
 
     @TaskAction
     def run() {
-        def inputFiles = getInputs().files.files.toArray()
-        def outputFiles = getOutputs().files.files.toArray()
+        if (!propertiesFile) {
+            logger.warn('The syntax "inputs.file file(..)" is deprecated! Please use `propertiesFile = file("path/file.props")`')
+            logger.warn('This will be removed in the next version of the JS plugin')
+            propertiesFile = getInputs().files.files.toArray()[0] as File
+        }
+
+        if (!dest) {
+            logger.warn('The syntax "outputs.file file(..)" is deprecated! Please use `dest = file("dest/file.js")`')
+            dest = getOutputs().files.files.toArray()[0] as File
+        }
 
         // Prevent arguments that don't make sense
         if (!AVAILABLE_TYPES.contains(type)) {
@@ -42,19 +53,15 @@ class Props2JsTask extends DefaultTask {
             throw new IllegalArgumentException("Must specify a 'functionName' when type is 'jsonp' or 'js'")
         }
 
-        if (outputFiles.size() == 1 && inputFiles.size() == 1) {
-            final File props2JsJar = RESOURCE_UTIL.extractFileToDirectory(new File(project.buildDir, TMP_DIR), PROPS2JS_JAR)
-            final List<String> props2JsArgs = [props2JsJar.canonicalPath, (inputFiles[0] as File).canonicalPath, '-t', type]
-            if (functionName) {
-                props2JsArgs.addAll(['--name', functionName])
-            }
-            props2JsArgs.addAll(['-o', (outputFiles[0] as File).canonicalPath])
-            project.javaexec {
-                main = '-jar'
-                args = props2JsArgs
-            }
-        } else {
-            throw new IllegalArgumentException("Could not map input files to output files. Found ${inputFiles.size()} inputs and ${outputFiles.size()} outputs")
+        final File props2JsJar = RESOURCE_UTIL.extractFileToDirectory(new File(project.buildDir, TMP_DIR), PROPS2JS_JAR)
+        final List<String> props2JsArgs = [props2JsJar.canonicalPath, propertiesFile.canonicalPath, '-t', type]
+        if (functionName) {
+            props2JsArgs.addAll(['--name', functionName])
+        }
+        props2JsArgs.addAll(['-o', dest.canonicalPath])
+        project.javaexec {
+            main = '-jar'
+            args = props2JsArgs
         }
     }
 }

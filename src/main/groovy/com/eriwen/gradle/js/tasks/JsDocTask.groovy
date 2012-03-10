@@ -36,13 +36,13 @@ class JsDocTask extends DefaultTask {
     @TaskAction
     def run() {
         if (!source) {
-            logger.warn('The syntax "inputs.files ..." is deprecated! Please use `source = ["path1", "path2"]`')
-            logger.warn('This will be removed in the next version of the JS plugin')
+            logger.warn 'The syntax "inputs.files ..." is deprecated! Please use `source = ["path1", "path2"]`'
+            logger.warn 'This will be removed in the next version of the JS plugin'
             source = getInputs().files.files.collect { it.canonicalPath }
         }
 
         if (!destinationDir) {
-            logger.warn('The syntax "outputs.file file(..)" is deprecated! Please use `destinationDir = file(buildDir)`')
+            logger.warn 'The syntax "outputs.file file(..)" is deprecated! Please use `destinationDir = file(buildDir)`'
             destinationDir = getOutputs().files.files.toArray()[0] as File
         }
 

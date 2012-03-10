@@ -20,11 +20,12 @@ import org.gradle.api.tasks.TaskAction
 
 import com.google.javascript.jscomp.CompilerOptions
 import com.eriwen.gradle.js.JsMinifier
+import org.gradle.api.GradleException
 
 class MinifyJsTask extends DefaultTask {
     private static final JsMinifier MINIFIER = new JsMinifier()
 
-    // FIXME: Wire defaults in properly through convention (#14)
+    // FIXME: Wire defaults in properly through convention (issue #14)
     CompilerOptions compilerOptions = new CompilerOptions()
     String compilationLevel = 'SIMPLE_OPTIMIZATIONS'
     String warningLevel = 'DEFAULT'
@@ -34,16 +35,20 @@ class MinifyJsTask extends DefaultTask {
 	@TaskAction
 	def run() {
         if (!source) {
-            logger.warn('The syntax "inputs.files ..." is deprecated! Please use `source = file("path1")`')
-            logger.warn('This will be removed in the next version of the JS plugin')
+            logger.warn 'The syntax "inputs.files ..." is deprecated! Please use `source = file("path1")`'
+            logger.warn 'This will be removed in the next version of the JS plugin'
             source = getInputs().files.files.toArray()[0] as File
         }
 
+        if (!source.exists()) {
+            throw new GradleException("JS file ${source.canonicalPath} doesn't exist!")
+        }
+
         if (!dest) {
-            logger.warn('The syntax "outputs.files ..." is deprecated! Please use `dest = file("dest/file.js")`')
+            logger.warn 'The syntax "outputs.files ..." is deprecated! Please use `dest = file("dest/file.js")`'
             dest = getOutputs().files.files.toArray()[0] as File
         }
 
         MINIFIER.minifyJsFile(source, dest, compilerOptions, warningLevel, compilationLevel)
-	}
+    }
 }

@@ -17,6 +17,7 @@ package com.eriwen.gradle.js.tasks
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
+import org.gradle.api.GradleException
 
 class CombineJsTask extends DefaultTask {
     def source
@@ -31,19 +32,22 @@ class CombineJsTask extends DefaultTask {
         }
 
         if (!getOutputs().files.files.empty) {
-            logger.warn('The syntax "outputs.files ..." is deprecated! Please use `dest = "dest/filename.js"`')
+            logger.warn 'The syntax "outputs.files ..." is deprecated! Please use `dest = "dest/filename.js"`'
             def outputFiles = getOutputs().files.files
             if (outputFiles.size() == 1) {
                 dest = (outputFiles.toArray()[0] as File)
             } else if (!dest) {
-                throw new IllegalArgumentException('Output must be exactly 1 File object. Example: dest = "myFile"')
+                throw new GradleException('Output must be exactly 1 File object. Example: dest = "myFile"')
             }
         }
 
         ant.concat(destfile: dest.canonicalPath, fixlastline: 'yes') {
-            source.each {
-                logger.info("Adding to fileset: ${it}")
-                fileset(file: it)
+            source.each { String path ->
+                if (!(new File(path).exists())) {
+                    throw new GradleException("Source JS file ${path} does not exist!")
+                }
+                logger.info("Adding to fileset: ${path}")
+                fileset(file: path)
             }
         }
     }

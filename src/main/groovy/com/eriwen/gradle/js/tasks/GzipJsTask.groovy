@@ -17,9 +17,10 @@ package com.eriwen.gradle.js.tasks
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
+import org.gradle.api.GradleException
 
 class GzipJsTask extends DefaultTask {
-    File source
+    def source
     File dest
 
     @TaskAction
@@ -35,7 +36,11 @@ class GzipJsTask extends DefaultTask {
             dest = getOutputs().files.files.toArray()[0] as File
         }
 
-        ant.gzip(src: source.canonicalPath, destfile: "${source.canonicalPath}.gz")
-        ant.move(file: "${source.canonicalPath}.gz", tofile: dest.canonicalPath)
+        if (!source.exists()) {
+            throw new GradleException("JS file ${source.canonicalPath} doesn't exist!")
+        } else {
+            ant.gzip(src: source.canonicalPath, destfile: "${source.canonicalPath}.gz")
+            ant.move(file: "${source.canonicalPath}.gz", tofile: dest.canonicalPath)
+        }
     }
 }

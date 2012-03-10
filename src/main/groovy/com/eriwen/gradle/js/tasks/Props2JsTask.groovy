@@ -18,6 +18,7 @@ package com.eriwen.gradle.js.tasks
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 import com.eriwen.gradle.js.ResourceUtil
+import org.gradle.api.GradleException
 
 class Props2JsTask extends DefaultTask {
     private static final String PROPS2JS_JAR = 'props2js-0.1.0.jar'
@@ -34,14 +35,18 @@ class Props2JsTask extends DefaultTask {
     @TaskAction
     def run() {
         if (!propertiesFile) {
-            logger.warn('The syntax "inputs.file file(..)" is deprecated! Please use `propertiesFile = file("path/file.props")`')
-            logger.warn('This will be removed in the next version of the JS plugin')
+            logger.warn 'The syntax "inputs.file file(..)" is deprecated! Please use `propertiesFile = file("path/file.props")`'
+            logger.warn 'This will be removed in the next version of the JS plugin'
             propertiesFile = getInputs().files.files.toArray()[0] as File
         }
 
         if (!dest) {
-            logger.warn('The syntax "outputs.file file(..)" is deprecated! Please use `dest = file("dest/file.js")`')
+            logger.warn 'The syntax "outputs.file file(..)" is deprecated! Please use `dest = file("dest/file.js")`'
             dest = getOutputs().files.files.toArray()[0] as File
+        }
+
+        if (!propertiesFile.exists()) {
+            throw new GradleException("${propertiesFile} does not exist!")
         }
 
         // Prevent arguments that don't make sense

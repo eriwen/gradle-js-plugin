@@ -4,7 +4,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.eriwen:gradle-js-plugin:0.3.13-SNAPSHOT'
+        classpath 'com.eriwen:gradle-js-plugin:0.3.37-SNAPSHOT'
     }
 }
 
@@ -27,8 +27,13 @@ apply plugin: 'js'
 combineJs {
     file2 = fileTree(dir: "${projectDir}/src/test/resources", includes: ['file2.js'])
     file1 = fileTree(dir: "${projectDir}/src/test/resources", includes: ['file1.js'])
-    inputs.files file2 + file1
+    inputs.files file1 + file2
     outputs.file file("${buildDir}/all.js")
+}
+
+task combine(type: com.eriwen.gradle.js.tasks.CombineJsTask) {
+    source = ["${projectDir}/src/test/resources/file1.js", "${projectDir}/src/test/resources/file2.js"]
+    dest = "${buildDir}/all.js"
 }
 
 // Minify with Google Closure Compiler
@@ -36,6 +41,11 @@ minifyJs {
     inputs.file file("${buildDir}/all.js")
     outputs.file file("${buildDir}/all-min.js")
     warningLevel = 'QUIET'
+}
+
+task minify(type: com.eriwen.gradle.js.tasks.MinifyJsTask) {
+    source = "${buildDir}/all.js"
+    dest = "${buildDir}/all-min.js"
 }
 
 // GZip it!

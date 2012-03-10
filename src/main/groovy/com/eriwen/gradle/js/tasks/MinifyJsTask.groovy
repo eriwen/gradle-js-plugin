@@ -20,24 +20,41 @@ import org.gradle.api.tasks.TaskAction
 
 import com.google.javascript.jscomp.CompilerOptions
 import com.eriwen.gradle.js.JsMinifier
+import org.codehaus.groovy.runtime.GStringImpl
 
 class MinifyJsTask extends DefaultTask {
     private static final JsMinifier MINIFIER = new JsMinifier()
 
+    // FIXME: Wire defaults in properly through convention (#14)
     CompilerOptions compilerOptions = new CompilerOptions()
     String compilationLevel = 'SIMPLE_OPTIMIZATIONS'
     String warningLevel = 'DEFAULT'
+    def source
+    def dest
 
 	@TaskAction
 	def run() {
-        def inputFiles = getInputs().files.files.toArray()
-        def outputFiles = getOutputs().files.files.toArray()
-        if (outputFiles.size() == inputFiles.size()) {
-            for (int i = 0; i < inputFiles.size(); i++) {
-                MINIFIER.minifyJsFile(inputFiles[i] as File, outputFiles[i] as File, compilerOptions, warningLevel, compilationLevel)
+        if (!source) {
+            logger.warn('The syntax "inputs.files ..." is deprecated! Please use `source = "path1"`')
+            logger.warn('This will be removed in the next version of the JS plugin')
+            source = getInputs().files.files.collect { it.canonicalPath }
+        } else if (source instanceof GStringImpl || source instanceof String) {
+            source = [source]
+        }
+
+        if (!dest) {
+            logger.warn('The syntax "outputs.files ..." is deprecated! Please use `dest = "dest/filename.js"`')
+            dest = getOutputs().files.files.collect { it.canonicalPath }
+        } else if (dest instanceof GStringImpl || dest instanceof String) {
+            dest = [dest]
+        }
+
+        if (dest.size() == source.size()) {
+            for (int i = 0; i < source.size(); i++) {
+                MINIFIER.minifyJsFile(project.file(source[i]), project.file(dest[i]), compilerOptions, warningLevel, compilationLevel)
             }
         } else {
-            throw new IllegalArgumentException("Could not map input files to output files. Found ${inputFiles.size()} inputs and ${outputFiles.size()} outputs")
+            throw new IllegalArgumentException("Could not map input files to output files. Found ${source.size()} inputs and ${dest.size()} outputs")
         }
 	}
 }

@@ -20,7 +20,7 @@ import org.gradle.api.tasks.TaskAction
 
 class CombineJsTask extends DefaultTask {
     def source
-    def dest
+    File dest
 
     @TaskAction
     def run() {
@@ -34,13 +34,13 @@ class CombineJsTask extends DefaultTask {
             logger.warn('The syntax "outputs.files ..." is deprecated! Please use `dest = "dest/filename.js"`')
             def outputFiles = getOutputs().files.files
             if (outputFiles.size() == 1) {
-                dest = (outputFiles.toArray()[0] as File).canonicalPath
+                dest = (outputFiles.toArray()[0] as File)
             } else if (!dest) {
                 throw new IllegalArgumentException('Output must be exactly 1 File object. Example: dest = "myFile"')
             }
         }
 
-        ant.concat(destfile: dest, fixlastline: 'yes') {
+        ant.concat(destfile: dest.canonicalPath, fixlastline: 'yes') {
             source.each {
                 logger.info("Adding to fileset: ${it}")
                 fileset(file: it)

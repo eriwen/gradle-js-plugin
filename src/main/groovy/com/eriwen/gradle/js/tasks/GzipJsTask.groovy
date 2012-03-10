@@ -1,5 +1,5 @@
 /**
- * Copyright 2011 Eric Wendelin
+ * Copyright 2011-2012 Eric Wendelin
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,18 +19,23 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
 class GzipJsTask extends DefaultTask {
+    File source
+    File dest
+
     @TaskAction
     def run() {
-        def inputFiles = getInputs().files.files.toArray()
-        def outputFiles = getOutputs().files.files.toArray()
-        if (outputFiles.size() == inputFiles.size()) {
-            for (int i = 0; i < inputFiles.size(); i++) {
-                String inputPath = (inputFiles[i] as File).canonicalPath
-                ant.gzip(src: inputPath, destfile: "${inputPath}.gz")
-                ant.move(file: "${inputPath}.gz", tofile: (outputFiles[i] as File).canonicalPath)
-            }
-        } else {
-            throw new IllegalArgumentException("Could not map input files to output files. Found ${inputFiles.size()} inputs and ${outputFiles.size()} outputs")
+        if (!source) {
+            logger.warn('The syntax "inputs.files ..." is deprecated! Please use `source = file("path1")`')
+            logger.warn('This will be removed in the next version of the JS plugin')
+            source = getInputs().files.files.toArray()[0] as File
         }
+
+        if (!dest) {
+            logger.warn('The syntax "outputs.files ..." is deprecated! Please use `dest = file("dest/file.js")`')
+            dest = getOutputs().files.files.toArray()[0] as File
+        }
+
+        ant.gzip(src: source.canonicalPath, destfile: "${source.canonicalPath}.gz")
+        ant.move(file: "${source.canonicalPath}.gz", tofile: dest.canonicalPath)
     }
 }

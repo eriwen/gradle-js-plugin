@@ -4,7 +4,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.eriwen:gradle-js-plugin:0.3.37-SNAPSHOT'
+        classpath 'com.eriwen:gradle-js-plugin:0.3.38-SNAPSHOT'
     }
 }
 
@@ -33,7 +33,7 @@ combineJs {
 
 task combine(type: com.eriwen.gradle.js.tasks.CombineJsTask) {
     source = ["${projectDir}/src/test/resources/file1.js", "${projectDir}/src/test/resources/file2.js"]
-    dest = "${buildDir}/all.js"
+    dest = file("${buildDir}/all.js")
 }
 
 // Minify with Google Closure Compiler
@@ -44,8 +44,8 @@ minifyJs {
 }
 
 task minify(type: com.eriwen.gradle.js.tasks.MinifyJsTask) {
-    source = "${buildDir}/all.js"
-    dest = "${buildDir}/all-min.js"
+    source = file("${buildDir}/all.js")
+    dest = file("${buildDir}/all-min.js")
 }
 
 // GZip it!
@@ -54,9 +54,17 @@ gzipJs {
     outputs.file file("${buildDir}/all-min.js")
 }
 
+task gzip(type: com.eriwen.gradle.js.tasks.GzipJsTask) {
+    source = file("${buildDir}/all-min.js")
+    dest = file("${buildDir}/all-min.js")
+}
+
 jshint {
     inputs.files fileTree(dir: "${projectDir}/src/test/resources", includes: ['file1.js'])
-    outputs.file file("${buildDir}/jshint.out")
+}
+
+task jshintz(type: com.eriwen.gradle.js.tasks.JsHintTask) {
+    source = ["${projectDir}/src/test/resources/file1.js"]
 }
 
 jsdoc {
@@ -65,9 +73,21 @@ jsdoc {
     options = []
 }
 
+task jsdocz(type: com.eriwen.gradle.js.tasks.JsDocTask) {
+    source = ["${projectDir}/src/test/resources/file1.js", "${projectDir}/src/test/resources/file2.js"]
+    destDir = file("${buildDir}/jsdoc")
+}
+
 props2js {
     inputs.file file("${projectDir}/src/test/resources/test.properties")
     outputs.file file("${buildDir}/props.jsonp")
+    type = 'jsonp'
+    functionName = 'fn'
+}
+
+task props(type: com.eriwen.gradle.js.tasks.Props2JsTask) {
+    source = file("${projectDir}/src/test/resources/test.properties")
+    dest = file("${buildDir}/props.jsonp")
     type = 'jsonp'
     functionName = 'fn'
 }

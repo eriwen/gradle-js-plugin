@@ -26,17 +26,20 @@ class JsHintTask extends DefaultTask {
     private static final ResourceUtil RESOURCE_UTIL = new ResourceUtil()
     private final RhinoExec rhino = new RhinoExec(project)
 
+    def source
+
     @TaskAction
     def run() {
-        def outputFiles = getOutputs().files
-        if (outputFiles.files.size() == 1) {
-            final File jshintJsFile = RESOURCE_UTIL.extractFileToDirectory(new File(project.buildDir, TMP_DIR), JSHINT_PATH)
-            final String outputPath = (outputFiles.files.toArray()[0] as File).canonicalPath
-            final List<String> args = [jshintJsFile.canonicalPath]
-            args.addAll(getInputs().files.files.collect { it.canonicalPath })
-            rhino.execute(args)
-        } else {
-            throw new IllegalArgumentException('Output must be exactly 1 File object. Example: outputs.file = file("myFile")')
+        if (!source) {
+            logger.warn('The syntax "inputs.files ..." is deprecated! Please use `source = "path1"`')
+            logger.warn('This will be removed in the next version of the JS plugin')
+            source = getInputs().files.files.collect { it.canonicalPath }
         }
+        
+        final File jshintJsFile = RESOURCE_UTIL.extractFileToDirectory(
+                new File(project.buildDir, TMP_DIR), JSHINT_PATH)
+        final List<String> args = [jshintJsFile.canonicalPath]
+        args.addAll()
+        rhino.execute(args)
     }
 }

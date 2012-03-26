@@ -38,7 +38,7 @@ class JsTask extends DefaultTask {
         final String tempPath = "${tempDir.canonicalPath}/${COMBINED_JS_FILE}"
 
         def deprecationMessage = """
-        The js is deprecated and will be removed in the next version of the Gradle JS plugin.
+        The js task is deprecated and will be removed in the next version of the Gradle JS plugin.
 
         It is recommended to use Gradle 1.0m9+ ability to reference other tasks' outputs like so:
 

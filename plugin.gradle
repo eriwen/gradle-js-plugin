@@ -4,7 +4,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.eriwen:gradle-js-plugin:0.3.44-SNAPSHOT'
+        classpath 'com.eriwen:gradle-js-plugin:0.4.0'
     }
 }
 
@@ -43,7 +43,7 @@ combineJs {
 
 task combine(type: com.eriwen.gradle.js.tasks.CombineJsTask) {
     //javascript.source.custom.js.files.toList()
-    source = ["${projectDir}/src/test/resources/file1.js", "${projectDir}/src/test/resources/file3.js"]
+    source = ["${projectDir}/src/test/resources/file1.js", "${projectDir}/src/test/resources/file2.js"]
     dest = file("${buildDir}/all.js")
 }
 

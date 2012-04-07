@@ -5,66 +5,64 @@ apply plugin: 'idea'
 
 defaultTasks 'clean', 'build'
 
-version = '0.3.44-SNAPSHOT'
+version = '0.4.0'
 group = 'com.eriwen'
 archivesBaseName = 'gradle-js-plugin'
 isSnapshot = version.endsWith("-SNAPSHOT")
 
 repositories {
-	mavenCentral()
-    maven { url 'http://m2repo.spockframework.org/snapshots/' }
+    mavenCentral()
 }
 
 dependencies {
-	groovy localGroovy()
-	compile gradleApi()
-	compile ('com.google.javascript:closure-compiler:r1592') {
+    groovy localGroovy()
+    compile gradleApi()
+    compile ('com.google.javascript:closure-compiler:r1810') {
         exclude module: "junit"
     }
-    testCompile ('org.spockframework:spock-core:0.6-groovy-1.8-SNAPSHOT') {
+    testCompile ('org.spockframework:spock-core:0.6-groovy-1.8') {
         exclude module: "junit-dep"
         exclude module: "groovy-all"
     }
-
 }
 
 idea.module {
-	gradleCacheVariable = 'GRADLE_CACHE'
-	downloadJavadoc = true
+    gradleCacheVariable = 'GRADLE_CACHE'
+    downloadJavadoc = true
     downloadSource = true
-	outputDir = file("intellij/out")
-	testOutputDir = file("intellij/testOut")
+    outputDir = file("intellij/out")
+    testOutputDir = file("intellij/testOut")
 }
 
 idea.project.ipr.withXml { provider ->
-	def node = provider.asNode()
-	// Use git
-	def vcsConfig = node.component.find { it.'@name' == 'VcsDirectoryMappings' }
-	vcsConfig.mapping[0].'@vcs' = 'Git'
+    def node = provider.asNode()
+    // Use git
+    def vcsConfig = node.component.find { it.'@name' == 'VcsDirectoryMappings' }
+    vcsConfig.mapping[0].'@vcs' = 'Git'
 
-	// Set gradle home
-	def gradleSettings = node.appendNode('component', [name: 'GradleSettings'])
-	gradleSettings.appendNode('option', [name: 'SDK_HOME', value: gradle.gradleHomeDir.absolutePath])
+    // Set gradle home
+    def gradleSettings = node.appendNode('component', [name: 'GradleSettings'])
+    gradleSettings.appendNode('option', [name: 'SDK_HOME', value: gradle.gradleHomeDir.absolutePath])
 }
 
 task sourceJar(type: Jar) {
-	description = 'An archive of the source code for Maven Central'
-	classifier = 'sources'
-	from sourceSets.main.groovy
+    description = 'An archive of the source code for Maven Central'
+    classifier = 'sources'
+    from sourceSets.main.groovy
 }
 
 task groovydocJar(type: Jar) {
-	description = 'An archive of the GroovyDocs for Maven Central'
-	classifier = 'javadoc'
-	from groovydoc
+    description = 'An archive of the GroovyDocs for Maven Central'
+    classifier = 'javadoc'
+    from groovydoc
 }
 
 task wrapper(type: Wrapper) {
-	gradleVersion = '1.0-milestone-8a'
+    gradleVersion = '1.0-milestone-9'
 }
 
 artifacts { 
-	archives groovydocJar, sourceJar
+    archives groovydocJar, sourceJar
 }
 
 signing {
@@ -79,57 +77,57 @@ gradle.taskGraph.whenReady { taskGraph ->
 }
 
 install.repositories.mavenInstaller {
-	pom.project(pomConfiguration)
-	if (signing.signatory) {
-		beforeDeployment { signPom(it) }
-	}
+    pom.project(pomConfiguration)
+    if (signing.signatory) {
+        beforeDeployment { signPom(it) }
+    }
 }
 
 // NOTE: Must still rename build/pom-default.xml to pom.xml
 // NOTE: Must rename pom-default.xml.asc to gradle-js-plugin-${version}.pom.asc
 uploadArchives {
-	repositories.mavenDeployer {
+    repositories.mavenDeployer {
         if (signing.signatory) {
             beforeDeployment { signPom(it) }
         }
-		name = 'mavenCentralReleaseDeployer'
-		repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2/') {
-			authentication(userName: System.properties['mavenCentralUsername'], password: System.properties['mavenCentralPassword'])
-			releases(updatePolicy: 'always')
-			snapshots(updatePolicy: 'always')
-		}
-		pom.project(pomConfiguration)
-	}
+        name = 'mavenCentralReleaseDeployer'
+        repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2/') {
+            authentication(userName: System.properties['mavenCentralUsername'], password: System.properties['mavenCentralPassword'])
+            releases(updatePolicy: 'always')
+            snapshots(updatePolicy: 'always')
+        }
+        pom.project(pomConfiguration)
+    }
 }
 
 /**
  * Create POM config and return for use by other tasks.
  */
 def getPomConfiguration() {
-	return {
-		name 'Gradle JS Plugin'
+    return {
+        name 'Gradle JS Plugin'
         packaging 'war'
-		description 'A Gradle plugin for working with JS.'
-		url 'https://github.com/eriwen/gradle-js-plugin'
-		licenses {
-			license {
-				name 'The Apache Software License, Version 2.0'
-				url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-				distribution 'repo'
-			}
-		}
-		developers {
-			developer {
-				id 'eriwen'
-				name 'Eric Wendelin'
-				email 'emwendelin@gmail.com'
-			}
-		}
-		scm {
-			connection 'scm:https://eriwen@github.com/eriwen/gradle-js-plugin'
-			developerConnection 'scm:git@github.com:eriwen/gradle-js-plugin.git'
-			url 'https://github.com/eriwen/gradle-js-plugin'
-		}
-	}
+        description 'A Gradle plugin for working with JS.'
+        url 'https://github.com/eriwen/gradle-js-plugin'
+        licenses {
+            license {
+                name 'The Apache Software License, Version 2.0'
+                url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                distribution 'repo'
+            }
+        }
+        developers {
+            developer {
+                id 'eriwen'
+                name 'Eric Wendelin'
+                email 'emwendelin@gmail.com'
+            }
+        }
+        scm {
+            connection 'scm:https://eriwen@github.com/eriwen/gradle-js-plugin'
+            developerConnection 'scm:git@github.com:eriwen/gradle-js-plugin.git'
+            url 'https://github.com/eriwen/gradle-js-plugin'
+        }
+    }
 }
 

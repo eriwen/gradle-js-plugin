@@ -49,7 +49,7 @@ task combine(type: com.eriwen.gradle.js.tasks.CombineJsTask) {
 
 // Minify with Google Closure Compiler
 minifyJs {
-    inputs.file file("${buildDir}/all2.js")
+    inputs.file file("${buildDir}/all.js")
     outputs.file file("${buildDir}/all-min.js")
     warningLevel = 'QUIET'
 }

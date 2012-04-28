@@ -26,7 +26,8 @@ class JsPlugin implements Plugin<Project> {
         project.convention.plugins.js = new JsPluginConvention()
 
         project.extensions.add(JavaScriptExtension.NAME, InternalGradle.toInstantiator(project).newInstance(JavaScriptExtension, project))
-        
+
+        configureDependencies(project)
         applyTasks(project)
     }
 

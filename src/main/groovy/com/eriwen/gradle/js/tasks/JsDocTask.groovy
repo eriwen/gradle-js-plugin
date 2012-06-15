@@ -15,13 +15,13 @@
  */
 package com.eriwen.gradle.js.tasks
 
-import org.gradle.api.tasks.TaskAction
-import org.gradle.api.DefaultTask
 import com.eriwen.gradle.js.ResourceUtil
-
 import com.eriwen.gradle.js.RhinoExec
+import org.gradle.api.tasks.SourceTask
+import org.gradle.api.tasks.OutputDirectory
+import org.gradle.api.tasks.TaskAction
 
-class JsDocTask extends DefaultTask {
+class JsDocTask extends SourceTask {
     private static final String JSDOC_PATH = 'jsdoc.zip'
     private static final String TMP_DIR = "tmp${File.separator}js"
     private static final ResourceUtil RESOURCE_UTIL = new ResourceUtil()
@@ -30,22 +30,12 @@ class JsDocTask extends DefaultTask {
     Iterable<String> modulePaths = ['node_modules', 'rhino_modules', '.']
     Iterable<String> options = []
     Boolean debug = false
-    def source
+
+    @OutputDirectory
     File destinationDir
 
     @TaskAction
     def run() {
-        if (!source) {
-            logger.warn 'The syntax "inputs.files ..." is deprecated! Please use `source = ["path1", "path2"]`'
-            logger.warn 'This will be removed in the next version of the JS plugin'
-            source = getInputs().files.files.collect { it.canonicalPath }
-        }
-
-        if (!destinationDir) {
-            logger.warn 'The syntax "outputs.file file(..)" is deprecated! Please use `destinationDir = file(buildDir)`'
-            destinationDir = getOutputs().files.files.toArray()[0] as File
-        }
-
         final File zipFile = RESOURCE_UTIL.extractFileToDirectory(new File(project.buildDir, TMP_DIR), JSDOC_PATH)
         final File jsdocDir = RESOURCE_UTIL.extractZipFile(zipFile)
         final String workingDir = "${jsdocDir.absolutePath}${File.separator}jsdoc"
@@ -58,7 +48,7 @@ class JsDocTask extends DefaultTask {
             args.addAll(['-modules', it])
         }
         args.add("${workingDir}${File.separator}jsdoc.js")
-        args.addAll(source)
+        args.addAll(source.files.collect { it.canonicalPath })
         args.addAll(['-d', destinationDir.absolutePath])
         args.addAll(options.collect { it })
 

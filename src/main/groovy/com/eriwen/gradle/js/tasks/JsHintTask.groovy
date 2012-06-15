@@ -16,30 +16,22 @@
 package com.eriwen.gradle.js.tasks
 
 import org.gradle.api.tasks.TaskAction
-import org.gradle.api.DefaultTask
 import com.eriwen.gradle.js.ResourceUtil
 import com.eriwen.gradle.js.RhinoExec
+import org.gradle.api.tasks.SourceTask
 
-class JsHintTask extends DefaultTask {
+class JsHintTask extends SourceTask {
     private static final String JSHINT_PATH = 'jshint-rhino.js'
     private static final String TMP_DIR = "tmp${File.separator}js"
     private static final ResourceUtil RESOURCE_UTIL = new ResourceUtil()
     private final RhinoExec rhino = new RhinoExec(project)
 
-    def source
-
     @TaskAction
     def run() {
-        if (!source) {
-            logger.warn('The syntax "inputs.files ..." is deprecated! Please use `source = "path1"`')
-            logger.warn('This will be removed in the next version of the JS plugin')
-            source = getInputs().files.files.collect { it.canonicalPath }
-        }
-        
         final File jshintJsFile = RESOURCE_UTIL.extractFileToDirectory(
                 new File(project.buildDir, TMP_DIR), JSHINT_PATH)
         final List<String> args = [jshintJsFile.canonicalPath]
-        args.addAll(source)
+        args.addAll(source.files.collect { it.canonicalPath })
         rhino.execute(args)
     }
 }

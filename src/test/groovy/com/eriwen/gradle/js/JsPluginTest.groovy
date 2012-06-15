@@ -34,17 +34,8 @@ class JsPluginTest {
         assertEquals 1, project.getTasksByName('combineJs', false).size()
         assertEquals 1, project.getTasksByName('minifyJs', false).size()
         assertEquals 1, project.getTasksByName('gzipJs', false).size()
-        assertEquals 1, project.getTasksByName('js', false).size()
         assertEquals 1, project.getTasksByName('jshint', false).size()
+        assertEquals 1, project.getTasksByName('jsdoc', false).size()
         assertEquals 0, project.getTasksByName('bogus', false).size()
-    }
-
-    @Test(expected=TaskExecutionException.class)
-    void shouldFailOnDownstreamTaskFailure() {
-        plugin.apply(project)
-
-        project.getTasksByName('combineJs', false).iterator().next().execute()
-
-        fail 'Should have gotten a TaskExecutionException'
     }
 }

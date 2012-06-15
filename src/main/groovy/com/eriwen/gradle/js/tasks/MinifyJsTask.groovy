@@ -15,40 +15,31 @@
  */
 package com.eriwen.gradle.js.tasks
 
-import org.gradle.api.DefaultTask
-import org.gradle.api.tasks.TaskAction
 
 import com.google.javascript.jscomp.CompilerOptions
 import com.eriwen.gradle.js.JsMinifier
 import org.gradle.api.GradleException
+import org.gradle.api.tasks.OutputFile
+import org.gradle.api.tasks.SourceTask
+import org.gradle.api.tasks.TaskAction
 
-class MinifyJsTask extends DefaultTask {
+class MinifyJsTask extends SourceTask {
     private static final JsMinifier MINIFIER = new JsMinifier()
+
+    @OutputFile
+    File dest
 
     // FIXME: Wire defaults in properly through convention (issue #14)
     CompilerOptions compilerOptions = new CompilerOptions()
     String compilationLevel = 'SIMPLE_OPTIMIZATIONS'
     String warningLevel = 'DEFAULT'
-    def source
-    File dest
 
 	@TaskAction
 	def run() {
-        if (!source) {
-            logger.warn 'The syntax "inputs.files ..." is deprecated! Please use `source = file("path1")`'
-            logger.warn 'This will be removed in the next version of the JS plugin'
-            source = getInputs().files.files.toArray()[0] as File
+        if (source.files.size() != 1) {
+            throw new GradleException("Only 1 file can be minified. Please run MinifyJs for each file.")
         }
 
-        if (!source.exists()) {
-            throw new GradleException("JS file ${source.canonicalPath} doesn't exist!")
-        }
-
-        if (!dest) {
-            logger.warn 'The syntax "outputs.files ..." is deprecated! Please use `dest = file("dest/file.js")`'
-            dest = getOutputs().files.files.toArray()[0] as File
-        }
-
-        MINIFIER.minifyJsFile(source, dest, compilerOptions, warningLevel, compilationLevel)
+        MINIFIER.minifyJsFile((source.files.toArray() as File[])[0], dest, compilerOptions, warningLevel, compilationLevel)
     }
 }

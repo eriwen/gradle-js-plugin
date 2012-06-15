@@ -4,7 +4,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.eriwen:gradle-js-plugin:0.4.1'
+        classpath 'com.eriwen:gradle-js-plugin:0.4.3'
     }
 }
 
@@ -13,17 +13,17 @@ repositories {
     mavenCentral()
 }
 
-//javascript {
-//    source {
-//        custom {
-//            js {
-//                srcDir "src/test/resources"
-//            }
-//        }
-//    }
-//}
-
 apply plugin: 'js'
+
+javascript {
+    source {
+        custom {
+            js {
+                srcDir "src/test/resources"
+            }
+        }
+    }
+}
 
 // Combine JS files
 combineJs {

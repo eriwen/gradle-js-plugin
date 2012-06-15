@@ -11,7 +11,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.eriwen:gradle-js-plugin:0.4'
+        classpath 'com.eriwen:gradle-js-plugin:1.0'
     }
 }
 // Invoke the plugin
@@ -38,20 +38,19 @@ task gzipjs(type: com.eriwen.gradle.js.tasks.GzipJsTask, dependsOn: 'minifyjs') 
 **Need more than 1 set of files generated? We'll have to declare our tasks a bit differently:**
 
 ```groovy
-task jsDev(type: com.eriwen.gradle.js.tasks.JsTask) {
+task jsDev(type: com.eriwen.gradle.js.tasks.CombineJsTask) {
     source = ["${projectDir}/js/file1.js", "${projectDir}/js/file2.js"]
     dest = file("${buildDir}/all-debug.js")
     compilationLevel = 'WHITESPACE_ONLY'
 }
 
-task jsProd(type: com.eriwen.gradle.js.tasks.JsTask) {
+task jsProd(type: com.eriwen.gradle.js.tasks.CombineJsTask) {
     source = ["${projectDir}/js/file1.js", "${projectDir}/js/file2.js"]
     dest = file("${buildDir}/all.js")
 }
 ```
 
 **[JSHint](http://jshint.com) support**
-
 ```groovy
 task jshintjs(type: com.eriwen.gradle.js.tasks.JsHintTask) {
     source = ['js/main.js']
@@ -79,7 +78,7 @@ task props(type: com.eriwen.gradle.js.tasks.Props2JsTask) {
 
 # Available Tasks and Options #
 ### combineJs ###
-- source = [FileCollection](http://gradle.org/current/docs/javadoc/org/gradle/api/file/FileCollection.html) of files to merge
+- source = Collection of file paths of files to merge
 - dest = File for combined output
 
 ### minifyJs (Uses the [Google Closure Compiler](http://code.google.com/closure/compiler/)) ###
@@ -92,13 +91,6 @@ task props(type: com.eriwen.gradle.js.tasks.Props2JsTask) {
 ### gzipJs ###
 - source = File to compress
 - dest = File for compressed output
-
-### js (DEPRECATED, will be removed in v0.5) ###
-- inputs.files Files to combine, minify and gzip
-- optputs.files File for tiny output :)
-- *(Optional)* compilationLevel = 'WHITESPACE_ONLY', 'SIMPLE_OPTIMIZATIONS' (default), or 'ADVANCED_OPTIMIZATIONS' (are you *hardcore*?)
-- *(Optional)* warningLevel = 'QUIET', 'DEFAULT' (default), or 'VERBOSE'
-- *(Optional)* compilerOptions = [CompilerOptions](http://code.google.com/p/closure-compiler/source/browse/trunk/src/com/google/javascript/jscomp/CompilerOptions.java?r=1187) object
 
 ### jshint ###
 - source = Files to assess with JSHint

@@ -5,10 +5,10 @@ apply plugin: 'idea'
 
 defaultTasks 'clean', 'build'
 
-version = '0.4.1'
+version = '0.4.3'
 group = 'com.eriwen'
-archivesBaseName = 'gradle-js-plugin'
-isSnapshot = version.endsWith("-SNAPSHOT")
+ext.archivesBaseName = 'gradle-js-plugin'
+ext.isSnapshot = version.endsWith("-SNAPSHOT")
 
 repositories {
     mavenCentral()
@@ -27,9 +27,9 @@ dependencies {
 }
 
 idea.module {
-    gradleCacheVariable = 'GRADLE_CACHE'
+    ext.gradleCacheVariable = 'GRADLE_CACHE'
     downloadJavadoc = true
-    downloadSource = true
+    ext.downloadSource = true
     outputDir = file("intellij/out")
     testOutputDir = file("intellij/testOut")
 }
@@ -58,7 +58,7 @@ task groovydocJar(type: Jar) {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '1.0-milestone-9'
+    gradleVersion = '1.0'
 }
 
 artifacts { 
@@ -79,7 +79,7 @@ gradle.taskGraph.whenReady { taskGraph ->
 install.repositories.mavenInstaller {
     pom.project(pomConfiguration)
     if (signing.signatory) {
-        beforeDeployment { signPom(it) }
+        beforeDeployment { signing.signPom(it) }
     }
 }
 

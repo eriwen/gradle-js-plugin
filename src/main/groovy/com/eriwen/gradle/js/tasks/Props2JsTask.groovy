@@ -15,40 +15,27 @@
  */
 package com.eriwen.gradle.js.tasks
 
-import org.gradle.api.DefaultTask
-import org.gradle.api.tasks.TaskAction
 import com.eriwen.gradle.js.ResourceUtil
 import org.gradle.api.GradleException
+import org.gradle.api.tasks.SourceTask
+import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.OutputFile
 
-class Props2JsTask extends DefaultTask {
+class Props2JsTask extends SourceTask {
     private static final String PROPS2JS_JAR = 'props2js-0.1.0.jar'
     private static final String TMP_DIR = 'tmp/js'
     private static final ResourceUtil RESOURCE_UTIL = new ResourceUtil()
     private static final Set<String> AVAILABLE_TYPES = ['js', 'json', 'jsonp']
 
-    File propertiesFile
+    @OutputFile
     File dest
+    
     // FIXME: populate defaults using plugin convention (issue #14)
     String functionName = ''
     String type = 'json'
 
     @TaskAction
     def run() {
-        if (!propertiesFile) {
-            logger.warn 'The syntax "inputs.file file(..)" is deprecated! Please use `propertiesFile = file("path/file.props")`'
-            logger.warn 'This will be removed in the next version of the JS plugin'
-            propertiesFile = getInputs().files.files.toArray()[0] as File
-        }
-
-        if (!dest) {
-            logger.warn 'The syntax "outputs.file file(..)" is deprecated! Please use `dest = file("dest/file.js")`'
-            dest = getOutputs().files.files.toArray()[0] as File
-        }
-
-        if (!propertiesFile.exists()) {
-            throw new GradleException("${propertiesFile} does not exist!")
-        }
-
         // Prevent arguments that don't make sense
         if (!AVAILABLE_TYPES.contains(type)) {
             throw new IllegalArgumentException("Invalid type specified. Must be one of: ${AVAILABLE_TYPES.join(',')}")
@@ -58,8 +45,12 @@ class Props2JsTask extends DefaultTask {
             throw new IllegalArgumentException("Must specify a 'functionName' when type is 'jsonp' or 'js'")
         }
 
+        if (source.files.size() != 1) {
+            throw new GradleException("Only 1 file can be processed with Props2Js. Please run Props2Js for each file.")
+        }
+
         final File props2JsJar = RESOURCE_UTIL.extractFileToDirectory(new File(project.buildDir, TMP_DIR), PROPS2JS_JAR)
-        final List<String> props2JsArgs = [props2JsJar.canonicalPath, propertiesFile.canonicalPath, '-t', type]
+        final List<String> props2JsArgs = [props2JsJar.canonicalPath, (source.files.toArray() as File[])[0].canonicalPath, '-t', type]
         if (functionName) {
             props2JsArgs.addAll(['--name', functionName])
         }

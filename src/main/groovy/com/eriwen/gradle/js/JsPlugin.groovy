@@ -48,12 +48,6 @@ class JsPlugin implements Plugin<Project> {
             options = project.convention.plugins.js.options
         }
 
-        project.task('js', type: JsTask) {
-            compilerOptions = project.convention.plugins.js.compilerOptions
-            compilationLevel = project.convention.plugins.js.compilationLevel
-            warningLevel = project.convention.plugins.js.warningLevel
-        }
-
         project.task('props2js', type: Props2JsTask) {
             type = project.convention.plugins.js.type
             functionName = project.convention.plugins.js.functionName

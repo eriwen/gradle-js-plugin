@@ -20,72 +20,41 @@ javascript {
         custom {
             js {
                 srcDir "src/test/resources"
+                include "*.js"
             }
         }
     }
 }
 
 // Combine JS files
-combineJs {
-    file2 = fileTree(dir: "${projectDir}/src/test/resources", includes: ['file2.js'])
-    file1 = fileTree(dir: "${projectDir}/src/test/resources", includes: ['file1.js'])
-    inputs.files file1 + file2
-    outputs.file file("${buildDir}/all.js")
-}
-
 task combine(type: com.eriwen.gradle.js.tasks.CombineJsTask) {
-    //javascript.source.custom.js.files.toList()
-    source = ["${projectDir}/src/test/resources/file1.js", "${projectDir}/src/test/resources/file2.js"]
+    source = javascript.source.custom.js.files.toList()
     dest = file("${buildDir}/all.js")
 }
 
 // Minify with Google Closure Compiler
-minifyJs {
-    inputs.file file("${buildDir}/all.js")
-    outputs.file file("${buildDir}/all-min.js")
-    warningLevel = 'QUIET'
-}
-
 task minify(type: com.eriwen.gradle.js.tasks.MinifyJsTask) {
     source = file("${buildDir}/all.js")
     dest = file("${buildDir}/all-min.js")
+    closure {
+        warningLevel = 'VERBOSE'
+        compilationLevel = 'SIMPLE_OPTIMIZATIONS'
+    }
 }
 
 // GZip it!
-gzipJs {
-    inputs.file file("${buildDir}/all-min.js")
-    outputs.file file("${buildDir}/all-min.js")
-}
-
 task gzip(type: com.eriwen.gradle.js.tasks.GzipJsTask) {
     source = file("${buildDir}/all-min.js")
     dest = file("${buildDir}/all-min.js")
-}
-
-jshint {
-    inputs.files fileTree(dir: "${projectDir}/src/test/resources", includes: ['file1.js'])
 }
 
 task jshintz(type: com.eriwen.gradle.js.tasks.JsHintTask) {
     source = ["${projectDir}/src/test/resources/file1.js"]
 }
 
-jsdoc {
-    inputs.files fileTree(dir: "${projectDir}/src/test/resources", includes: ['file2.js'])
-    outputs.dir "${buildDir}/jsdoc"
-    options = []
-}
-
 task jsdocz(type: com.eriwen.gradle.js.tasks.JsDocTask) {
     source = ["${projectDir}/src/test/resources/file1.js", "${projectDir}/src/test/resources/file2.js"]
     destinationDir = file("${buildDir}/jsdoc")
-}
-
-props2js {
-    inputs.file file("${projectDir}/src/test/resources/test.properties")
-    outputs.file file("${buildDir}/props.jsonp")
-    type = 'jsonp'
-    functionName = 'fn'
 }
 
 task props(type: com.eriwen.gradle.js.tasks.Props2JsTask) {

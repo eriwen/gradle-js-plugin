@@ -28,7 +28,6 @@ class JsDocTask extends SourceTask {
     private final RhinoExec rhino = new RhinoExec(project)
 
     Iterable<String> modulePaths = ['node_modules', 'rhino_modules', '.']
-    Iterable<String> options = []
     Boolean debug = false
 
     @OutputDirectory
@@ -50,7 +49,7 @@ class JsDocTask extends SourceTask {
         args.add("${workingDir}${File.separator}jsdoc.js")
         args.addAll(source.files.collect { it.canonicalPath })
         args.addAll(['-d', destinationDir.absolutePath])
-        args.addAll(options.collect { it })
+        args.addAll(project.jsdoc.options.collect { it })
 
         rhino.execute(args, workingDir)
     }

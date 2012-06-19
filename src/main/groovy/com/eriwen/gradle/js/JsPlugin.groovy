@@ -23,8 +23,9 @@ import com.eriwen.gradle.js.tasks.*
 class JsPlugin implements Plugin<Project> {
 
     void apply(final Project project) {
-        project.convention.plugins.js = new JsPluginConvention()
-
+        project.extensions.create(ClosureCompilerExtension.NAME, ClosureCompilerExtension)
+        project.extensions.create(JsDocExtension.NAME, JsDocExtension)
+        project.extensions.create(Props2JsExtension.NAME, Props2JsExtension)
         project.extensions.add(JavaScriptExtension.NAME, InternalGradle.toInstantiator(project).newInstance(JavaScriptExtension, project))
 
         configureDependencies(project)
@@ -32,26 +33,12 @@ class JsPlugin implements Plugin<Project> {
     }
 
     void applyTasks(final Project project) {
-        project.task('minifyJs', type: MinifyJsTask) {
-            compilerOptions = project.convention.plugins.js.compilerOptions
-            compilationLevel = project.convention.plugins.js.compilationLevel
-            warningLevel = project.convention.plugins.js.warningLevel
-        }
-
+        project.task('minifyJs', type: MinifyJsTask) {}
         project.task('combineJs', type: CombineJsTask) {}
-
         project.task('gzipJs', type: GzipJsTask) {}
-
         project.task('jshint', type: JsHintTask) {}
-
-        project.task('jsdoc', type: JsDocTask) {
-            options = project.convention.plugins.js.options
-        }
-
-        project.task('props2js', type: Props2JsTask) {
-            type = project.convention.plugins.js.type
-            functionName = project.convention.plugins.js.functionName
-        }
+        project.task('jsdoc', type: JsDocTask) {}
+        project.task('props2js', type: Props2JsTask) {}
     }
 
     void configureDependencies(Project project) {

@@ -16,7 +16,6 @@
 package com.eriwen.gradle.js.tasks
 
 
-import com.google.javascript.jscomp.CompilerOptions
 import com.eriwen.gradle.js.JsMinifier
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.OutputFile
@@ -29,17 +28,12 @@ class MinifyJsTask extends SourceTask {
     @OutputFile
     File dest
 
-    // FIXME: Wire defaults in properly through convention (issue #14)
-    CompilerOptions compilerOptions = new CompilerOptions()
-    String compilationLevel = 'SIMPLE_OPTIMIZATIONS'
-    String warningLevel = 'DEFAULT'
-
-	@TaskAction
-	def run() {
+    @TaskAction
+    def run() {
         if (source.files.size() != 1) {
             throw new GradleException("Only 1 file can be minified. Please run MinifyJs for each file.")
         }
 
-        MINIFIER.minifyJsFile((source.files.toArray() as File[])[0], dest, compilerOptions, warningLevel, compilationLevel)
+        MINIFIER.minifyJsFile((source.files.toArray() as File[])[0], dest, project.closure.compilerOptions, project.closure.warningLevel, project.closure.compilationLevel)
     }
 }

@@ -7,12 +7,9 @@ import org.junit.After
 import org.junit.Test
 
 import static org.junit.Assert.*
-import org.gradle.api.tasks.TaskExecutionException
 
 class JsPluginTest {
-    private static final String TEST_SOURCE_PATH = new File('.', 'src/test/resources').absolutePath
-
-	private Project project
+    private Project project
     private JsPlugin plugin
 
     @Before

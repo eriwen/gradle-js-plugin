@@ -23,19 +23,18 @@ import org.gradle.api.tasks.OutputFile
 
 class Props2JsTask extends SourceTask {
     private static final String PROPS2JS_JAR = 'props2js-0.1.0.jar'
-    private static final String TMP_DIR = 'tmp/js'
+    private static final String TMP_DIR = "tmp${File.separator}js"
     private static final ResourceUtil RESOURCE_UTIL = new ResourceUtil()
     private static final Set<String> AVAILABLE_TYPES = ['js', 'json', 'jsonp']
 
     @OutputFile
     File dest
-    
-    // FIXME: populate defaults using plugin convention (issue #14)
-    String functionName = ''
-    String type = 'json'
 
     @TaskAction
     def run() {
+        final String functionName = project.props.functionName
+        final String type = project.props.type
+
         // Prevent arguments that don't make sense
         if (!AVAILABLE_TYPES.contains(type)) {
             throw new IllegalArgumentException("Invalid type specified. Must be one of: ${AVAILABLE_TYPES.join(',')}")

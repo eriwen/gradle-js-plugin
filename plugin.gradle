@@ -20,7 +20,7 @@ javascript {
         custom {
             js {
                 srcDir "src/test/resources"
-                include "*.js"
+                include "file*.js"
             }
         }
     }
@@ -39,6 +39,7 @@ task minify(type: com.eriwen.gradle.js.tasks.MinifyJsTask) {
     closure {
         warningLevel = 'VERBOSE'
         compilationLevel = 'SIMPLE_OPTIMIZATIONS'
+        externs = files("src/test/resources/externs.js")
     }
 }
 

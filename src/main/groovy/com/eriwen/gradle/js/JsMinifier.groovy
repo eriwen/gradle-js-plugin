@@ -7,6 +7,8 @@ import com.google.javascript.jscomp.CompilerOptions
 import com.google.javascript.jscomp.JSSourceFile
 import com.google.javascript.jscomp.Result
 import com.google.javascript.jscomp.WarningLevel
+import java.nio.charset.Charset
+import org.gradle.api.file.FileCollection
 
 /**
  * Util to minify JS files with Google Closure Compiler.
@@ -16,23 +18,25 @@ import com.google.javascript.jscomp.WarningLevel
  */
 class JsMinifier {
 
-
-    void minifyJsFile(final File inputFile, final File outputFile, final CompilerOptions options,
+    void minifyJsFile(final File inputFile, final Set<File> externsFiles, final File outputFile, final CompilerOptions options,
             final String warningLevel, final String compilationLevel) {
-		Compiler compiler = new Compiler()
-		CompilationLevel.valueOf(compilationLevel).setOptionsForCompilationLevel(options)
-		WarningLevel level = WarningLevel.valueOf(warningLevel)
-		level.setOptionsForWarningLevel(options)
-		List<JSSourceFile> externs = CommandLineRunner.getDefaultExterns()
+        Compiler compiler = new Compiler()
+        CompilationLevel.valueOf(compilationLevel).setOptionsForCompilationLevel(options)
+        WarningLevel level = WarningLevel.valueOf(warningLevel)
+        level.setOptionsForWarningLevel(options)
+        List<JSSourceFile> externs = CommandLineRunner.getDefaultExterns()
+        if (externsFiles.size()) {
+            externs.addAll(externsFiles.collect() { JSSourceFile.fromFile(it) })
+        }
         List<JSSourceFile> inputs = new ArrayList<JSSourceFile>()
         inputs.add(JSSourceFile.fromFile(inputFile))
-		Result result = compiler.compile(externs, inputs, options)
-		if (result.success) {
-			outputFile.write(compiler.toSource())
-		} else {
-			result.errors.each {
-				println "${it.sourceName}:${it.lineNumber} - ${it.description}"
-			}
-		}
+        Result result = compiler.compile(externs, inputs, options)
+        if (result.success) {
+            outputFile.write(compiler.toSource())
+        } else {
+            result.errors.each {
+                println "${it.sourceName}:${it.lineNumber} - ${it.description}"
+            }
+        }
     }
 }

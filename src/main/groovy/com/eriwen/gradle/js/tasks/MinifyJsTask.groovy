@@ -34,6 +34,8 @@ class MinifyJsTask extends SourceTask {
             throw new GradleException("Only 1 file can be minified. Please run MinifyJs for each file.")
         }
 
-        MINIFIER.minifyJsFile((source.files.toArray() as File[])[0], dest, project.closure.compilerOptions, project.closure.warningLevel, project.closure.compilationLevel)
+        Set<File> externsFiles = project.closure.externs ? project.closure.externs.files : [] as Set<File>
+        MINIFIER.minifyJsFile((source.files.toArray() as File[])[0], externsFiles, dest,
+                project.closure.compilerOptions, project.closure.warningLevel, project.closure.compilationLevel)
     }
 }

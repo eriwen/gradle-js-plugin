@@ -5,7 +5,7 @@ apply plugin: 'idea'
 
 defaultTasks 'clean', 'build'
 
-version = '0.4.3'
+version = '1.0'
 group = 'com.eriwen'
 ext.archivesBaseName = 'gradle-js-plugin'
 ext.isSnapshot = version.endsWith("-SNAPSHOT")
@@ -17,7 +17,7 @@ repositories {
 dependencies {
     groovy localGroovy()
     compile gradleApi()
-    compile ('com.google.javascript:closure-compiler:r1810') {
+    compile ('com.google.javascript:closure-compiler:r1918') {
         exclude module: "junit"
     }
     testCompile ('org.spockframework:spock-core:0.6-groovy-1.8') {
@@ -61,7 +61,7 @@ task wrapper(type: Wrapper) {
     gradleVersion = '1.0'
 }
 
-artifacts { 
+artifacts {
     archives groovydocJar, sourceJar
 }
 

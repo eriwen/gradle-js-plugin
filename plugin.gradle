@@ -28,7 +28,7 @@ javascript {
 
 // Combine JS files
 task combine(type: com.eriwen.gradle.js.tasks.CombineJsTask) {
-    source = javascript.source.custom.js.files.toList()
+    source = javascript.source.custom.js.files
     dest = file("${buildDir}/all.js")
 }
 
@@ -49,17 +49,17 @@ task gzip(type: com.eriwen.gradle.js.tasks.GzipJsTask) {
 }
 
 task jshintz(type: com.eriwen.gradle.js.tasks.JsHintTask) {
-    source = ["${projectDir}/src/test/resources/file1.js"]
+    source = javascript.source.custom.js.files
 }
 
 task jsdocz(type: com.eriwen.gradle.js.tasks.JsDocTask) {
-    source = ["${projectDir}/src/test/resources/file1.js", "${projectDir}/src/test/resources/file2.js"]
+    source = javascript.source.custom.js.files
     destinationDir = file("${buildDir}/jsdoc")
 }
 
 task props(type: com.eriwen.gradle.js.tasks.Props2JsTask) {
-    propertiesFile = file("${projectDir}/src/test/resources/test.properties")
+    source = file("${projectDir}/src/test/resources/test.properties")
     dest = file("${buildDir}/props.jsonp")
-    type = 'jsonp'
-    functionName = 'fn'
+    project.props.type = 'jsonp'
+    project.props.functionName = 'fn'
 }

@@ -15,7 +15,6 @@
  */
 package com.eriwen.gradle.js
 
-import com.eriwen.gradle.js.source.internal.InternalGradle
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import com.eriwen.gradle.js.tasks.*
@@ -26,7 +25,7 @@ class JsPlugin implements Plugin<Project> {
         project.extensions.create(ClosureCompilerExtension.NAME, ClosureCompilerExtension)
         project.extensions.create(JsDocExtension.NAME, JsDocExtension)
         project.extensions.create(Props2JsExtension.NAME, Props2JsExtension)
-        project.extensions.add(JavaScriptExtension.NAME, InternalGradle.toInstantiator(project).newInstance(JavaScriptExtension, project))
+        project.extensions.create(JavaScriptExtension.NAME, JavaScriptExtension, project)
 
         configureDependencies(project)
         applyTasks(project)

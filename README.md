@@ -11,27 +11,50 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.eriwen:gradle-js-plugin:1.0'
+        classpath 'com.eriwen:gradle-js-plugin:1.0.1'
     }
 }
 // Invoke the plugin
 apply plugin: 'js'
 
+// Declare your sources
+javascript.source {
+    dev {
+        js {
+            srcDir jsSrcDir
+            include "*.js"
+            exclude "*.min.js"
+        }
+    }
+    prod {
+        js {
+            srcDir jsSrcDir
+            include "*.min.js"
+        }
+    }
+}
+
 // Specify a collection of files to be combined, then minified and finally GZip compressed.
 task combinejs(type: com.eriwen.gradle.js.tasks.CombineJsTask) {
-	source = ["${projectDir}/js/file1.js", "${projectDir}/js/file2.js"]
-	dest = file("${buildDir}/all.js")
+    if (env == 'prod') {
+        source = javascript.source.dev.js.files
+    } else {
+        source = javascript.source.prod.js.files
+    }
+    dest = file("${buildDir}/all.js")
 }
 
 task minifyjs(type: com.eriwen.gradle.js.tasks.MinifyJsTask, dependsOn: 'combinejs') {
-	source = file("${buildDir}/all.js")
-	dest = file("${buildDir}/all-min.js")
-	warningLevel = 'QUIET'
+    source = file("${buildDir}/all.js")
+    dest = file("${buildDir}/all-min.js")
+    closure {
+        warningLevel = 'QUIET'
+    }
 }
 
 task gzipjs(type: com.eriwen.gradle.js.tasks.GzipJsTask, dependsOn: 'minifyjs') {
-	source = file("${buildDir}/all-min.js")
-	dest = file("${buildDir}/all-min.js")
+    source = file("${buildDir}/all-min.js")
+    dest = file("${buildDir}/all-min.js")
 }
 ```
 
@@ -41,7 +64,6 @@ task gzipjs(type: com.eriwen.gradle.js.tasks.GzipJsTask, dependsOn: 'minifyjs') 
 task jsDev(type: com.eriwen.gradle.js.tasks.CombineJsTask) {
     source = ["${projectDir}/js/file1.js", "${projectDir}/js/file2.js"]
     dest = file("${buildDir}/all-debug.js")
-    compilationLevel = 'WHITESPACE_ONLY'
 }
 
 task jsProd(type: com.eriwen.gradle.js.tasks.CombineJsTask) {
@@ -53,7 +75,7 @@ task jsProd(type: com.eriwen.gradle.js.tasks.CombineJsTask) {
 **[JSHint](http://jshint.com) support**
 ```groovy
 task jshintjs(type: com.eriwen.gradle.js.tasks.JsHintTask) {
-    source = ['js/main.js']
+    source = javascript.source.dev.js.files
 }
 ```
 
@@ -62,17 +84,18 @@ task jshintjs(type: com.eriwen.gradle.js.tasks.JsHintTask) {
 task jsdocjs(type: com.eriwen.gradle.js.tasks.JsDocTask) {
     source = ["${projectDir}/js/file1.js", "${projectDir}/js/file2.js"]
     destinationDir = file("${buildDir}/jsdoc")
-    options = []
 }
 ```
 
 **[props2Js](https://github.com/nzakas/props2js) support**
 ```groovy
-task props(type: com.eriwen.gradle.js.tasks.Props2JsTask) {
-    propertiesFile = file("${projectDir}/src/test/resources/test.properties")
+task processProps(type: com.eriwen.gradle.js.tasks.Props2JsTask) {
+    source = file("${projectDir}/src/test/resources/test.properties")
     dest = file("${buildDir}/props.jsonp")
-    type = 'jsonp'
-    functionName = 'fn'
+    props {
+        type = 'jsonp'
+        functionName = 'fn'
+    }
 }
 ```
 
@@ -84,9 +107,10 @@ task props(type: com.eriwen.gradle.js.tasks.Props2JsTask) {
 ### minifyJs (Uses the [Google Closure Compiler](http://code.google.com/closure/compiler/)) ###
 - source = File to minify
 - dest = File for minified output
-- *(Optional)* compilationLevel = 'WHITESPACE_ONLY', 'SIMPLE_OPTIMIZATIONS' (default), or 'ADVANCED_OPTIMIZATIONS' (are you *hardcore*?)
-- *(Optional)* warningLevel = 'QUIET', 'DEFAULT' (default), or 'VERBOSE'
-- *(Optional)* compilerOptions = [CompilerOptions](http://code.google.com/p/closure-compiler/source/browse/trunk/src/com/google/javascript/jscomp/CompilerOptions.java?r=1187) object
+- *(Optional)* closure.compilationLevel = 'WHITESPACE_ONLY', 'SIMPLE_OPTIMIZATIONS' (default), or 'ADVANCED_OPTIMIZATIONS' (are you *hardcore*?)
+- *(Optional)* closure.warningLevel = 'QUIET', 'DEFAULT' (default), or 'VERBOSE'
+- *(Optional)* closure.compilerOptions = [CompilerOptions](http://code.google.com/p/closure-compiler/source/browse/trunk/src/com/google/javascript/jscomp/CompilerOptions.java?r=1918) object
+- *(Optional)* closure.externs = [FileCollection](http://gradle.org/docs/current/javadoc/org/gradle/api/file/FileCollection.html) object
 
 ### gzipJs ###
 - source = File to compress
@@ -98,7 +122,7 @@ task props(type: com.eriwen.gradle.js.tasks.Props2JsTask) {
 ### jsdoc ###
 - source = Files to generate documentation for
 - destinationDir = Directory path to put JSDoc output
-- *(Optional)* options = []
+- *(Optional)* options.options = []
 
 ```
 JSDoc 3 options:
@@ -116,10 +140,10 @@ JSDoc 3 options:
 ```
 
 ### props2js ###
-- propertiesFile = Properties file to process
+- source = Properties file to process
 - dest = Destination file for output
-- type = One of: 'js', 'json', or 'jsonp'
-- *(Optional)* functionName = Function name to wrap JSONP
+- props.type = One of: 'js', 'json', or 'jsonp'
+- *(Optional)* props.functionName = Function name to wrap JSONP
 
 What, you want more? [Tell me then!](https://github.com/eriwen/gradle-js-plugin/issues)
 

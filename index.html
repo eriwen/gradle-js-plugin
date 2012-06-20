@@ -1,0 +1,233 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Gradle JavaScript Plugin by eriwen</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="stylesheets/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="https://github.com/eriwen/gradle-js-plugin">View On GitHub</a></li>
+          <li class="downloads"><a href="https://github.com/eriwen/gradle-js-plugin/zipball/master">ZIP</a></li>
+          <li class="downloads"><a href="https://github.com/eriwen/gradle-js-plugin/tarball/master">TAR</a></li>
+          <li class="title">DOWNLOADS</li>
+        </nav>
+      </div><!-- end header -->
+
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <h1>Gradle JavaScript Plugin</h1>
+          <p>Gradle plugin for working with JS</p>
+          <hr>
+          <span class="credits left">Project maintained by <a href="https://github.com/eriwen">eriwen</a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></span>
+        </div>
+
+        <h1>One dot Oh!</h1>
+
+<h3>New features</h3>
+
+<ul>
+<li>Incremental build support, Gradle knows when your sources have changed.</li>
+<li>New syntax available for declaring your JS source files using Gradle's native SourceSets</li>
+<li>Updated Closure Compiler and the ability to declare additional externs</li>
+<li>Various bug fixes</li>
+</ul><h1>Quick Start</h1>
+
+<p>Wrangling your JS in a <a href="http://gradle.org">Gradle</a> build is easy! Just add this to your <em>build.gradle</em> file:</p>
+
+<div class="highlight">
+<pre><span class="c1">// Pull the plugin from a Maven Repo</span>
+<span class="n">buildscript</span> <span class="o">{</span>
+    <span class="n">repositories</span> <span class="o">{</span>
+        <span class="n">mavenCentral</span><span class="o">()</span>
+    <span class="o">}</span>
+    <span class="n">dependencies</span> <span class="o">{</span>
+        <span class="n">classpath</span> <span class="s1">'com.eriwen:gradle-js-plugin:1.0.1'</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+<span class="c1">// Invoke the plugin</span>
+<span class="n">apply</span> <span class="nl">plugin:</span> <span class="s1">'js'</span>
+
+<span class="c1">// Declare your sources</span>
+<span class="n">javascript</span><span class="o">.</span><span class="na">source</span> <span class="o">{</span>
+    <span class="n">dev</span> <span class="o">{</span>
+        <span class="n">js</span> <span class="o">{</span>
+            <span class="n">srcDir</span> <span class="n">jsSrcDir</span>
+            <span class="n">include</span> <span class="s2">"*.js"</span>
+            <span class="n">exclude</span> <span class="s2">"*.min.js"</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+    <span class="n">prod</span> <span class="o">{</span>
+        <span class="n">js</span> <span class="o">{</span>
+            <span class="n">srcDir</span> <span class="n">jsSrcDir</span>
+            <span class="n">include</span> <span class="s2">"*.min.js"</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="c1">// Specify a collection of files to be combined, then minified and finally GZip compressed.</span>
+<span class="n">task</span> <span class="nf">combinejs</span><span class="o">(</span><span class="nl">type:</span> <span class="n">com</span><span class="o">.</span><span class="na">eriwen</span><span class="o">.</span><span class="na">gradle</span><span class="o">.</span><span class="na">js</span><span class="o">.</span><span class="na">tasks</span><span class="o">.</span><span class="na">CombineJsTask</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">if</span> <span class="o">(</span><span class="n">env</span> <span class="o">==</span> <span class="s1">'prod'</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">source</span> <span class="o">=</span> <span class="n">javascript</span><span class="o">.</span><span class="na">source</span><span class="o">.</span><span class="na">dev</span><span class="o">.</span><span class="na">js</span><span class="o">.</span><span class="na">files</span>
+    <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+        <span class="n">source</span> <span class="o">=</span> <span class="n">javascript</span><span class="o">.</span><span class="na">source</span><span class="o">.</span><span class="na">prod</span><span class="o">.</span><span class="na">js</span><span class="o">.</span><span class="na">files</span>
+    <span class="o">}</span>
+    <span class="n">dest</span> <span class="o">=</span> <span class="n">file</span><span class="o">(</span><span class="s2">"${buildDir}/all.js"</span><span class="o">)</span>
+<span class="o">}</span>
+
+<span class="n">task</span> <span class="nf">minifyjs</span><span class="o">(</span><span class="nl">type:</span> <span class="n">com</span><span class="o">.</span><span class="na">eriwen</span><span class="o">.</span><span class="na">gradle</span><span class="o">.</span><span class="na">js</span><span class="o">.</span><span class="na">tasks</span><span class="o">.</span><span class="na">MinifyJsTask</span><span class="o">,</span> <span class="nl">dependsOn:</span> <span class="s1">'combinejs'</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">source</span> <span class="o">=</span> <span class="n">file</span><span class="o">(</span><span class="s2">"${buildDir}/all.js"</span><span class="o">)</span>
+    <span class="n">dest</span> <span class="o">=</span> <span class="n">file</span><span class="o">(</span><span class="s2">"${buildDir}/all-min.js"</span><span class="o">)</span>
+    <span class="n">closure</span> <span class="o">{</span>
+        <span class="n">warningLevel</span> <span class="o">=</span> <span class="s1">'QUIET'</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+
+<span class="n">task</span> <span class="nf">gzipjs</span><span class="o">(</span><span class="nl">type:</span> <span class="n">com</span><span class="o">.</span><span class="na">eriwen</span><span class="o">.</span><span class="na">gradle</span><span class="o">.</span><span class="na">js</span><span class="o">.</span><span class="na">tasks</span><span class="o">.</span><span class="na">GzipJsTask</span><span class="o">,</span> <span class="nl">dependsOn:</span> <span class="s1">'minifyjs'</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">source</span> <span class="o">=</span> <span class="n">file</span><span class="o">(</span><span class="s2">"${buildDir}/all-min.js"</span><span class="o">)</span>
+    <span class="n">dest</span> <span class="o">=</span> <span class="n">file</span><span class="o">(</span><span class="s2">"${buildDir}/all-min.js"</span><span class="o">)</span>
+<span class="o">}</span>
+</pre>
+</div>
+
+
+<p><strong>Need more than 1 set of files generated? We'll have to declare our tasks a bit differently:</strong></p>
+
+<div class="highlight">
+<pre><span class="n">task</span> <span class="nf">jsDev</span><span class="o">(</span><span class="nl">type:</span> <span class="n">com</span><span class="o">.</span><span class="na">eriwen</span><span class="o">.</span><span class="na">gradle</span><span class="o">.</span><span class="na">js</span><span class="o">.</span><span class="na">tasks</span><span class="o">.</span><span class="na">CombineJsTask</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">source</span> <span class="o">=</span> <span class="o">[</span><span class="s2">"${projectDir}/js/file1.js"</span><span class="o">,</span> <span class="s2">"${projectDir}/js/file2.js"</span><span class="o">]</span>
+    <span class="n">dest</span> <span class="o">=</span> <span class="n">file</span><span class="o">(</span><span class="s2">"${buildDir}/all-debug.js"</span><span class="o">)</span>
+<span class="o">}</span>
+
+<span class="n">task</span> <span class="nf">jsProd</span><span class="o">(</span><span class="nl">type:</span> <span class="n">com</span><span class="o">.</span><span class="na">eriwen</span><span class="o">.</span><span class="na">gradle</span><span class="o">.</span><span class="na">js</span><span class="o">.</span><span class="na">tasks</span><span class="o">.</span><span class="na">CombineJsTask</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">source</span> <span class="o">=</span> <span class="o">[</span><span class="s2">"${projectDir}/js/file1.js"</span><span class="o">,</span> <span class="s2">"${projectDir}/js/file2.js"</span><span class="o">]</span>
+    <span class="n">dest</span> <span class="o">=</span> <span class="n">file</span><span class="o">(</span><span class="s2">"${buildDir}/all.js"</span><span class="o">)</span>
+<span class="o">}</span>
+</pre>
+</div>
+
+
+<p><strong><a href="http://jshint.com">JSHint</a> support</strong></p>
+
+<div class="highlight">
+<pre><span class="n">task</span> <span class="nf">jshintjs</span><span class="o">(</span><span class="nl">type:</span> <span class="n">com</span><span class="o">.</span><span class="na">eriwen</span><span class="o">.</span><span class="na">gradle</span><span class="o">.</span><span class="na">js</span><span class="o">.</span><span class="na">tasks</span><span class="o">.</span><span class="na">JsHintTask</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">source</span> <span class="o">=</span> <span class="n">javascript</span><span class="o">.</span><span class="na">source</span><span class="o">.</span><span class="na">dev</span><span class="o">.</span><span class="na">js</span><span class="o">.</span><span class="na">files</span>
+<span class="o">}</span>
+</pre>
+</div>
+
+
+<p><strong><a href="https://github.com/micmath/jsdoc">JSDoc 3</a> support</strong></p>
+
+<div class="highlight">
+<pre><span class="n">task</span> <span class="nf">jsdocjs</span><span class="o">(</span><span class="nl">type:</span> <span class="n">com</span><span class="o">.</span><span class="na">eriwen</span><span class="o">.</span><span class="na">gradle</span><span class="o">.</span><span class="na">js</span><span class="o">.</span><span class="na">tasks</span><span class="o">.</span><span class="na">JsDocTask</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">source</span> <span class="o">=</span> <span class="o">[</span><span class="s2">"${projectDir}/js/file1.js"</span><span class="o">,</span> <span class="s2">"${projectDir}/js/file2.js"</span><span class="o">]</span>
+    <span class="n">destinationDir</span> <span class="o">=</span> <span class="n">file</span><span class="o">(</span><span class="s2">"${buildDir}/jsdoc"</span><span class="o">)</span>
+<span class="o">}</span>
+</pre>
+</div>
+
+
+<p><strong><a href="https://github.com/nzakas/props2js">props2Js</a> support</strong></p>
+
+<div class="highlight">
+<pre><span class="n">task</span> <span class="nf">processProps</span><span class="o">(</span><span class="nl">type:</span> <span class="n">com</span><span class="o">.</span><span class="na">eriwen</span><span class="o">.</span><span class="na">gradle</span><span class="o">.</span><span class="na">js</span><span class="o">.</span><span class="na">tasks</span><span class="o">.</span><span class="na">Props2JsTask</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">source</span> <span class="o">=</span> <span class="n">file</span><span class="o">(</span><span class="s2">"${projectDir}/src/test/resources/test.properties"</span><span class="o">)</span>
+    <span class="n">dest</span> <span class="o">=</span> <span class="n">file</span><span class="o">(</span><span class="s2">"${buildDir}/props.jsonp"</span><span class="o">)</span>
+    <span class="n">props</span> <span class="o">{</span>
+        <span class="n">type</span> <span class="o">=</span> <span class="s1">'jsonp'</span>
+        <span class="n">functionName</span> <span class="o">=</span> <span class="s1">'fn'</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre>
+</div>
+
+
+<h1>Available Tasks and Options</h1>
+
+<h3>combineJs</h3>
+
+<ul>
+<li>source = Collection of file paths of files to merge</li>
+<li>dest = File for combined output</li>
+</ul><h3>minifyJs (Uses the <a href="http://code.google.com/closure/compiler/">Google Closure Compiler</a>)</h3>
+
+<ul>
+<li>source = File to minify</li>
+<li>dest = File for minified output</li>
+<li>
+<em>(Optional)</em> closure.compilationLevel = 'WHITESPACE_ONLY', 'SIMPLE_OPTIMIZATIONS' (default), or 'ADVANCED_OPTIMIZATIONS' (are you <em>hardcore</em>?)</li>
+<li>
+<em>(Optional)</em> closure.warningLevel = 'QUIET', 'DEFAULT' (default), or 'VERBOSE'</li>
+<li>
+<em>(Optional)</em> closure.compilerOptions = <a href="http://code.google.com/p/closure-compiler/source/browse/trunk/src/com/google/javascript/jscomp/CompilerOptions.java?r=1918">CompilerOptions</a> object</li>
+<li>
+<em>(Optional)</em> closure.externs = <a href="http://gradle.org/docs/current/javadoc/org/gradle/api/file/FileCollection.html">FileCollection</a> object</li>
+</ul><h3>gzipJs</h3>
+
+<ul>
+<li>source = File to compress</li>
+<li>dest = File for compressed output</li>
+</ul><h3>jshint</h3>
+
+<ul>
+<li>source = Files to assess with JSHint</li>
+</ul><h3>jsdoc</h3>
+
+<ul>
+<li>source = Files to generate documentation for</li>
+<li>destinationDir = Directory path to put JSDoc output</li>
+<li>
+<em>(Optional)</em> options.options = []</li>
+</ul><pre><code>JSDoc 3 options:
+-t or --template &lt;value&gt; The name of the template to use. Default: the "default" template
+-c or --configure &lt;value&gt; The path to the configuration file. Default: jsdoc __dirname + /conf.json
+-e or --encoding &lt;value&gt; Assume this encoding when reading all source files. Default: utf-8
+-T or --test Run all tests and quit.
+-d or --destination &lt;value&gt; The path to the output folder. Use "console" to dump data to the console. Default: console
+-p or --private Display symbols marked with the @private tag. Default: false.
+-r or --recurse Recurse into subdirectories when scanning for source code files.
+-h or --help Print this message and quit.
+-X or --explain Dump all found doclet internals to console and quit.
+-q or --query &lt;value&gt; Provide a querystring to define custom variable names/values to add to the options hash.
+-u or --tutorials &lt;value&gt; Directory in which JSDoc should search for tutorials.
+</code></pre>
+
+<h3>props2js</h3>
+
+<ul>
+<li>source = Properties file to process</li>
+<li>dest = Destination file for output</li>
+<li>props.type = One of: 'js', 'json', or 'jsonp'</li>
+<li>
+<em>(Optional)</em> props.functionName = Function name to wrap JSONP</li>
+</ul><p>What, you want more? <a href="https://github.com/eriwen/gradle-js-plugin/issues">Tell me then!</a></p>
+
+<h1>See Also</h1>
+
+<p>The <a href="https://github.com/eriwen/gradle-css-plugin">Gradle CSS Plugin</a>!</p>
+
+<p><a href="https://twitter.com/eriwen">Follow @eriwen</a></p>
+      </section>
+
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><!--<![endif]-->
+    
+  </body>
+</html>

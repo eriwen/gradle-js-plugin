@@ -15,13 +15,11 @@ repositories {
 
 apply plugin: 'js'
 
-javascript {
-    source {
-        custom {
-            js {
-                srcDir "src/test/resources"
-                include "file*.js"
-            }
+javascript.source {
+    custom {
+        js {
+            srcDir "src/test/resources"
+            include "file*.js"
         }
     }
 }

@@ -32,6 +32,6 @@ class JsHintTask extends SourceTask {
                 new File(project.buildDir, TMP_DIR), JSHINT_PATH)
         final List<String> args = [jshintJsFile.canonicalPath]
         args.addAll(source.files.collect { it.canonicalPath })
-        rhino.execute(args)
+        rhino.execute(args, '.', true)
     }
 }

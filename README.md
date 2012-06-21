@@ -11,7 +11,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.eriwen:gradle-js-plugin:1.0.1'
+        classpath 'com.eriwen:gradle-js-plugin:1.0.2'
     }
 }
 // Invoke the plugin
@@ -44,16 +44,16 @@ task combinejs(type: com.eriwen.gradle.js.tasks.CombineJsTask) {
     dest = file("${buildDir}/all.js")
 }
 
-task minifyjs(type: com.eriwen.gradle.js.tasks.MinifyJsTask, dependsOn: 'combinejs') {
-    source = file("${buildDir}/all.js")
+task minifyjs(type: com.eriwen.gradle.js.tasks.MinifyJsTask) {
+    source = combinejs
     dest = file("${buildDir}/all-min.js")
     closure {
         warningLevel = 'QUIET'
     }
 }
 
-task gzipjs(type: com.eriwen.gradle.js.tasks.GzipJsTask, dependsOn: 'minifyjs') {
-    source = file("${buildDir}/all-min.js")
+task gzipjs(type: com.eriwen.gradle.js.tasks.GzipJsTask) {
+    source = minifyjs
     dest = file("${buildDir}/all-min.js")
 }
 ```
@@ -76,6 +76,7 @@ task jsProd(type: com.eriwen.gradle.js.tasks.CombineJsTask) {
 ```groovy
 task jshintjs(type: com.eriwen.gradle.js.tasks.JsHintTask) {
     source = javascript.source.dev.js.files
+    dest = file("${buildDir}/jshint.out")
 }
 ```
 
@@ -118,6 +119,7 @@ task processProps(type: com.eriwen.gradle.js.tasks.Props2JsTask) {
 
 ### jshint ###
 - source = Files to assess with JSHint
+- dest = File for JSHint output
 
 ### jsdoc ###
 - source = Files to generate documentation for

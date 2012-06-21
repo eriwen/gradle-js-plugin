@@ -4,7 +4,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.eriwen:gradle-js-plugin:1.0.1'
+        classpath 'com.eriwen:gradle-js-plugin:1.0.2'
     }
 }
 
@@ -24,6 +24,10 @@ javascript.source {
     }
 }
 
+task clean(type: Delete) {
+    delete buildDir
+}
+
 // Combine JS files
 task combine(type: com.eriwen.gradle.js.tasks.CombineJsTask) {
     source = javascript.source.custom.js.files
@@ -32,7 +36,7 @@ task combine(type: com.eriwen.gradle.js.tasks.CombineJsTask) {
 
 // Minify with Google Closure Compiler
 task minify(type: com.eriwen.gradle.js.tasks.MinifyJsTask) {
-    source = file("${buildDir}/all.js")
+    source = combine
     dest = file("${buildDir}/all-min.js")
     closure {
         warningLevel = 'VERBOSE'
@@ -41,14 +45,19 @@ task minify(type: com.eriwen.gradle.js.tasks.MinifyJsTask) {
     }
 }
 
+// For auto-versioning
+//def version = Integer.toHexString(Integer.parseInt(new java.text.SimpleDateFormat('yyDDHHmm').format(new Date())))
+def version = "1.7.2"
+
 // GZip it!
 task gzip(type: com.eriwen.gradle.js.tasks.GzipJsTask) {
-    source = file("${buildDir}/all-min.js")
-    dest = file("${buildDir}/all-min.js")
+    source = minify
+    dest = file("${buildDir}/all-${version}.min.js")
 }
 
 task jshintz(type: com.eriwen.gradle.js.tasks.JsHintTask) {
     source = javascript.source.custom.js.files
+    dest = file("${buildDir}/jshint.out")
 }
 
 task jsdocz(type: com.eriwen.gradle.js.tasks.JsDocTask) {

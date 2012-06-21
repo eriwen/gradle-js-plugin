@@ -19,6 +19,7 @@ import org.gradle.api.tasks.TaskAction
 import com.eriwen.gradle.js.ResourceUtil
 import com.eriwen.gradle.js.RhinoExec
 import org.gradle.api.tasks.SourceTask
+import org.gradle.api.tasks.OutputFile
 
 class JsHintTask extends SourceTask {
     private static final String JSHINT_PATH = 'jshint-rhino.js'
@@ -26,12 +27,14 @@ class JsHintTask extends SourceTask {
     private static final ResourceUtil RESOURCE_UTIL = new ResourceUtil()
     private final RhinoExec rhino = new RhinoExec(project)
 
+    @OutputFile File dest;
+
     @TaskAction
     def run() {
         final File jshintJsFile = RESOURCE_UTIL.extractFileToDirectory(
                 new File(project.buildDir, TMP_DIR), JSHINT_PATH)
         final List<String> args = [jshintJsFile.canonicalPath]
         args.addAll(source.files.collect { it.canonicalPath })
-        rhino.execute(args, '.', true)
+        rhino.execute(args, [ignoreExitCode: true, out: new FileOutputStream(dest)])
     }
 }

@@ -15,21 +15,16 @@
  */
 package com.eriwen.gradle.js.tasks
 
-import org.gradle.api.GradleException
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.SourceTask
 import org.gradle.api.tasks.TaskAction
 
 class GzipJsTask extends SourceTask {
-    @OutputFile
-    File dest
+    @OutputFile File dest
 
     @TaskAction
     def run() {
-        if (source.files.size() != 1) {
-            throw new GradleException("Only 1 file can be minified. Please run MinifyJs for each file.")
-        }
-        final String srcPath = (source.files.toArray() as File[])[0].canonicalPath
+        final String srcPath = source.singleFile.canonicalPath
         ant.gzip(src: srcPath, destfile: "${srcPath}.gz")
         ant.move(file: "${srcPath}.gz", tofile: dest.canonicalPath)
     }

@@ -15,9 +15,11 @@
  */
 package com.eriwen.gradle.js
 
+import org.gradle.api.tasks.Input
+
 class Props2JsExtension {
     public static final NAME = 'props'
 
-    String type = 'json'
-    String functionName = ''
+    @Input String type = 'json'
+    @Input String functionName = ''
 }

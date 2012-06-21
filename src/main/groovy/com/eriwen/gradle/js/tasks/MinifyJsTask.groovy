@@ -17,7 +17,6 @@ package com.eriwen.gradle.js.tasks
 
 
 import com.eriwen.gradle.js.JsMinifier
-import org.gradle.api.GradleException
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.SourceTask
 import org.gradle.api.tasks.TaskAction
@@ -25,17 +24,12 @@ import org.gradle.api.tasks.TaskAction
 class MinifyJsTask extends SourceTask {
     private static final JsMinifier MINIFIER = new JsMinifier()
 
-    @OutputFile
-    File dest
+    @OutputFile File dest
 
     @TaskAction
     def run() {
-        if (source.files.size() != 1) {
-            throw new GradleException("Only 1 file can be minified. Please run MinifyJs for each file.")
-        }
-
         Set<File> externsFiles = project.closure.externs ? project.closure.externs.files : [] as Set<File>
-        MINIFIER.minifyJsFile((source.files.toArray() as File[])[0], externsFiles, dest,
+        MINIFIER.minifyJsFile(source.singleFile, externsFiles, dest,
                 project.closure.compilerOptions, project.closure.warningLevel, project.closure.compilationLevel)
     }
 }

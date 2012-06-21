@@ -15,8 +15,10 @@
  */
 package com.eriwen.gradle.js
 
+import org.gradle.api.tasks.Input
+
 class JsDocExtension {
     public static final String NAME = 'jsdoc'
 
-    Iterable<String> options = []
+    @Input Iterable<String> options = []
 }

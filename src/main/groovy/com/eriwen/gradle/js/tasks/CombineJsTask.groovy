@@ -20,8 +20,7 @@ import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.SourceTask
 
 class CombineJsTask extends SourceTask {
-    @OutputFile
-    File dest
+    @OutputFile File dest
 
     @TaskAction
     def run() {

@@ -17,11 +17,12 @@ package com.eriwen.gradle.js
 
 import com.google.javascript.jscomp.CompilerOptions
 import org.gradle.api.file.FileCollection
+import org.gradle.api.tasks.Input
 
 class ClosureCompilerExtension {
     public static final NAME = "closure"
-    CompilerOptions compilerOptions = new CompilerOptions()
-    String compilationLevel = 'SIMPLE_OPTIMIZATIONS'
-    String warningLevel = 'DEFAULT'
-    FileCollection externs = null
+    @Input CompilerOptions compilerOptions = new CompilerOptions()
+    @Input String compilationLevel = 'SIMPLE_OPTIMIZATIONS'
+    @Input String warningLevel = 'DEFAULT'
+    @Input FileCollection externs = null
 }

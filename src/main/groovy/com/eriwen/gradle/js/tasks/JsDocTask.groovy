@@ -51,6 +51,6 @@ class JsDocTask extends SourceTask {
         args.addAll(['-d', destinationDir.absolutePath])
         args.addAll(project.jsdoc.options.collect { it })
 
-        rhino.execute(args, workingDir)
+        rhino.execute(args, [workingDir: workingDir])
     }
 }

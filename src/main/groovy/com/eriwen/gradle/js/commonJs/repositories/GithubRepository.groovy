@@ -20,9 +20,13 @@ import com.eriwen.gradle.js.commonJs.Package
 
 class GithubRepository implements Repository {
     private Package pack
+    private String repoName
 
     GithubRepository(Package pack) {
         this.pack = pack
+        // Need this for the api. getting from the end, so I don't have to care if the scheme is
+        // present.
+        this.repoName = this.pack.repositories[0].url.split('/')[-3]
     }
 
     File getTar(int index=0) {
@@ -38,7 +42,7 @@ class GithubRepository implements Repository {
     Object getTagByName(String name) {
         // SEE: http://developer.github.com/v3/
         // TODO: This could be a whole lot nicer.
-        String tagJson = "https://api.github.com/repos/${userName}/$repoName/tags".toURL().getText()
+        String tagJson = "https://api.github.com/repos/${repoName}/$name/tags".toURL().getText()
         def tags = new JsonSlurper().parseText(tagJson)
 
         for (Object tag in tags) {

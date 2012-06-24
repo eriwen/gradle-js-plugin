@@ -1,8 +1,8 @@
 package com.eriwen.gradle.js.source.internal;
 
 import org.gradle.api.Project;
-import org.gradle.api.internal.Instantiator;
 import org.gradle.api.internal.file.FileResolver;
+import org.gradle.internal.reflect.Instantiator;
 import org.gradle.api.internal.project.ProjectInternal;
 
 /**

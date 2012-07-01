@@ -11,7 +11,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.eriwen:gradle-js-plugin:1.0.2'
+        classpath 'com.eriwen:gradle-js-plugin:1.0.3'
     }
 }
 // Invoke the plugin

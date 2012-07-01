@@ -27,8 +27,11 @@ class Props2JsTask extends SourceTask {
     private static final ResourceUtil RESOURCE_UTIL = new ResourceUtil()
     private static final Set<String> AVAILABLE_TYPES = ['js', 'json', 'jsonp']
 
-    @OutputFile
-    File dest
+    @OutputFile def dest
+
+    File getDest() {
+        project.file(dest)
+    }
 
     @TaskAction
     def run() {
@@ -53,7 +56,7 @@ class Props2JsTask extends SourceTask {
         if (functionName) {
             props2JsArgs.addAll(['--name', functionName])
         }
-        props2JsArgs.addAll(['-o', dest.canonicalPath])
+        props2JsArgs.addAll(['-o', (dest as File).canonicalPath])
         project.javaexec {
             main = '-jar'
             args = props2JsArgs

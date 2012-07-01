@@ -30,8 +30,11 @@ class JsDocTask extends SourceTask {
     Iterable<String> modulePaths = ['node_modules', 'rhino_modules', '.']
     Boolean debug = false
 
-    @OutputDirectory
-    File destinationDir
+    @OutputDirectory def destinationDir
+
+    File getDestinationDir() {
+        project.file(destinationDir)
+    }
 
     @TaskAction
     def run() {
@@ -48,7 +51,7 @@ class JsDocTask extends SourceTask {
         }
         args.add("${workingDir}${File.separator}jsdoc.js")
         args.addAll(source.files.collect { it.canonicalPath })
-        args.addAll(['-d', destinationDir.absolutePath])
+        args.addAll(['-d', (destinationDir as File).absolutePath])
         args.addAll(project.jsdoc.options.collect { it })
 
         rhino.execute(args, [workingDir: workingDir])

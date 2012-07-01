@@ -27,7 +27,11 @@ class JsHintTask extends SourceTask {
     private static final ResourceUtil RESOURCE_UTIL = new ResourceUtil()
     private final RhinoExec rhino = new RhinoExec(project)
 
-    @OutputFile File dest;
+    @OutputFile def dest
+
+    File getDest() {
+        project.file(dest)
+    }
 
     @TaskAction
     def run() {
@@ -35,6 +39,6 @@ class JsHintTask extends SourceTask {
                 new File(project.buildDir, TMP_DIR), JSHINT_PATH)
         final List<String> args = [jshintJsFile.canonicalPath]
         args.addAll(source.files.collect { it.canonicalPath })
-        rhino.execute(args, [ignoreExitCode: true, out: new FileOutputStream(dest)])
+        rhino.execute(args, [ignoreExitCode: true, out: new FileOutputStream(dest as File)])
     }
 }

@@ -20,12 +20,16 @@ import org.gradle.api.tasks.SourceTask
 import org.gradle.api.tasks.TaskAction
 
 class GzipJsTask extends SourceTask {
-    @OutputFile File dest
+    @OutputFile def dest
+
+    File getDest() {
+        project.file(dest)
+    }
 
     @TaskAction
     def run() {
         final String srcPath = source.singleFile.canonicalPath
         ant.gzip(src: srcPath, destfile: "${srcPath}.gz")
-        ant.move(file: "${srcPath}.gz", tofile: dest.canonicalPath)
+        ant.move(file: "${srcPath}.gz", tofile: (dest as File).canonicalPath)
     }
 }

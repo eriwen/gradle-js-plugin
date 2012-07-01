@@ -20,11 +20,15 @@ import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.SourceTask
 
 class CombineJsTask extends SourceTask {
-    @OutputFile File dest
+    @OutputFile def dest
+
+    File getDest() {
+        project.file(dest)
+    }
 
     @TaskAction
     def run() {
-        ant.concat(destfile: dest.canonicalPath, fixlastline: 'yes') {
+        ant.concat(destfile: (dest as File).canonicalPath, fixlastline: 'yes') {
             source.files.each {
                 logger.info("Adding to fileset: ${it}")
                 fileset(file: it)

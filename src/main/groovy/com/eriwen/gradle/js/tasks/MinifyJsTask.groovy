@@ -24,12 +24,16 @@ import org.gradle.api.tasks.TaskAction
 class MinifyJsTask extends SourceTask {
     private static final JsMinifier MINIFIER = new JsMinifier()
 
-    @OutputFile File dest
+    @OutputFile def dest
+
+    File getDest() {
+        project.file(dest)
+    }
 
     @TaskAction
     def run() {
         Set<File> externsFiles = project.closure.externs ? project.closure.externs.files : [] as Set<File>
-        MINIFIER.minifyJsFile(source.singleFile, externsFiles, dest,
+        MINIFIER.minifyJsFile(source.singleFile, externsFiles, dest as File,
                 project.closure.compilerOptions, project.closure.warningLevel, project.closure.compilationLevel)
     }
 }

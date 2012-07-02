@@ -66,7 +66,7 @@ class JsPluginFunctionalTest extends FunctionalSpec {
         task("secondTask").state.upToDate
     }
 
-    def "combine, minify, gzip"() {
+    def "tasks operation"() {
         given:
         buildFile << """
             javascript.source {
@@ -96,17 +96,29 @@ class JsPluginFunctionalTest extends FunctionalSpec {
         run "minifyJs"
 
         then:
-        file("build/all-min.js").text == "function fn1(){console.log(\"1\")}function fn2(){console.log(\"2\")};"
+        file("build/all-min.js").text == 'function fn1(){console.log("1")}function fn2(){console.log("2")};'
 
         and:
-        wasExecuted ":combineJs" //Test inference
+        wasExecuted ":combineJs" //Test dependency inference
         wasExecuted ":minifyJs"
 
         when:
         run "minifyJs"
 
         then:
-        wasUpToDate ":combineJs"
+        wasUpToDate ":combineJs" //Test proper sourceSet detection
         wasUpToDate ":minifyJs"
+
+        when:
+        file("src/custom/js/file3.js") << "function fn3() { console.log('3'); }"
+
+        and:
+        run "minifyJs"
+
+        then:
+        !wasUpToDate(":minifyJs")
+
+        and:
+        file("build/all-min.js").text == 'function fn1(){console.log("1")}function fn2(){console.log("2")}function fn3(){console.log("3")};'
     }
 }

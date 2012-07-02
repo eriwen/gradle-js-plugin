@@ -7,6 +7,9 @@ buildscript {
         classpath 'com.eriwen:gradle-js-plugin:1.0.4'
     }
 }
+buildscript {
+    configurations.classpath.resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}
 
 repositories {
     mavenLocal()

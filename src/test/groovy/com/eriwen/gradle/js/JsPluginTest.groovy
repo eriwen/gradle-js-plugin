@@ -2,37 +2,21 @@ package com.eriwen.gradle.js
 
 import org.gradle.api.Project
 import org.gradle.testfixtures.ProjectBuilder
-import org.junit.Before
-import org.junit.After
-import org.junit.Test
+import spock.lang.Specification
 
-import static org.junit.Assert.*
+class JsPluginTest extends Specification {
 
-class JsPluginTest {
-    private Project project
-    private JsPlugin plugin
+    Project project = ProjectBuilder.builder().build()
 
-    @Before
-    void setUp() {
-        project = ProjectBuilder.builder().build()
-        plugin = new JsPlugin()
+    def setup() {
+        project.apply(plugin: JsPlugin)
     }
 
-    @After
-    void tearDown() {
-        project = null
-        plugin = null
-    }
-
-    @Test
-    void shouldApplyJsTasks() {
-        plugin.apply(project)
-
-        assertEquals 1, project.getTasksByName('combineJs', false).size()
-        assertEquals 1, project.getTasksByName('minifyJs', false).size()
-        assertEquals 1, project.getTasksByName('gzipJs', false).size()
-        assertEquals 1, project.getTasksByName('jshint', false).size()
-        assertEquals 1, project.getTasksByName('jsdoc', false).size()
-        assertEquals 0, project.getTasksByName('bogus', false).size()
+    def "extensions are installed"() {
+        expect:
+        project.extensions.getByName("closure") instanceof ClosureCompilerExtension
+        project.extensions.getByName("javascript") instanceof JavaScriptExtension
+        project.extensions.getByName("jsdoc") instanceof JsDocExtension
+        project.extensions.getByName("props") instanceof Props2JsExtension
     }
 }

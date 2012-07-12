@@ -37,7 +37,7 @@ class ResourceUtil {
 
         final File file = new File(targetDirectory, resourcePath)
         if (!file.exists()) {
-            final InputStream inputStream = getClass().getClassLoader().getResourceAsStream(resourcePath)
+            final InputStream inputStream = Thread.currentThread().contextClassLoader.getResourceAsStream(resourcePath)
             file << inputStream
             inputStream.close()
         }

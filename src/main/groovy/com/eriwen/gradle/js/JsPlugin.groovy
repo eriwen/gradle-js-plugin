@@ -40,7 +40,7 @@ class JsPlugin implements Plugin<Project> {
         project.task('props2js', type: Props2JsTask) {}
     }
 
-    void configureDependencies(Project project) {
+    void configureDependencies(final Project project) {
         project.configurations {
             rhino
         }

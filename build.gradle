@@ -5,7 +5,7 @@ apply plugin: 'idea'
 
 defaultTasks 'clean', 'build'
 
-version = '1.0.4'
+version = '1.1'
 group = 'com.eriwen'
 ext.archivesBaseName = 'gradle-js-plugin'
 ext.isSnapshot = version.endsWith("-SNAPSHOT")
@@ -58,7 +58,7 @@ task groovydocJar(type: Jar) {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '1.1-rc-1-20120623000031+0200'
+    gradleVersion = '1.1'
 }
 
 artifacts {
@@ -83,8 +83,6 @@ install.repositories.mavenInstaller {
     }
 }
 
-// NOTE: Must still rename build/pom-default.xml to pom.xml
-// NOTE: Must rename pom-default.xml.asc to gradle-js-plugin-${version}.pom.asc
 uploadArchives {
     repositories.mavenDeployer {
         if (signing.signatory) {

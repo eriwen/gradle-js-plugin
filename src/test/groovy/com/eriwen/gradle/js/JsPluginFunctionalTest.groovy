@@ -88,9 +88,9 @@ class JsPluginFunctionalTest extends FunctionalSpec {
             }
         """
         and:
-        file("src/custom/js/bar.js") << "function fn1() { console.log('1'); }"
+        file("src/custom/js/file1.js") << "function fn1() { console.log('1'); }"
         and:
-        file("src/custom/js/foo.js") << "function fn2() { console.log('2'); }"
+        file("src/custom/js/file2.js") << "function fn2() { console.log('2'); }"
 
         when:
         run "minifyJs"
@@ -110,7 +110,7 @@ class JsPluginFunctionalTest extends FunctionalSpec {
         wasUpToDate ":minifyJs"
 
         when:
-        file("src/custom/js/xee.js") << "function fn3() { console.log('3'); }"
+        file("src/custom/js/file3.js") << "function fn3() { console.log('3'); }"
 
         and:
         run "minifyJs"

@@ -16,16 +16,16 @@
 package com.eriwen.gradle.js.tasks
 
 import com.eriwen.gradle.js.ResourceUtil
+import com.eriwen.gradle.js.RhinoExec
 import org.gradle.api.tasks.SourceTask
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
-import org.gradle.plugins.javascript.rhino.RhinoShellExec
 
 class JsDocTask extends SourceTask {
     private static final String JSDOC_PATH = 'jsdoc.zip'
     private static final String TMP_DIR = "tmp${File.separator}js"
     private static final ResourceUtil RESOURCE_UTIL = new ResourceUtil()
-    private final RhinoShellExec rhino = new RhinoShellExec()
+    private final RhinoExec rhino = new RhinoExec(project)
 
     Iterable<String> modulePaths = ['node_modules', 'rhino_modules', '.']
     Boolean debug = false
@@ -54,8 +54,6 @@ class JsDocTask extends SourceTask {
         args.addAll(['-d', (destinationDir as File).absolutePath])
         args.addAll(project.jsdoc.options.collect { it })
 
-        rhino.scriptArgs = ["workingDir=${workingDir}"]
-        rhino.args(args)
-        rhino.execute()
+        rhino.execute(args, [workingDir: workingDir])
     }
 }

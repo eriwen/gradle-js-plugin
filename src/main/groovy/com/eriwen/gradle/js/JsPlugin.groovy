@@ -18,16 +18,10 @@ package com.eriwen.gradle.js
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import com.eriwen.gradle.js.tasks.*
-import org.gradle.plugins.javascript.rhino.RhinoPlugin
-import org.gradle.api.plugins.ReportingBasePlugin
-import org.gradle.api.reporting.ReportingExtension
 
 class JsPlugin implements Plugin<Project> {
 
     void apply(final Project project) {
-        project.plugins.apply(RhinoPlugin)
-        project.plugins.apply(ReportingBasePlugin)
-
         project.extensions.create(ClosureCompilerExtension.NAME, ClosureCompilerExtension)
         project.extensions.create(JsDocExtension.NAME, JsDocExtension)
         project.extensions.create(Props2JsExtension.NAME, Props2JsExtension)

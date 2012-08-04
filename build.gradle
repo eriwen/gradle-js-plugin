@@ -12,7 +12,6 @@ ext.isSnapshot = version.endsWith("-SNAPSHOT")
 
 repositories {
     mavenCentral()
-    mavenRepo url: 'http://oss.sonatype.org/content/repositories/snapshots/'
 }
 
 dependencies {

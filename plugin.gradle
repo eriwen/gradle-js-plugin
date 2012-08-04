@@ -4,7 +4,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.eriwen:gradle-js-plugin:1.0.4'
+        classpath 'com.eriwen:gradle-js-plugin:1.2'
     }
 }
 buildscript {
@@ -56,11 +56,6 @@ def version = "1.7.2"
 task gzip(type: com.eriwen.gradle.js.tasks.GzipJsTask) {
     source = minify
     dest = "${buildDir}/all-${version}.min.js"
-}
-
-jshint {
-    source = javascript.source.custom.js.files
-    dest = "${buildDir}/jshint.out"
 }
 
 task jshintz(type: com.eriwen.gradle.js.tasks.JsHintTask) {

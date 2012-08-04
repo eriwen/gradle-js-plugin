@@ -18,10 +18,16 @@ package com.eriwen.gradle.js
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import com.eriwen.gradle.js.tasks.*
+import org.gradle.plugins.javascript.rhino.RhinoPlugin
+import org.gradle.api.plugins.ReportingBasePlugin
+import org.gradle.api.reporting.ReportingExtension
 
 class JsPlugin implements Plugin<Project> {
 
     void apply(final Project project) {
+        project.plugins.apply(RhinoPlugin)
+        project.plugins.apply(ReportingBasePlugin)
+
         project.extensions.create(ClosureCompilerExtension.NAME, ClosureCompilerExtension)
         project.extensions.create(JsDocExtension.NAME, JsDocExtension)
         project.extensions.create(Props2JsExtension.NAME, Props2JsExtension)
@@ -32,12 +38,13 @@ class JsPlugin implements Plugin<Project> {
     }
 
     void applyTasks(final Project project) {
-        project.task('minifyJs', type: MinifyJsTask) {}
-        project.task('combineJs', type: CombineJsTask) {}
-        project.task('gzipJs', type: GzipJsTask) {}
-        project.task('jshint', type: JsHintTask) {}
-        project.task('jsdoc', type: JsDocTask) {}
-        project.task('props2js', type: Props2JsTask) {}
+        //project.task('coffee', type: TranspileCoffeeScriptTask, group: 'Build', description: 'Transpile CoffeeScript to JavaScript') {}
+        project.task('combineJs', type: CombineJsTask, group: 'Build', description: 'Combine many JavaScript files into one') {}
+        project.task('minifyJs', type: MinifyJsTask, group: 'Build', description: 'Minify JavaScript using Closure Compiler') {}
+        project.task('gzipJs', type: GzipJsTask, group: 'Build', description: 'GZip a given JavaScript file') {}
+        project.task('jshint', type: JsHintTask, group: 'Verification', description: 'Analyze JavaScript sources with JSHint') {}
+        project.task('jsdoc', type: JsDocTask, group: 'Documentation', description: 'Produce HTML documentation with JSDoc 3') {}
+        project.task('props2js', type: Props2JsTask, group: 'Build', description: 'Convert Java properties files for use with JavaScript') {}
     }
 
     void configureDependencies(final Project project) {
@@ -48,7 +55,11 @@ class JsPlugin implements Plugin<Project> {
             mavenCentral()
         }
         project.dependencies {
-            rhino 'org.mozilla:rhino:1.7R3'
+            rhino 'org.mozilla:rhino:1.7R4'
+//            rhino 'com.google.code.gson:gson:2.2.1'
+            //add javaScript.gradlePublicJavaScriptRepository
+            //add javaScript.googleApisRepository
         }
+        // TODO: have 'check' depend on jshint
     }
 }

@@ -58,6 +58,11 @@ task gzip(type: com.eriwen.gradle.js.tasks.GzipJsTask) {
     dest = "${buildDir}/all-${version}.min.js"
 }
 
+jshint {
+    source = javascript.source.custom.js.files
+    dest = "${buildDir}/jshint.out"
+}
+
 task jshintz(type: com.eriwen.gradle.js.tasks.JsHintTask) {
     source = javascript.source.custom.js.files
     dest = "${buildDir}/jshint.out"

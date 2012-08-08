@@ -33,7 +33,7 @@ class MinifyJsTask extends SourceTask {
     @TaskAction
     def run() {
         Set<File> externsFiles = project.closure.externs ? project.closure.externs.files : [] as Set<File>
-        MINIFIER.minifyJsFile(source.singleFile, externsFiles, dest as File,
+        MINIFIER.minifyJsFile(source.files, externsFiles, dest as File,
                 project.closure.compilerOptions, project.closure.warningLevel, project.closure.compilationLevel)
     }
 }

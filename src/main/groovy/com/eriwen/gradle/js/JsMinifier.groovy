@@ -18,7 +18,7 @@ import org.gradle.api.file.FileCollection
  */
 class JsMinifier {
 
-    void minifyJsFile(final File inputFile, final Set<File> externsFiles, final File outputFile, final CompilerOptions options,
+    void minifyJsFile(final Set<File> inputFiles, final Set<File> externsFiles, final File outputFile, final CompilerOptions options,
             final String warningLevel, final String compilationLevel) {
         Compiler compiler = new Compiler()
         CompilationLevel.valueOf(compilationLevel).setOptionsForCompilationLevel(options)
@@ -29,7 +29,9 @@ class JsMinifier {
             externs.addAll(externsFiles.collect() { JSSourceFile.fromFile(it) })
         }
         List<JSSourceFile> inputs = new ArrayList<JSSourceFile>()
-        inputs.add(JSSourceFile.fromFile(inputFile))
+        inputFiles.each { inputFile -> 
+          inputs.add(JSSourceFile.fromFile(inputFile))
+        }
         Result result = compiler.compile(externs, inputs, options)
         if (result.success) {
             outputFile.write(compiler.toSource())

@@ -38,9 +38,9 @@ task combine(type: com.eriwen.gradle.js.tasks.CombineJsTask) {
 }
 
 // Minify with Google Closure Compiler
-task minify(type: com.eriwen.gradle.js.tasks.MinifyJsTask) {
-    source = combine
+minifyJs {
     dest = file("${buildDir}/all-min.js")
+    source = javascript.source.custom.js.files
     closure {
         warningLevel = 'VERBOSE'
         compilationLevel = 'SIMPLE_OPTIMIZATIONS'
@@ -48,13 +48,21 @@ task minify(type: com.eriwen.gradle.js.tasks.MinifyJsTask) {
     }
 }
 
+javascript.source.custom.js.files.eachWithIndex { jsFile, idx ->
+    tasks.add(name: "dominify${idx}", type: com.eriwen.gradle.js.tasks.MinifyJsTask) {
+        source = jsFile
+        dest = "${buildDir}/${jsFile.name}"
+    }
+}
+task individualMinify(dependsOn: tasks.matching { Task task -> task.name.startsWith("dominify")})
+
 // For auto-versioning
 //def version = Integer.toHexString(Integer.parseInt(new java.text.SimpleDateFormat('yyDDHHmm').format(new Date())))
 def version = "1.7.2"
 
 // GZip it!
 task gzip(type: com.eriwen.gradle.js.tasks.GzipJsTask) {
-    source = minify
+    source = minifyJs
     dest = "${buildDir}/all-${version}.min.js"
 }
 

@@ -1,5 +1,5 @@
 language: groovy
-script: gradlew test
+script: ./gradlew test
 notifications:
   email: false
 branches:

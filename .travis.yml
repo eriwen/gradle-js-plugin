@@ -1,3 +1,8 @@
 language: groovy
 script: gradlew test
+notifications:
+  email: false
+branches:
+  only:
+    - master
 

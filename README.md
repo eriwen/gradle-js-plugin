@@ -1,7 +1,7 @@
-# Gradle Javascript Plugin! #
+# Gradle Javascript Plugin!
 Aiming to be the *simplest* way to manage your Javascript in a build.
 
-# Quick Start #
+# Quick Start
 Wrangling your JS in a [Gradle](http://gradle.org) build is easy! Just add this to your *build.gradle* file:
 
 ```groovy
@@ -100,7 +100,7 @@ task processProps(type: com.eriwen.gradle.js.tasks.Props2JsTask) {
 }
 ```
 
-# Available Tasks and Options #
+# Available Tasks and Options
 ### combineJs ###
 - source = Collection of file paths of files to merge
 - dest = File for combined output
@@ -148,6 +148,25 @@ JSDoc 3 options:
 - *(Optional)* props.functionName = Function name to wrap JSONP
 
 What, you want more? [Tell me then!](https://github.com/eriwen/gradle-js-plugin/issues)
+
+## Contributors
+This project is made possible due to the efforts of these fine people:
+
+* [Eric Wendelin](http://eriwen.com) - Original author and maintainer
+* [Luke Daley](https://github.com/alkemist) - Advice and improved project structure and testing
+* [Josh Newman](https://github.com/jnewman) - AMD and CommonJS work
+* Martin Ziel - Allowing minifyJs task to accept multiple files as input
+
+### Making contributions
+When submitting your pull requests, please do the following to make it easier to incorporate your changes:
+
+* Include unit and/or functional tests that validate changes you're making. 
+* Rebase your changes onto origin/HEAD if you can do so cleanly.
+* If submitting additional functionality, provide an example of how to use it.
+* Please keep code style consistent with surrounding code.
+ 
+### Testing
+You can run all tests by simply running `gradlew test` from your favorite shell.
 
 # See Also #
 The [Gradle CSS Plugin](https://github.com/eriwen/gradle-css-plugin)!

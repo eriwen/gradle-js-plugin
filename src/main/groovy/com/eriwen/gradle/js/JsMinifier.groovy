@@ -9,6 +9,7 @@ import com.google.javascript.jscomp.Result
 import com.google.javascript.jscomp.WarningLevel
 import java.nio.charset.Charset
 import org.gradle.api.file.FileCollection
+import org.gradle.api.GradleException
 
 /**
  * Util to minify JS files with Google Closure Compiler.
@@ -36,9 +37,11 @@ class JsMinifier {
         if (result.success) {
             outputFile.write(compiler.toSource())
         } else {
+        	String error = ""
             result.errors.each {
-                println "${it.sourceName}:${it.lineNumber} - ${it.description}"
+                error += "${it.sourceName}:${it.lineNumber} - ${it.description}\n"
             }
+            throw new GradleException(error)
         }
     }
 }

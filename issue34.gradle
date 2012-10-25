@@ -1,0 +1,49 @@
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.eriwen:gradle-js-plugin:1.2'
+    }
+}
+
+apply plugin: 'js'
+
+javascript.source {
+    custom {
+        js {
+            srcDir "src/test/resources"
+            include "file*.js"
+        }
+    }
+}
+
+task combineAJs(type: com.eriwen.gradle.js.tasks.CombineJsTask) {
+    source = javascript.source.custom.js.files
+    dest = "${buildDir}/js/a.js"
+}
+
+task combineBJs(type: com.eriwen.gradle.js.tasks.CombineJsTask) {
+    source = javascript.source.custom.js.files
+    dest = "${buildDir}/js/b.js"
+}
+
+task minifyAJs(type: com.eriwen.gradle.js.tasks.MinifyJsTask) {
+    source = combineAJs
+    dest = file("${buildDir}/js/a-min.js")
+    closure {
+        compilationLevel = 'SIMPLE_OPTIMIZATIONS'
+        warningLevel = 'QUIET'
+    }
+}
+
+task minifyBJs(type: com.eriwen.gradle.js.tasks.MinifyJsTask) {
+    source = combineBJs
+    dest = file("${buildDir}/js/b-min.js")
+    closure {
+        compilationLevel = 'ADVANCED_OPTIMIZATIONS'
+        externs = files("src/test/resources/externs.js")
+        warningLevel = 'QUIET'
+    }
+}

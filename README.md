@@ -37,9 +37,9 @@ javascript.source {
 // Specify a collection of files to be combined, then minified and finally GZip compressed.
 task combinejs(type: com.eriwen.gradle.js.tasks.CombineJsTask) {
     if (env == 'prod') {
-        source = javascript.source.dev.js.files
-    } else {
         source = javascript.source.prod.js.files
+    } else {
+        source = javascript.source.dev.js.files
     }
     dest = file("${buildDir}/all.js")
 }

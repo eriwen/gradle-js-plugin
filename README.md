@@ -80,7 +80,7 @@ task jshintjs(type: com.eriwen.gradle.js.tasks.JsHintTask) {
 }
 ```
 
-**[JSDoc 3](https://github.com/micmath/jsdoc) support**
+**[JSDoc 3](https://github.com/jsdoc3/jsdoc) support**
 ```groovy
 task jsdocjs(type: com.eriwen.gradle.js.tasks.JsDocTask) {
     source = ["${projectDir}/js/file1.js", "${projectDir}/js/file2.js"]

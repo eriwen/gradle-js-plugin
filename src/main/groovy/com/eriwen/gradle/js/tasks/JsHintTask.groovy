@@ -29,6 +29,8 @@ class JsHintTask extends SourceTask {
 
     @OutputFile def dest
 
+    def ignoreExitCode = true;
+
     File getDest() {
         project.file(dest)
     }
@@ -39,6 +41,6 @@ class JsHintTask extends SourceTask {
                 new File(project.buildDir, TMP_DIR), JSHINT_PATH)
         final List<String> args = [jshintJsFile.canonicalPath]
         args.addAll(source.files.collect { it.canonicalPath })
-        rhino.execute(args, [ignoreExitCode: true, out: new FileOutputStream(dest as File)])
+        rhino.execute(args, [ignoreExitCode: ignoreExitCode, out: new FileOutputStream(dest as File)])
     }
 }

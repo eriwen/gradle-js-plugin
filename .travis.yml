@@ -1,5 +1,6 @@
 language: groovy
-scripts: ./gradlew test
+install: ./gradlew assemble
+script: ./gradlew clean build
 notifications:
   email: false
 branches:

@@ -96,7 +96,8 @@ class JsPluginFunctionalTest extends FunctionalSpec {
         run "minifyJs"
 
         then:
-        file("build/all-min.js").text == 'function fn1(){console.log("1")}function fn2(){console.log("2")};'
+        file("build/all-min.js").text.indexOf('function fn1(){console.log("1")}') > -1
+        file("build/all-min.js").text.indexOf('function fn2(){console.log("2")}') > -1
 
         and:
         wasExecuted ":combineJs" //Test dependency inference

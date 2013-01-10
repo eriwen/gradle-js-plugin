@@ -119,6 +119,9 @@ class JsPluginFunctionalTest extends FunctionalSpec {
         !wasUpToDate(":minifyJs")
 
         and:
-        file("build/all-min.js").text == 'function fn1(){console.log("1")}function fn2(){console.log("2")}function fn3(){console.log("3")};'
+        // NOTE: File order is not guaranteed
+        file("build/all-min.js").text.indexOf('function fn1(){console.log("1")}') > -1
+        file("build/all-min.js").text.indexOf('function fn2(){console.log("2")}') > -1
+        file("build/all-min.js").text.indexOf('function fn3(){console.log("3")}') > -1
     }
 }

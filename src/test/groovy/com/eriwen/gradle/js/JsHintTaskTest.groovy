@@ -8,8 +8,7 @@ import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
 
 class JsHintTaskTest extends Specification {
-
-    @Rule TemporaryFolder dir = new TemporaryFolder();
+    @Rule TemporaryFolder dir = new TemporaryFolder()
 
     Project project = ProjectBuilder.builder().build()
     def task
@@ -29,8 +28,7 @@ class JsHintTaskTest extends Specification {
         addInvalidFile()
 
         when:
-        task.run();
-
+        task.run()
 
         then:
         notThrown ExecException
@@ -38,11 +36,11 @@ class JsHintTaskTest extends Specification {
 
     def "build passes with only valid files"() {
         given:
-        task.ignoreExitCode = false;
+        task.ignoreExitCode = false
         addValidFile()
 
         when:
-        task.run();
+        task.run()
 
         then:
         notThrown ExecException
@@ -50,12 +48,12 @@ class JsHintTaskTest extends Specification {
 
     def "build fails with invalid files"() {
         given:
-        task.ignoreExitCode = false;
+        task.ignoreExitCode = false
         addValidFile()
         addInvalidFile()
 
         when:
-        task.run();
+        task.run()
 
         then:
         ExecException e = thrown()
@@ -72,10 +70,9 @@ class JsHintTaskTest extends Specification {
     }
 
     def addFile(name,contents) {
-        def file = new File(src,name)
+        def file = new File(src as String, name)
         file << contents
     }
-
 }
 
 

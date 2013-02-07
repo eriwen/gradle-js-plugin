@@ -1,6 +1,7 @@
 package com.eriwen.gradle.js
 
 import org.gradle.api.Project
+import org.gradle.process.ExecResult
 
 /**
  * Utility for executing JS with Rhino.
@@ -25,7 +26,10 @@ class RhinoExec {
             standardOutput = out
         }
 
-        project.javaexec(execOptions)
+        ExecResult result = project.javaexec(execOptions)
+        if (!ignoreExitCode) {
+            result.assertNormalExitValue()
+        }
     }
 
     public RhinoExec(final Project projectIn) {

@@ -20,7 +20,6 @@ import com.eriwen.gradle.js.ResourceUtil
 import com.eriwen.gradle.js.RhinoExec
 import org.gradle.api.tasks.SourceTask
 import org.gradle.api.tasks.OutputFile
-import org.mozilla.javascript.*;
 
 class RequireJsTask extends SourceTask {
     private static final String REQUIREJS_PATH = 'r.js'
@@ -38,30 +37,24 @@ class RequireJsTask extends SourceTask {
 
     @TaskAction
     def run() {
-        final File requireJsFile = RESOURCE_UTIL.extractFileToDirectory(
-                new File(project.buildDir, TMP_DIR), REQUIREJS_PATH)
-        LinkedHashMap<String, Object> options = [optimize: "none", logLevel: 2, skipModuleInsertion: false, jamConfig: "jam/require.config.js", out: dest]
-        options.putAll(project.options)
+        final File requireJsFile = RESOURCE_UTIL.extractFileToDirectory(new File(project.buildDir, TMP_DIR), REQUIREJS_PATH)
+        LinkedHashMap<String, Object> options = [] // [optimize: "none", logLevel: 2, skipModuleInsertion: false, out: dest]
+        options.putAll(project.requirejs.options)
 
-        // Set Some Options Based On The jam File
-        File jamFile = new File(options.jamConfig);
-        if (jamFile.exists()) {
-            Context cx = Context.enter();
-            try {
-                Scriptable scope = cx.initStandardObjects()
-                String s = jamFile.text
-                Object result = cx.evaluateString(scope, s, options.jamConfig, 1, null)
-                logger.debug(result.toString())
-            } finally {
-                Context.exit();
+        final List<String> args = [requireJsFile.canonicalPath]
+        args.add("-o")
+        if (project.requirejs.buildprofile != null && project.requirejs.buildprofile.class == File) {
+            File buildprofile = project.requirejs.buildprofile
+            if (buildprofile.exists()) {
+                args.add(buildprofile.canonicalPath)
             }
         }
 
-        final List<String> args = []
         options.each() { key, value ->
             logger.debug("${key} == ${value}")
             args.add("${key}=${value}")
         }
-        rhino.execute(args, [ignoreExitCode: ignoreExitCode])
+
+        rhino.execute(args, [ignoreExitCode: ignoreExitCode, workingDir: project.projectDir.canonicalPath])
     }
 }

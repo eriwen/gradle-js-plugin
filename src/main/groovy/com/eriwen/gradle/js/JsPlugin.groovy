@@ -24,6 +24,7 @@ class JsPlugin implements Plugin<Project> {
     void apply(final Project project) {
         project.extensions.create(ClosureCompilerExtension.NAME, ClosureCompilerExtension)
         project.extensions.create(JsDocExtension.NAME, JsDocExtension)
+        project.extensions.create(RequireJsExtension.NAME, RequireJsExtension)
         project.extensions.create(Props2JsExtension.NAME, Props2JsExtension)
         project.extensions.create(JavaScriptExtension.NAME, JavaScriptExtension, project)
 
@@ -39,6 +40,7 @@ class JsPlugin implements Plugin<Project> {
         project.task('jshint', type: JsHintTask, group: 'Verification', description: 'Analyze JavaScript sources with JSHint') {}
         project.task('jsdoc', type: JsDocTask, group: 'Documentation', description: 'Produce HTML documentation with JSDoc 3') {}
         project.task('props2js', type: Props2JsTask, group: 'Build', description: 'Convert Java properties files for use with JavaScript') {}
+        project.task('requirejs', type: RequireJsTask, group: 'Build', description: 'Run the r.js Optimizer to produce Require.js output') {}
     }
 
     void configureDependencies(final Project project) {
@@ -50,9 +52,9 @@ class JsPlugin implements Plugin<Project> {
         }
         project.dependencies {
             rhino 'org.mozilla:rhino:1.7R4'
-//            rhino 'com.google.code.gson:gson:2.2.1'
-            //add javaScript.gradlePublicJavaScriptRepository
-            //add javaScript.googleApisRepository
+            // rhino 'com.google.code.gson:gson:2.2.1'
+            // add javaScript.gradlePublicJavaScriptRepository
+            // add javaScript.googleApisRepository
         }
         // TODO: have 'check' depend on jshint
     }

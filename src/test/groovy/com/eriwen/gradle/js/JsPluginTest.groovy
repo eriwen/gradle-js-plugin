@@ -18,5 +18,6 @@ class JsPluginTest extends Specification {
         project.extensions.getByName("javascript") instanceof JavaScriptExtension
         project.extensions.getByName("jsdoc") instanceof JsDocExtension
         project.extensions.getByName("props") instanceof Props2JsExtension
+        project.extensions.getByName("requirejs") instanceof RequireJsExtension
     }
 }

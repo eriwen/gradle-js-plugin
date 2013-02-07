@@ -20,5 +20,7 @@ import org.gradle.api.tasks.Input
 class RequireJsExtension {
     public static final String NAME = 'requirejs'
 
+    @Input File buildprofile = null
+
     @Input LinkedHashMap<String, Object> options = []
 }

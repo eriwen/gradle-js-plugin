@@ -24,6 +24,7 @@ class JsPlugin implements Plugin<Project> {
     void apply(final Project project) {
         project.extensions.create(ClosureCompilerExtension.NAME, ClosureCompilerExtension)
         project.extensions.create(JsDocExtension.NAME, JsDocExtension)
+        project.extensions.create(JsHintExtension.NAME, JsHintExtension)
         project.extensions.create(Props2JsExtension.NAME, Props2JsExtension)
         project.extensions.create(JavaScriptExtension.NAME, JavaScriptExtension, project)
 
@@ -50,9 +51,9 @@ class JsPlugin implements Plugin<Project> {
         }
         project.dependencies {
             rhino 'org.mozilla:rhino:1.7R4'
-//            rhino 'com.google.code.gson:gson:2.2.1'
-            //add javaScript.gradlePublicJavaScriptRepository
-            //add javaScript.googleApisRepository
+            // rhino 'com.google.code.gson:gson:2.2.1'
+            // add javaScript.gradlePublicJavaScriptRepository
+            // add javaScript.googleApisRepository
         }
         // TODO: have 'check' depend on jshint
     }

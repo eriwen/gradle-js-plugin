@@ -40,7 +40,7 @@ class JsPlugin implements Plugin<Project> {
         project.task('jshint', type: JsHintTask, group: 'Verification', description: 'Analyze JavaScript sources with JSHint') {}
         project.task('jsdoc', type: JsDocTask, group: 'Documentation', description: 'Produce HTML documentation with JSDoc 3') {}
         project.task('props2js', type: Props2JsTask, group: 'Build', description: 'Convert Java properties files for use with JavaScript') {}
-        project.task('requirejs', type: RequireJsTask, group: 'Build', description: 'Run the r.js Optimizer to produce Require.js output') {}
+        project.task('requireJs', type: RequireJsTask, group: 'Build', description: 'Run the r.js Optimizer to produce Require.js output') {}
     }
 
     void configureDependencies(final Project project) {

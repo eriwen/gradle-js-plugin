@@ -16,7 +16,7 @@ class RequireJsTaskTest extends Specification {
 
     def setup() {
         project.apply(plugin: JsPlugin)
-        task = project.tasks.requirejs
+        task = project.tasks.requireJs
         src = dir.newFolder()
         task.source = src
         task.dest = dir.newFile()

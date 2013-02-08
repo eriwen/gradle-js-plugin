@@ -43,11 +43,8 @@ class RequireJsTask extends SourceTask {
 
         final List<String> args = [requireJsFile.canonicalPath]
         args.add("-o")
-        if (project.requirejs.buildprofile != null && project.requirejs.buildprofile.class == File) {
-            File buildprofile = project.requirejs.buildprofile
-            if (buildprofile.exists()) {
-                args.add(buildprofile.canonicalPath)
-            }
+        if (project.requirejs.buildprofile != null && project.requirejs.buildprofile.class == File && project.requirejs.buildprofile.exists()) {
+            args.add("${project.requirejs.buildprofile.canonicalPath}")
         }
 
         def outAdded = false

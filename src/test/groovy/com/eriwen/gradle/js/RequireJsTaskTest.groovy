@@ -52,7 +52,7 @@ class RequireJsTaskTest extends Specification {
 
     def "runWithBuildProfile"() {
         given:
-        project.requirejs.buildprofile = new File("build.js")
+        project.requirejs.buildprofile = new File("${project.projectDir.absolutePath}${File.separator}build.js")
         addBuildFile()
         addMainFile()
         addJamDir()

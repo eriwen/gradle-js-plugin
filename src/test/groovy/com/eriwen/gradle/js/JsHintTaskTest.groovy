@@ -59,6 +59,20 @@ class JsHintTaskTest extends Specification {
         ExecException e = thrown()
     }
 
+    def "build writes to stdout and accepts options"() {
+        given:
+        task.ignoreExitCode = false
+        task.outputToStdOut = true
+        project.jshint.options = [scripturl: "true", laxcomma: "true"]
+
+        addValidFile()
+
+        when:
+        task.run()
+
+        then:
+        notThrown ExecException
+    }
 
     def addValidFile() {
         addFile("valid.js", "var a = 5;")

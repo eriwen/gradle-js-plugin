@@ -27,9 +27,11 @@ class JsHintTask extends SourceTask {
     private static final ResourceUtil RESOURCE_UTIL = new ResourceUtil()
     private final RhinoExec rhino = new RhinoExec(project)
 
-    @OutputFile def dest
+    @OutputFile def dest = new File(project.buildDir, "jshint.log")
 
     def ignoreExitCode = true;
+
+    def outputToStdOut = false;
 
     File getDest() {
         project.file(dest)
@@ -41,6 +43,24 @@ class JsHintTask extends SourceTask {
                 new File(project.buildDir, TMP_DIR), JSHINT_PATH)
         final List<String> args = [jshintJsFile.canonicalPath]
         args.addAll(source.files.collect { it.canonicalPath })
-        rhino.execute(args, [ignoreExitCode: ignoreExitCode, out: new FileOutputStream(dest as File)])
+        LinkedHashMap<String, Object> options = project.jshint.options
+        if (options != null && options.size() > 0) {
+            def optionsArg = ""
+            options.each() { key, value ->
+                logger.debug("${key} == ${value}")
+                optionsArg = (optionsArg == "") ? "${key}=${value}" : "${optionsArg},${key}=${value}"
+            }
+
+            if (optionsArg != "") {
+                args.add(optionsArg)
+            }
+        }
+
+        if (outputToStdOut) {
+            rhino.execute(args, [ignoreExitCode: ignoreExitCode])
+        } else {
+            rhino.execute(args, [ignoreExitCode: ignoreExitCode, out: new FileOutputStream(dest as File)])
+        }
+
     }
 }

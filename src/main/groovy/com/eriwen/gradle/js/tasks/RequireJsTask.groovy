@@ -50,9 +50,19 @@ class RequireJsTask extends SourceTask {
             }
         }
 
+        def outAdded = false
+        if (!options.containsKey("out")) {
+            args.add("out=${getDest().canonicalPath}")
+            outAdded = true
+        }
         options.each() { key, value ->
             logger.debug("${key} == ${value}")
-            args.add("${key}=${value}")
+            if (key.equalsIgnoreCase("out") & !outAdded) {
+                args.add("out=${getDest().canonicalPath}")
+                outAdded = true
+            } else {
+                args.add("${key}=${value}")
+            }
         }
 
         rhino.execute(args, [ignoreExitCode: ignoreExitCode, workingDir: project.projectDir.canonicalPath])

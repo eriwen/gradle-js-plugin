@@ -33,7 +33,6 @@ class JsPlugin implements Plugin<Project> {
     }
 
     void applyTasks(final Project project) {
-        //project.task('coffee', type: TranspileCoffeeScriptTask, group: 'Build', description: 'Transpile CoffeeScript to JavaScript') {}
         project.task('combineJs', type: CombineJsTask, group: 'Build', description: 'Combine many JavaScript files into one') {}
         project.task('minifyJs', type: MinifyJsTask, group: 'Build', description: 'Minify JavaScript using Closure Compiler') {}
         project.task('gzipJs', type: GzipJsTask, group: 'Build', description: 'GZip a given JavaScript file') {}

@@ -101,12 +101,21 @@ task processProps(type: com.eriwen.gradle.js.tasks.Props2JsTask) {
 }
 ```
 
-# Available Tasks and Options
-### combineJs ###
+**[require.js]() support**
+```groovy
+task require(type: com.eriwen.gradle.js.tasks.RequireJsTask) {
+    source = javascript.source.dev.js.files
+    dest = "${buildDir}/out.js"
+    requirejs.buildprofile = new File("src/main/resources/requirejs-config.js")
+}
+```
+
+# Built-in Tasks and Options
+### combineJs
 - source = Collection of file paths of files to merge
 - dest = File for combined output
 
-### minifyJs (Uses the [Google Closure Compiler](http://code.google.com/closure/compiler/)) ###
+### minifyJs (Uses the [Google Closure Compiler](http://code.google.com/closure/compiler/))
 - source = File to minify
 - dest = File for minified output
 - *(Optional)* closure.compilationLevel = 'WHITESPACE_ONLY', 'SIMPLE_OPTIMIZATIONS' (default), or 'ADVANCED_OPTIMIZATIONS' (are you *hardcore*?)
@@ -114,11 +123,11 @@ task processProps(type: com.eriwen.gradle.js.tasks.Props2JsTask) {
 - *(Optional)* closure.compilerOptions = [CompilerOptions](http://code.google.com/p/closure-compiler/source/browse/trunk/src/com/google/javascript/jscomp/CompilerOptions.java?r=1918) object
 - *(Optional)* closure.externs = [FileCollection](http://gradle.org/docs/current/javadoc/org/gradle/api/file/FileCollection.html) object
 
-### gzipJs ###
+### gzipJs
 - source = File to compress
 - dest = File for compressed output
 
-### jshint ###
+### jshint
 - source = Files to assess with JSHint
 - dest = File for JSHint output
 - *(Optional)* ignoreExitCode = Fail build if `false` and jshint finds problems. Default is `true`.
@@ -126,7 +135,7 @@ task processProps(type: com.eriwen.gradle.js.tasks.Props2JsTask) {
 - *(Optional)* jshint.options = Map of options (e.g. `[expr: "true", unused: "true"]`)
 
 
-### jsdoc ###
+### jsdoc
 - source = Files to generate documentation for
 - destinationDir = Directory path to put JSDoc output
 - *(Optional)* options.options = []
@@ -146,13 +155,20 @@ JSDoc 3 options:
 -u or --tutorials <value> Directory in which JSDoc should search for tutorials.
 ```
 
-### props2js ###
+### props2js
 - source = Properties file to process
 - dest = Destination file for output
 - props.type = One of: 'js', 'json', or 'jsonp'
 - *(Optional)* props.functionName = Function name to wrap JSONP
 
-What, you want more? [Tell me then!](https://github.com/eriwen/gradle-js-plugin/issues)
+### requireJs
+- source = Source JS files
+- dest = Output JS file
+- *(Must declare this or `requirejs.options`)* requirejs.buildprofile = File reference for config [example](https://github.com/eriwen/gradle-js-plugin/blob/master/src/test/resources/requirejs/build.js)
+- requirejs.options = Map of options [require.js docs](http://requirejs.org/docs/optimization.html#options)
+- *(Optional)* ignoreExitCode = Fail build if `false` and require.js did not run successfully. Default is `false`.
+
+What, you want more? [Tell me!](https://github.com/eriwen/gradle-js-plugin/issues)
 
 ## Contributors
 This project is made possible due to the efforts of these fine people:

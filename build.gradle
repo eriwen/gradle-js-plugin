@@ -8,7 +8,7 @@ targetCompatibility = '1.6'
 
 defaultTasks 'clean', 'build'
 
-version = '1.3.2'
+version = '1.4.0'
 group = 'com.eriwen'
 ext.archivesBaseName = 'gradle-js-plugin'
 ext.isSnapshot = version.endsWith("-SNAPSHOT")
@@ -61,7 +61,7 @@ task groovydocJar(type: Jar) {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '1.3'
+    gradleVersion = '1.4'
 }
 
 artifacts {

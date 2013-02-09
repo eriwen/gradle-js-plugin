@@ -15,6 +15,7 @@
  */
 package com.eriwen.gradle.js.tasks
 
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
 import com.eriwen.gradle.js.ResourceUtil
 import com.eriwen.gradle.js.RhinoExec
@@ -28,10 +29,8 @@ class JsHintTask extends SourceTask {
     private final RhinoExec rhino = new RhinoExec(project)
 
     @OutputFile def dest = new File(project.buildDir, "jshint.log")
-
-    def ignoreExitCode = true;
-
-    def outputToStdOut = false;
+    @Input def ignoreExitCode = true
+    @Input def outputToStdOut = false
 
     File getDest() {
         project.file(dest)

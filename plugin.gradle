@@ -69,8 +69,8 @@ task gzip(type: com.eriwen.gradle.js.tasks.GzipJsTask) {
 task jshintz(type: com.eriwen.gradle.js.tasks.JsHintTask) {
     source = javascript.source.custom.js.files
     dest = "${buildDir}/jshint.out"
-    ignoreExitCode = true
-    jshint.options = [expr: "false", unused: "true"]
+    ignoreExitCode = false
+    jshint.options = [expr: "true", unused: "true"]
 }
 
 task jsdocz(type: com.eriwen.gradle.js.tasks.JsDocTask) {

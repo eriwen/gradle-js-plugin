@@ -11,7 +11,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.eriwen:gradle-js-plugin:1.3.1'
+        classpath 'com.eriwen:gradle-js-plugin:1.4.0'
     }
 }
 // Invoke the plugin
@@ -77,6 +77,7 @@ task jsProd(type: com.eriwen.gradle.js.tasks.CombineJsTask) {
 task jshintjs(type: com.eriwen.gradle.js.tasks.JsHintTask) {
     source = javascript.source.dev.js.files
     dest = file("${buildDir}/jshint.out")
+    jshint.options = [expr: "true", unused: "true"]
 }
 ```
 
@@ -120,6 +121,10 @@ task processProps(type: com.eriwen.gradle.js.tasks.Props2JsTask) {
 ### jshint ###
 - source = Files to assess with JSHint
 - dest = File for JSHint output
+- *(Optional)* ignoreExitCode = Fail build if `false` and jshint finds problems. Default is `true`.
+- *(Optional)* outputToStdOut = `true` will output to STDOUT instead of file. Default is `false`.
+- *(Optional)* jshint.options = Map of options (e.g. `[expr: "true", unused: "true"]`)
+
 
 ### jsdoc ###
 - source = Files to generate documentation for
@@ -156,6 +161,7 @@ This project is made possible due to the efforts of these fine people:
 * [Luke Daley](https://github.com/alkemist) - Advice and improved project structure and testing
 * [Josh Newman](https://github.com/jnewman) - AMD and CommonJS work
 * Martin Ziel - Allowing minifyJs task to accept multiple files as input
+* [Joe Fitzgerald](https://github.com/joefitzgerald) - JSHint and RequireJS features
 
 # See Also #
 The [Gradle CSS Plugin](https://github.com/eriwen/gradle-css-plugin)!

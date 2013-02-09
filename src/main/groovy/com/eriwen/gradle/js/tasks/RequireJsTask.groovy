@@ -15,6 +15,7 @@
  */
 package com.eriwen.gradle.js.tasks
 
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
 import com.eriwen.gradle.js.ResourceUtil
 import com.eriwen.gradle.js.RhinoExec
@@ -28,8 +29,7 @@ class RequireJsTask extends SourceTask {
     private final RhinoExec rhino = new RhinoExec(project)
 
     @OutputFile def dest
-
-    def ignoreExitCode = false;
+    @Input def ignoreExitCode = false
 
     File getDest() {
         project.file(dest)

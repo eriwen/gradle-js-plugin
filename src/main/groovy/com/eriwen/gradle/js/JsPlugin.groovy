@@ -1,5 +1,5 @@
 /**
- * Copyright 2012 Eric Wendelin
+ * Copyright 2013 Eric Wendelin
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -34,7 +34,6 @@ class JsPlugin implements Plugin<Project> {
     }
 
     void applyTasks(final Project project) {
-        //project.task('coffee', type: TranspileCoffeeScriptTask, group: 'Build', description: 'Transpile CoffeeScript to JavaScript') {}
         project.task('combineJs', type: CombineJsTask, group: 'Build', description: 'Combine many JavaScript files into one') {}
         project.task('minifyJs', type: MinifyJsTask, group: 'Build', description: 'Minify JavaScript using Closure Compiler') {}
         project.task('gzipJs', type: GzipJsTask, group: 'Build', description: 'GZip a given JavaScript file') {}
@@ -53,9 +52,6 @@ class JsPlugin implements Plugin<Project> {
         }
         project.dependencies {
             rhino 'org.mozilla:rhino:1.7R4'
-            // rhino 'com.google.code.gson:gson:2.2.1'
-            // add javaScript.gradlePublicJavaScriptRepository
-            // add javaScript.googleApisRepository
         }
         // TODO: have 'check' depend on jshint
     }

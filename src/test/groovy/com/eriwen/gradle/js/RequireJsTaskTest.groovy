@@ -83,7 +83,7 @@ class RequireJsTaskTest extends Specification {
         }
     }
 
-    def addFile(name,contents) {
+    def addFile(name, contents) {
         def file = new File(project.projectDir as String, name)
         file << contents
     }

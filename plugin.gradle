@@ -37,6 +37,12 @@ task combine(type: com.eriwen.gradle.js.tasks.CombineJsTask) {
     dest = "${buildDir}/all.js"
 }
 
+requireJs {
+    source = javascript.source.custom.js.files
+    dest = "$buildDir/require.js"
+    requirejs.buildprofile = new File("src/test/resources/requirejs/build.js")
+}
+
 // Minify with Google Closure Compiler
 minifyJs {
     dest = file("${buildDir}/all-min.js")

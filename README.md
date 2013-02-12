@@ -1,11 +1,11 @@
 # Gradle Javascript Plugin! [![Build Status](https://secure.travis-ci.org/eriwen/gradle-js-plugin.png)](http://travis-ci.org/eriwen/gradle-js-plugin)
-Aiming to be the *simplest* way to manage your Javascript in a build.
+Aiming to be the *simplest* way to manage your JavaScript in a build.
 
 # Quick Start
 Wrangling your JS in a [Gradle](http://gradle.org) build is easy! Just add this to your *build.gradle* file:
 
 ```groovy
-// Pull the plugin from a Maven Repo
+// Pull the plugin from Maven Central
 buildscript {
     repositories {
         mavenCentral()
@@ -33,34 +33,17 @@ javascript.source {
         }
     }
 }
+```
 
-// Specify a collection of files to be combined, then minified and finally GZip compressed.
-task combinejs(type: com.eriwen.gradle.js.tasks.CombineJsTask) {
-    if (env == 'prod') {
-        source = javascript.source.prod.js.files
-    } else {
-        source = javascript.source.dev.js.files
-    }
+### Combining Files ([options](#combinejs))
+```groovy
+// Configure the built-in task
+combineJs {
+    source = javascript.source.dev.js.files
     dest = file("${buildDir}/all.js")
 }
 
-task minifyjs(type: com.eriwen.gradle.js.tasks.MinifyJsTask) {
-    source = combinejs
-    dest = file("${buildDir}/all-min.js")
-    closure {
-        warningLevel = 'QUIET'
-    }
-}
-
-task gzipjs(type: com.eriwen.gradle.js.tasks.GzipJsTask) {
-    source = minifyjs
-    dest = file("${buildDir}/all-min.js")
-}
-```
-
-**Need more than 1 set of files generated? We'll have to declare our tasks a bit differently:**
-
-```groovy
+// Create new CombineJsTasks if you have multiple sets of JS files
 task jsDev(type: com.eriwen.gradle.js.tasks.CombineJsTask) {
     source = ["${projectDir}/js/file1.js", "${projectDir}/js/file2.js"]
     dest = file("${buildDir}/all-debug.js")
@@ -72,26 +55,45 @@ task jsProd(type: com.eriwen.gradle.js.tasks.CombineJsTask) {
 }
 ```
 
-**[JSHint](http://jshint.com) support**
+### Minifying files with [Google Closure Compiler](http://code.google.com/closure/compiler/) ([options](#minifyjs-uses-the-google-closure-compiler))
 ```groovy
-task jshintjs(type: com.eriwen.gradle.js.tasks.JsHintTask) {
+minifyJs {
+    source = combineJs
+    dest = file("${buildDir}/all-min.js")
+    closure {
+        warningLevel = 'QUIET'
+    }
+}
+```
+
+### GZip JS ([options](#gzipjs))
+```groovy
+gzipJs {
+    source = minifyjs
+    dest = file("${buildDir}/all-min.js")
+}
+```
+
+### [JSHint](http://jshint.com) support ([options](#jshint))
+```groovy
+jshint {
     source = javascript.source.dev.js.files
     dest = file("${buildDir}/jshint.out")
     jshint.options = [expr: "true", unused: "true"]
 }
 ```
 
-**[JSDoc 3](https://github.com/jsdoc3/jsdoc) support**
+### [JSDoc 3](https://github.com/jsdoc3/jsdoc) support ([options](#jsdoc))
 ```groovy
-task jsdocjs(type: com.eriwen.gradle.js.tasks.JsDocTask) {
+jsdoc {
     source = ["${projectDir}/js/file1.js", "${projectDir}/js/file2.js"]
     destinationDir = file("${buildDir}/jsdoc")
 }
 ```
 
-**[props2Js](https://github.com/nzakas/props2js) support**
+### [props2js](https://github.com/nzakas/props2js) support ([options](#props2js))
 ```groovy
-task processProps(type: com.eriwen.gradle.js.tasks.Props2JsTask) {
+props2js {
     source = file("${projectDir}/src/test/resources/test.properties")
     dest = file("${buildDir}/props.jsonp")
     props {
@@ -101,9 +103,9 @@ task processProps(type: com.eriwen.gradle.js.tasks.Props2JsTask) {
 }
 ```
 
-**[require.js]() support**
+### [require.js](http://requirejs.org/) via r.js ([options](#requirejs))
 ```groovy
-task require(type: com.eriwen.gradle.js.tasks.RequireJsTask) {
+requireJs {
     source = javascript.source.dev.js.files
     dest = "${buildDir}/out.js"
     requirejs.buildprofile = new File("src/main/resources/requirejs-config.js")
@@ -179,5 +181,5 @@ This project is made possible due to the efforts of these fine people:
 * Martin Ziel - Allowing minifyJs task to accept multiple files as input
 * [Joe Fitzgerald](https://github.com/joefitzgerald) - JSHint and RequireJS features
 
-# See Also #
+## See Also
 The [Gradle CSS Plugin](https://github.com/eriwen/gradle-css-plugin)!

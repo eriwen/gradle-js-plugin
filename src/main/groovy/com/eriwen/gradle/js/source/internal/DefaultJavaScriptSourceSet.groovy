@@ -21,7 +21,7 @@ class DefaultJavaScriptSourceSet implements JavaScriptSourceSet {
     DefaultJavaScriptSourceSet(String name, Project project) {
         this.name = name
         this.displayName = GUtil.toWords(name)
-        this.js = new DefaultSourceDirectorySet(name, String.format("%s JavaScript source", displayName), InternalGradle.toFileResolver(project))
+        this.js = new DefaultJavaScriptSourceDirectorySet(name, project)
         this.processing = InternalGradle.toInstantiator(project).newInstance(DefaultJavaScriptProcessingChain, project, this)
         this.processed = project.files({ processing.empty ? js : processing.last().outputs.files })
     }

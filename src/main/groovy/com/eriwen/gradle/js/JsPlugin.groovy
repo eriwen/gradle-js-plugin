@@ -18,11 +18,16 @@ package com.eriwen.gradle.js
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import com.eriwen.gradle.js.tasks.*
+import com.eriwen.gradle.js.source.internal.DefaultJavaScriptSourceDirectorySet
+import com.eriwen.gradle.js.source.JavaScriptSourceSet
+import com.eriwen.gradle.js.tasks.closure.*
+import org.gradle.api.internal.file.DefaultSourceDirectorySet
+import org.gradle.api.Task
 
 class JsPlugin implements Plugin<Project> {
 
     void apply(final Project project) {
-        project.extensions.create(ClosureCompilerExtension.NAME, ClosureCompilerExtension)
+        project.extensions.create(ClosureExtension.NAME, ClosureExtension)
         project.extensions.create(JsDocExtension.NAME, JsDocExtension)
         project.extensions.create(JsHintExtension.NAME, JsHintExtension)
         project.extensions.create(RequireJsExtension.NAME, RequireJsExtension)
@@ -35,12 +40,39 @@ class JsPlugin implements Plugin<Project> {
 
     void applyTasks(final Project project) {
         project.task('combineJs', type: CombineJsTask, group: 'Build', description: 'Combine many JavaScript files into one') {}
+        def getClosureTask = project.task('getClosure', 
+        	type: com.eriwen.gradle.js.tasks.closure.GetClosure, group: 'Build', 
+        	description: 'Download the closure library if it does not already exist') {}
+        project.task('depsJs', type: com.eriwen.gradle.js.tasks.closure.WriteDepsTask, 
+        	group: 'Build', description: 
+        	'Write out JavaScript dependencies using Closure DepsWriter') {}
+        project.task('buildJs', type: com.eriwen.gradle.js.tasks.closure.BuildJsTask, 
+        	group: 'Build', description: 
+        	'Build JavaScript using Closure Build Tool and the Closure Compiler') {}
         project.task('minifyJs', type: MinifyJsTask, group: 'Build', description: 'Minify JavaScript using Closure Compiler') {}
         project.task('gzipJs', type: GzipJsTask, group: 'Build', description: 'GZip a given JavaScript file') {}
         project.task('jshint', type: JsHintTask, group: 'Verification', description: 'Analyze JavaScript sources with JSHint') {}
         project.task('jsdoc', type: JsDocTask, group: 'Documentation', description: 'Produce HTML documentation with JSDoc 3') {}
         project.task('props2js', type: Props2JsTask, group: 'Build', description: 'Convert Java properties files for use with JavaScript') {}
         project.task('requireJs', type: RequireJsTask, group: 'Build', description: 'Run the r.js Optimizer to produce Require.js output') {}
+
+        project.tasks.withType(com.eriwen.gradle.js.tasks.closure.BuildJsTask) { Task task ->
+          conventionMapping.map("source") { project.javascript.source.main.js }
+          conventionMapping.map("dest") { project.file("${project.buildDir}/${task.namespace}.js") }
+        }
+        
+        project.tasks.withType(com.eriwen.gradle.js.tasks.closure.WriteDepsTask) { Task task ->
+        /*task.conventionMapping.map("source") { 
+          	def srcSet = new DefaultJavaScriptSourceDirectorySet(
+          			task.name, project)
+          	project.javascript.source.each { JavaScriptSourceSet src ->
+          		srcSet.source(src.js)
+          	}
+          	return srcSet
+		   }*/
+          conventionMapping.map("source") { project.javascript.source.main.js }
+          conventionMapping.map("dest") { "${project.buildDir}/deps.js" }
+         }
     }
 
     void configureDependencies(final Project project) {

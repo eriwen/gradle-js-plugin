@@ -14,7 +14,7 @@ class JsPluginTest extends Specification {
 
     def "extensions are installed"() {
         expect:
-        project.extensions.getByName("closure") instanceof ClosureCompilerExtension
+        project.extensions.getByName("closure") instanceof ClosureExtension
         project.extensions.getByName("javascript") instanceof JavaScriptExtension
         project.extensions.getByName("jsdoc") instanceof JsDocExtension
         project.extensions.getByName("props") instanceof Props2JsExtension

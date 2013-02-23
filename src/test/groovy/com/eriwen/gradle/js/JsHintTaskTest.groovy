@@ -74,6 +74,21 @@ class JsHintTaskTest extends Specification {
         notThrown ExecException
     }
 
+    def "jshint processes many files"() {
+        given:
+        task.ignoreExitCode = false
+        addFile("valid.js", "var a = 5;")
+        addFile("valid2.js", "var b = 5;")
+        addFile("valid3.js", "var c = 5;")
+        addFile("valid4.js", "var d = 5;")
+
+        when:
+        task.run()
+
+        then:
+        notThrown ExecException
+    }
+
     def addValidFile() {
         addFile("valid.js", "var a = 5;")
     }

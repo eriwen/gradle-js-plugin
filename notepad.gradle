@@ -1,0 +1,48 @@
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.eriwen:gradle-js-plugin:1.4.0'
+        classpath 'org.ajoberstar:gradle-git:0.3.0'
+    }
+}
+// Invoke the plugin
+apply plugin: 'js'
+
+javascript {
+    source {
+        main {
+            js {
+                srcDir project.file("src/notepad/javascript")
+            }
+        }
+    }
+
+}
+
+closure {
+    compiler {
+        options {
+            closurePass = true
+            generateExports = true
+        }
+        compilationLevel = 'ADVANCED_OPTIMIZATIONS'
+        warnings = 'DEFAULT'
+    }
+    library {
+        location = "lib/closure-library/"
+    }
+    
+}
+
+buildJs {
+    dependsOn getClosure
+    namespace = "tutorial.notepad"
+}
+
+depsJs {
+    dependsOn getClosure
+}
+

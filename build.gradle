@@ -23,6 +23,7 @@ dependencies {
     compile ('com.google.javascript:closure-compiler:r1918') {
         exclude module: "junit"
     }
+	compile ('org.ajoberstar:gradle-git:0.3.0')
     testCompile ('org.spockframework:spock-core:0.6-groovy-1.8') {
         exclude module: "junit-dep"
         exclude module: "groovy-all"

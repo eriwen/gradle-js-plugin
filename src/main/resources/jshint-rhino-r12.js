@@ -4977,8 +4977,6 @@ var reportWithReporter = function (reporter, file) {
     var opts   = {};
     var retval = 0;
 
-    print("Calling rhino with: " + args.join(", "));
-
     args.forEach(function (arg) {
         if (arg.indexOf("=") > -1) {
             if (!optstr) {

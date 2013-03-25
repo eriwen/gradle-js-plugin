@@ -29,7 +29,7 @@ class JsHintTask extends SourceTask {
     private static final ResourceUtil RESOURCE_UTIL = new ResourceUtil()
     private final RhinoExec rhino = new RhinoExec(project)
 
-    @OutputFile def dest = new File(project.reportsDir, "jshint.log")
+    @OutputFile def dest = new File(project.buildDir, "jshint.log")
     @Input def ignoreExitCode = true
     @Input def outputToStdOut = false
     @Input def checkstyle = false

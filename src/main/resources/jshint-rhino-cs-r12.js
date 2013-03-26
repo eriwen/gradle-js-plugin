@@ -4972,13 +4972,23 @@ var reportWithReporter = function (reporter, file) {
 
 (function (args) {
     var filenames = [];
+    var reporter;
+    var reporterModule;
     var optstr; // arg1=val1,arg2=val2,...
     var predef; // global1=true,global2,global3,...
     var opts   = {};
     var retval = 0;
+	var results = [];
+	var data = [];
+	var lintData;
 
     args.forEach(function (arg) {
         if (arg.indexOf("=") > -1) {
+			// Check first for reporter option
+			if (arg.split("=")[0] === "reporter") {
+				reporter = arg.split("=")[1];
+				return;
+			}
             if (!optstr) {
                 // First time it's the options.
                 optstr = arg;
@@ -5031,28 +5041,46 @@ var reportWithReporter = function (reporter, file) {
         });
     }
 
-    filenames.forEach(function (name) {
-        var input = readFile(name);
+	filenames.forEach(function (file) {
+		var input = readFile(file);
+		
+		if (!input) {
+			print("jshint: Couldn't open file " + file);
+			quit(1);
+		}
+		
+		if (!JSHINT(input, opts)) {
+			JSHINT.errors.forEach(function (err) {
+				if (err) {
+					results.push({ file: file, error: err });
+				}
+			});
+			retval = 1;
+		}
 
-        if (!input) {
-            print("jshint: Couldn't open file " + name);
-            quit(1);
-        }
+		lintData = JSHINT.data();
 
-        if (!JSHINT(input, opts)) {
-          if (checkstyleReporter) {
-            reportWithReporter(checkstyleReporter.reporter, name);
-          }
-          else {
-            for (var i = 0, err; err = JSHINT.errors[i]; i += 1) {
-                print(err.reason + " (" + name + ":" + err.line + ":" + err.character + ")");
-                print("> " + (err.evidence || "").replace(/^\s*(\S*(\s+\S+)*)\s*$/, "$1"));
-                print("");
-            }
-          }
-          retval = 1;
-        }
-    });
+		if (lintData) {
+			lintData.file = file;
+			data.push(lintData);
+		}
+	});
+	   
+    if (reporter === "checkstyle") {
+        reporterModule = checkstyleReporter;
+    }
+
+    if (reporterModule) {
+		reporterModule.reporter(results, data);
+	} else {
+		for (var i = 0; i < results.length; i += 1) {
+			var file = results[i].file;
+			var err = results[i].error;
+			print(err.reason + " (" + file + ":" + err.line + ":" + err.character + ")");
+			print("> " + (err.evidence || "").replace(/^\s*(\S*(\s+\S+)*)\s*$/, "$1"));
+			print("");
+		}
+	}
 
     quit(retval);
 }(arguments));

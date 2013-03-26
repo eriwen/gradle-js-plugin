@@ -23,8 +23,7 @@ import org.gradle.api.tasks.SourceTask
 import org.gradle.api.tasks.OutputFile
 
 class JsHintTask extends SourceTask {
-    private static final String JSHINT_PATH = 'jshint-rhino-r12.js'
-    private static final String JSHINT_CS_PATH = 'jshint-rhino-cs-r12.js'
+    private static final String JSHINT_PATH = 'jshint-rhino-cs-r12.js'
     private static final String TMP_DIR = "tmp${File.separator}js"
     private static final ResourceUtil RESOURCE_UTIL = new ResourceUtil()
     private final RhinoExec rhino = new RhinoExec(project)
@@ -42,14 +41,12 @@ class JsHintTask extends SourceTask {
     def run() {
         final File jshintJsFile = RESOURCE_UTIL.extractFileToDirectory(
                 new File(project.buildDir, TMP_DIR), JSHINT_PATH)
-        final File jshintCsJsFile = RESOURCE_UTIL.extractFileToDirectory(
-                new File(project.buildDir, TMP_DIR), JSHINT_CS_PATH)
-        final File jsFile = jshintJsFile
-        if (checkstyle) {
-          jsFile = jshintCsJsFile
-        }
-        final List<String> args = [jsFile.canonicalPath]
+        final List<String> args = [jshintJsFile.canonicalPath]
         args.addAll(source.files.collect { it.canonicalPath })
+        if (checkstyle) {
+          logger.debug("reporter=checkstyle")
+          args.add("reporter=checkstyle")
+        }
         LinkedHashMap<String, Object> options = project.jshint.options
         if (options != null && options.size() > 0) {
             def optionsArg = ""

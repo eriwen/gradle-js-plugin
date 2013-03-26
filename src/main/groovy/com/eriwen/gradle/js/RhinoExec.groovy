@@ -20,7 +20,7 @@ class RhinoExec {
         def execOptions = {
             main = RHINO_MAIN_CLASS
             classpath = project.configurations.rhino
-            args = execargs
+            args = ["-opt", "9"] + execargs
             workingDir = workingDirIn
             ignoreExitValue = ignoreExitCode
             standardOutput = out

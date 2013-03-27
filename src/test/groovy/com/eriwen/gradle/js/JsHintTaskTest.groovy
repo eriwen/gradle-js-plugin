@@ -116,6 +116,37 @@ class JsHintTaskTest extends Specification {
         def contents = new File(dest as String).text
         assert contents =~ "<checkstyle"
     }
+   
+
+    def "fails without predef option to jshint"() {
+        given:
+        task.ignoreExitCode = false
+        task.checkstyle = true
+        project.jshint.options = [ undef: "true" ]
+        project.jshint.predef = [ someGlobalTwo: 5 ]
+        addFile("invalidWithGlobal.js", "var b = someGlobal;")
+
+        when:
+        task.run()
+
+        then:
+        thrown ExecException
+    }
+
+    def "passes with predef option to jshint"() {
+        given:
+        task.ignoreExitCode = false
+        task.checkstyle = true
+        project.jshint.options = [ undef: "true" ]
+        project.jshint.predef = [ someGlobal: 5 ]
+        addFile("validWithGlobal.js", "var b = someGlobal;")
+
+        when:
+        task.run()
+
+        then:
+        notThrown ExecException
+    }
 
     def addValidFile() {
         addFile("valid.js", "var a = 5;")

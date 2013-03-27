@@ -4883,7 +4883,7 @@ var checkstyleReporter =
 		data.forEach(function (result) {
 			file = data.file;
 			globals = result.implieds;
-			unuseds = result.unused;
+			unuseds = null; // result.unused; already reported by jshint if unused=true
 
 			// Register the file
 			result.file = result.file.replace(/^\.\//, '');

@@ -4947,36 +4947,13 @@ var checkstyleReporter =
 	}
 };
 
-var reportWithReporter = function (reporter, file) {
-  var results = [];
-  var data = [];
-  var lintData;
-
-  JSHINT.errors.forEach(function (err) {
-	if (err) {
-	  results.push({ file: file, error: err });
-	}
-  });
-  
-  lintData = JSHINT.data();
-  if (lintData) {
-	lintData.file = file;
-	data.push(lintData);
-  }
-  
-  if (reporter) {
-    reporter(results, data, { verbose: true});
-  }
-  
-};
-
 var printError = function (str) {
   if (typeof Packages !== "undefined") { // rhino
     java.lang.System.err.println(str);
   } else {
     print(str);
   }
-}
+};
 
 (function (args) {
     var filenames = [];

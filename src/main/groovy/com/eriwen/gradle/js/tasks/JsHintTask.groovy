@@ -56,7 +56,8 @@ class JsHintTask extends SourceTask {
         args.addAll(source.files.collect { it.canonicalPath })
         if (checkstyle) {
           logger.debug("reporter=checkstyle")
-          args.add("reporter=checkstyle")
+          def reporterArg = makeOptionsArg(["reporter":"checkstyle"] + project.jshint.reporterOptions)
+          args.add(reporterArg)
         }
         def optionsArg = makeOptionsArg(project.jshint.options)
         if (optionsArg != "") {

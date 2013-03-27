@@ -4839,7 +4839,7 @@ if (typeof exports === "object" && exports) {
 // http://github.com/relaxnow
 var checkstyleReporter =
 {
-	reporter: function (results, data)
+	reporter: function (results, data, options)
 	{
 		"use strict";
 
@@ -4883,7 +4883,7 @@ var checkstyleReporter =
 		data.forEach(function (result) {
 			file = data.file;
 			globals = result.implieds;
-			unuseds = null; // result.unused; already reported by jshint if unused=true
+			unuseds = result.unused;
 
 			// Register the file
 			result.file = result.file.replace(/^\.\//, '');
@@ -4891,7 +4891,7 @@ var checkstyleReporter =
 				files[result.file] = [];
 			}
 
-			if (globals) {
+			if (globals && options["impliedglobals"]) {
 				globals.forEach(function (global) {
 					files[result.file].push({
 						severity: 'warning',
@@ -4902,7 +4902,7 @@ var checkstyleReporter =
 					});
 				});
 			}
-			if (unuseds) {
+			if (unuseds && options["impliedunuseds"]) {
 				unuseds.forEach(function (unused) {
 					files[result.file].push({
 						severity: 'warning',
@@ -4955,6 +4955,28 @@ var printError = function (str) {
   }
 };
 
+var parseOptions = function (optstr) {
+    var opts = {};
+    optstr.split(",").forEach(function (arg) {
+        var o = arg.split("=");
+        if (o[0] === "indent") {
+            opts[o[0]] = parseInt(o[1], 10);
+        } else {
+            opts[o[0]] = (function (ov) {
+                switch (ov) {
+                case "true":
+                    return true;
+                case "false":
+                    return false;
+                default:
+                    return ov;
+                }
+            }(o[1]));
+        }
+    });
+    return opts;
+};
+
 (function (args) {
     var filenames = [];
     var reporter;
@@ -4966,15 +4988,15 @@ var printError = function (str) {
 	var results = [];
 	var data = [];
 	var lintData;
+    var reporterOptStr;
+    var reporterOpts = {};
 
     args.forEach(function (arg) {
         if (arg.indexOf("=") > -1) {
 			// Check first for reporter option
 			if (arg.split("=")[0] === "reporter") {
-				reporter = arg.split("=")[1];
-				return;
-			}
-            if (!optstr) {
+                reporterOptStr = arg;
+			} else if (!optstr) {
                 // First time it's the options.
                 optstr = arg;
             } else {
@@ -4998,23 +5020,13 @@ var printError = function (str) {
     }
 
     if (optstr) {
-        optstr.split(",").forEach(function (arg) {
-            var o = arg.split("=");
-            if (o[0] === "indent") {
-                opts[o[0]] = parseInt(o[1], 10);
-            } else {
-                opts[o[0]] = (function (ov) {
-                    switch (ov) {
-                    case "true":
-                        return true;
-                    case "false":
-                        return false;
-                    default:
-                        return ov;
-                    }
-                }(o[1]));
-            }
-        });
+        opts = parseOptions(optstr);
+    }
+
+    if (reporterOptStr) {
+        reporterOpts = parseOptions(reporterOptStr);
+        reporter = reporterOpts["reporter"];
+        delete reporterOpts["reporter"];
     }
 
     if (predef) {
@@ -5056,7 +5068,7 @@ var printError = function (str) {
     }
 
     if (reporterModule) {
-		reporterModule.reporter(results, data);
+		reporterModule.reporter(results, data, reporterOpts);
 	} else {
 		for (var i = 0; i < results.length; i += 1) {
 			var file = results[i].file;

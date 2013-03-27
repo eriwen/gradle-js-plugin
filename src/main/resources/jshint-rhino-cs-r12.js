@@ -4970,6 +4970,14 @@ var reportWithReporter = function (reporter, file) {
   
 };
 
+var printError = function (str) {
+  if (typeof Packages !== "undefined") { // rhino
+    java.lang.System.err.println(str);
+  } else {
+    print(str);
+  }
+}
+
 (function (args) {
     var filenames = [];
     var reporter;
@@ -5008,7 +5016,7 @@ var reportWithReporter = function (reporter, file) {
     });
 
     if (filenames.length === 0) {
-        print("Usage: jshint.js file.js");
+        printError("Usage: jshint.js file.js");
         quit(1);
     }
 
@@ -5045,7 +5053,7 @@ var reportWithReporter = function (reporter, file) {
 		var input = readFile(file);
 		
 		if (!input) {
-			print("jshint: Couldn't open file " + file);
+			printError("jshint: Couldn't open file " + file);
 			quit(1);
 		}
 		

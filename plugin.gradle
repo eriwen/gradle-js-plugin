@@ -78,6 +78,7 @@ task jshintz(type: com.eriwen.gradle.js.tasks.JsHintTask) {
     ignoreExitCode = true
     reporter = 'checkstyle'
     jshint.options = [expr: "true", unused: "true"]
+    jshint.predef = ["exports": 1]
 }
 
 task jsdocz(type: com.eriwen.gradle.js.tasks.JsDocTask) {

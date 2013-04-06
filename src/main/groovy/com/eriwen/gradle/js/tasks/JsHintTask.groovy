@@ -31,7 +31,7 @@ class JsHintTask extends SourceTask {
     @OutputFile def dest = new File(project.buildDir, "jshint.log")
     @Input def ignoreExitCode = true
     @Input def outputToStdOut = false
-    @Input def checkstyle = false
+    @Input def reporter = ''
 
     File getDest() {
         project.file(dest)
@@ -43,10 +43,13 @@ class JsHintTask extends SourceTask {
                 new File(project.buildDir, TMP_DIR), JSHINT_PATH)
         final List<String> args = [jshintJsFile.canonicalPath]
         args.addAll(source.files.collect { it.canonicalPath })
-        if (checkstyle) {
-          logger.debug("reporter=checkstyle")
-          args.add("reporter=checkstyle")
+
+        // Allow variable reporter
+        if (reporter) {
+          logger.debug("reporter=${reporter}")
+          args.add("reporter=${reporter}")
         }
+
         LinkedHashMap<String, Object> options = project.jshint.options
         if (options != null && options.size() > 0) {
             def optionsArg = ""

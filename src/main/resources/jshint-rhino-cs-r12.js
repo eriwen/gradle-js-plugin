@@ -4834,15 +4834,146 @@ if (typeof exports === "object" && exports) {
 /*jshint boss: true, rhino: true, unused: true, undef: true, white: true, quotmark: double */
 /*global JSHINT*/
 
+
+// Author: Boy Baukema
+// http://github.com/relaxnow
+var checkstyleReporter =
+{
+	reporter: function (results, data)
+	{
+		"use strict";
+
+		var files = {},
+			out = [],
+			pairs = {
+				"&": "&amp;",
+				'"': "&quot;",
+				"'": "&apos;",
+				"<": "&lt;",
+				">": "&gt;"
+			},
+			file, fileName, i, issue, globals, unuseds;
+
+		function encode(s) {
+			for (var r in pairs) {
+				if (typeof(s) !== "undefined") {
+					s = s.replace(new RegExp(r, "g"), pairs[r]);
+				}
+			}
+			return s || "";
+		}
+
+		results.forEach(function (result) {
+			// Register the file
+			result.file = result.file.replace(/^\.\//, '');
+			if (!files[result.file]) {
+				files[result.file] = [];
+			}
+
+			// Add the error
+			files[result.file].push({
+				severity: 'error',
+				line: result.error.line,
+				column: result.error.character,
+				message: result.error.reason,
+				source: result.error.raw
+			});
+		});
+
+		data.forEach(function (result) {
+			file = data.file;
+			globals = result.implieds;
+			unuseds = null; // result.unused; already reported by jshint if unused=true
+
+			// Register the file
+			result.file = result.file.replace(/^\.\//, '');
+			if (!files[result.file]) {
+				files[result.file] = [];
+			}
+
+			if (globals) {
+				globals.forEach(function (global) {
+					files[result.file].push({
+						severity: 'warning',
+						line: global.line,
+						column: 0,
+						message: "Implied global '" + global.name + "'",
+						source: 'jshint.implied-globals'
+					});
+				});
+			}
+			if (unuseds) {
+				unuseds.forEach(function (unused) {
+					files[result.file].push({
+						severity: 'warning',
+						line: unused.line,
+						column: 0,
+						message: "Unused variable: '" + unused.name + "'",
+						source: 'jshint.implied-unuseds'
+					});
+				});
+			}
+		});
+
+		out.push("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
+		out.push("<checkstyle version=\"4.3\">");
+
+		for (fileName in files) {
+			if (files.hasOwnProperty(fileName)) {
+				out.push("\t<file name=\"" + fileName + "\">");
+				for (i = 0; i < files[fileName].length; i++) {
+					issue = files[fileName][i];
+					out.push(
+						"\t\t<error " +
+							"line=\"" + issue.line + "\" " +
+							"column=\"" + issue.column + "\" " +
+							"severity=\"" + issue.severity + "\" " +
+							"message=\"" + encode(issue.message) + "\" " +
+							"source=\"" + encode(issue.source) + "\" " +
+							"/>"
+					);
+				}
+				out.push("\t</file>");
+			}
+		}
+
+	    out.push("</checkstyle>");
+
+      if (typeof process !== "undefined") {
+		process.stdout.write(out.join("\n") + "\n");
+      } else {
+        print(out.join("\n") + "\n");
+      }
+	}
+};
+
+var printError = function (str) {
+  if (typeof Packages !== "undefined") { // rhino
+    java.lang.System.err.println(str);
+  } else {
+    print(str);
+  }
+};
+
 (function (args) {
     var filenames = [];
+    var reporter;
+    var reporterModule;
     var optstr; // arg1=val1,arg2=val2,...
     var predef; // global1=true,global2,global3,...
     var opts   = {};
     var retval = 0;
+	var results = [];
+	var data = [];
+	var lintData;
 
     args.forEach(function (arg) {
         if (arg.indexOf("=") > -1) {
+			// Check first for reporter option
+			if (arg.split("=")[0] === "reporter") {
+				reporter = arg.split("=")[1];
+				return;
+			}
             if (!optstr) {
                 // First time it's the options.
                 optstr = arg;
@@ -4862,7 +4993,7 @@ if (typeof exports === "object" && exports) {
     });
 
     if (filenames.length === 0) {
-        print("Usage: jshint.js file.js");
+        printError("Usage: jshint.js file.js");
         quit(1);
     }
 
@@ -4895,23 +5026,46 @@ if (typeof exports === "object" && exports) {
         });
     }
 
-    filenames.forEach(function (name) {
-        var input = readFile(name);
+	filenames.forEach(function (file) {
+		var input = readFile(file);
+		
+		if (!input) {
+			printError("jshint: Couldn't open file " + file);
+			quit(1);
+		}
+		
+		if (!JSHINT(input, opts)) {
+			JSHINT.errors.forEach(function (err) {
+				if (err) {
+					results.push({ file: file, error: err });
+				}
+			});
+			retval = 1;
+		}
 
-        if (!input) {
-            print("jshint: Couldn't open file " + name);
-            quit(1);
-        }
+		lintData = JSHINT.data();
 
-        if (!JSHINT(input, opts)) {
-            for (var i = 0, err; err = JSHINT.errors[i]; i += 1) {
-                print(err.reason + " (" + name + ":" + err.line + ":" + err.character + ")");
-                print("> " + (err.evidence || "").replace(/^\s*(\S*(\s+\S+)*)\s*$/, "$1"));
-                print("");
-            }
-            retval = 1;
-        }
-    });
+		if (lintData) {
+			lintData.file = file;
+			data.push(lintData);
+		}
+	});
+	   
+    if (reporter === "checkstyle") {
+        reporterModule = checkstyleReporter;
+    }
+
+    if (reporterModule) {
+		reporterModule.reporter(results, data);
+	} else {
+		for (var i = 0; i < results.length; i += 1) {
+			var file = results[i].file;
+			var err = results[i].error;
+			print(err.reason + " (" + file + ":" + err.line + ":" + err.character + ")");
+			print("> " + (err.evidence || "").replace(/^\s*(\S*(\s+\S+)*)\s*$/, "$1"));
+			print("");
+		}
+	}
 
     quit(retval);
 }(arguments));

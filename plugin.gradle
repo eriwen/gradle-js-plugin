@@ -4,7 +4,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.eriwen:gradle-js-plugin:1.4.1'
+        classpath 'com.eriwen:gradle-js-plugin:1.5.0'
     }
 }
 buildscript {
@@ -75,7 +75,8 @@ task gzip(type: com.eriwen.gradle.js.tasks.GzipJsTask) {
 task jshintz(type: com.eriwen.gradle.js.tasks.JsHintTask) {
     source = javascript.source.custom.js.files
     dest = "${buildDir}/jshint.out"
-    ignoreExitCode = false
+    ignoreExitCode = true
+    reporter = 'checkstyle'
     jshint.options = [expr: "true", unused: "true"]
 }
 

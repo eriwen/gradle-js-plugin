@@ -8,7 +8,7 @@ targetCompatibility = '1.6'
 
 defaultTasks 'clean', 'build'
 
-version = '1.4.1'
+version = '1.4.2'
 group = 'com.eriwen'
 ext.archivesBaseName = 'gradle-js-plugin'
 ext.isSnapshot = version.endsWith("-SNAPSHOT")
@@ -20,10 +20,10 @@ repositories {
 dependencies {
     groovy localGroovy()
     compile gradleApi()
-    compile ('com.google.javascript:closure-compiler:r1918') {
+    compile ('com.google.javascript:closure-compiler:v20130227') {
         exclude module: "junit"
     }
-    testCompile ('org.spockframework:spock-core:0.6-groovy-1.8') {
+    testCompile ('org.spockframework:spock-core:0.7-groovy-1.8') {
         exclude module: "junit-dep"
         exclude module: "groovy-all"
     }

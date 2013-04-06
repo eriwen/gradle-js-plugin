@@ -21,4 +21,5 @@ class JsHintExtension {
     public static final String NAME = 'jshint'
 
     @Input LinkedHashMap<String, Object> options = []
+    @Input LinkedHashMap<String, Object> predef = []
 }

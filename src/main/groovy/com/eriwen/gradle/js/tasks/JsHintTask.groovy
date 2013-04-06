@@ -23,7 +23,7 @@ import org.gradle.api.tasks.SourceTask
 import org.gradle.api.tasks.OutputFile
 
 class JsHintTask extends SourceTask {
-    private static final String JSHINT_PATH = 'jshint-rhino-r12.js'
+    private static final String JSHINT_PATH = 'jshint-rhino-cs-r12.js'
     private static final String TMP_DIR = "tmp${File.separator}js"
     private static final ResourceUtil RESOURCE_UTIL = new ResourceUtil()
     private final RhinoExec rhino = new RhinoExec(project)
@@ -31,9 +31,21 @@ class JsHintTask extends SourceTask {
     @OutputFile def dest = new File(project.buildDir, "jshint.log")
     @Input def ignoreExitCode = true
     @Input def outputToStdOut = false
+    @Input def checkstyle = false
 
     File getDest() {
         project.file(dest)
+    }
+
+    def makeOptionsArg(LinkedHashMap<String, Object> options) {
+      def optionsArg = ""
+      if (options != null && options.size() > 0) {
+        options.each() { key, value ->
+          logger.debug("${key} == ${value}")
+          optionsArg = (optionsArg == "") ? "${key}=${value}" : "${optionsArg},${key}=${value}"
+        }
+      }
+      return optionsArg
     }
 
     @TaskAction
@@ -42,17 +54,17 @@ class JsHintTask extends SourceTask {
                 new File(project.buildDir, TMP_DIR), JSHINT_PATH)
         final List<String> args = [jshintJsFile.canonicalPath]
         args.addAll(source.files.collect { it.canonicalPath })
-        LinkedHashMap<String, Object> options = project.jshint.options
-        if (options != null && options.size() > 0) {
-            def optionsArg = ""
-            options.each() { key, value ->
-                logger.debug("${key} == ${value}")
-                optionsArg = (optionsArg == "") ? "${key}=${value}" : "${optionsArg},${key}=${value}"
-            }
-
-            if (optionsArg != "") {
-                args.add(optionsArg)
-            }
+        if (checkstyle) {
+          logger.debug("reporter=checkstyle")
+          args.add("reporter=checkstyle")
+        }
+        def optionsArg = makeOptionsArg(project.jshint.options)
+        if (optionsArg != "") {
+          args.add(optionsArg)
+        }
+        def predefArg = makeOptionsArg(project.jshint.predef)
+        if (predefArg != "") {
+          args.add(predefArg)
         }
 
         if (outputToStdOut) {

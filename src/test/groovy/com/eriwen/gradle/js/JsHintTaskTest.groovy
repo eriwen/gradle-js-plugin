@@ -13,13 +13,15 @@ class JsHintTaskTest extends Specification {
     Project project = ProjectBuilder.builder().build()
     def task
     def src
+    def dest
 
     def setup() {
         project.apply(plugin: JsPlugin)
         task = project.tasks.jshint
         src = dir.newFolder()
+        dest = dir.newFile()
         task.source = src
-        task.dest = dir.newFile()
+        task.dest = dest
     }
 
     def "build ignores result by default"() {
@@ -81,6 +83,63 @@ class JsHintTaskTest extends Specification {
         addFile("valid2.js", "var b = 5;")
         addFile("valid3.js", "var c = 5;")
         addFile("valid4.js", "var d = 5;")
+
+        when:
+        task.run()
+
+        then:
+        notThrown ExecException
+    }
+
+    def "does not generate checkstyle report when disabled"() {
+        given:
+        task.checkstyle = false
+        addFile("invalid.js", "var b = 5")
+
+        when:
+        task.run()
+
+        then:
+        def contents = new File(dest as String).text
+        assert ! (contents =~ "<checkstyle")
+    }
+
+    def "generates checkstyle report when enabled"() {
+        given:
+        task.checkstyle = true
+        addFile("invalid.js", "var b = 5")
+
+        when:
+        task.run()
+
+        then:
+        def contents = new File(dest as String).text
+        assert contents =~ "<checkstyle"
+    }
+   
+
+    def "fails without predef option to jshint"() {
+        given:
+        task.ignoreExitCode = false
+        task.checkstyle = true
+        project.jshint.options = [ undef: "true" ]
+        project.jshint.predef = [ someGlobalTwo: 5 ]
+        addFile("invalidWithGlobal.js", "var b = someGlobal;")
+
+        when:
+        task.run()
+
+        then:
+        thrown ExecException
+    }
+
+    def "passes with predef option to jshint"() {
+        given:
+        task.ignoreExitCode = false
+        task.checkstyle = true
+        project.jshint.options = [ undef: "true" ]
+        project.jshint.predef = [ someGlobal: 5 ]
+        addFile("validWithGlobal.js", "var b = someGlobal;")
 
         when:
         task.run()

@@ -37,29 +37,20 @@ class JsHintTask extends SourceTask {
         project.file(dest)
     }
 
-    def makeOptionsArg(LinkedHashMap<String, Object> options) {
-      def optionsArg = ''
-      if (options != null && options.size() > 0) {
-        options.each() { key, value ->
-          logger.debug("${key} == ${value}")
-          optionsArg = (optionsArg == '') ? "${key}=${value}" : "${optionsArg},${key}=${value}"
-        }
-      }
-      return optionsArg
-    }
-
     @TaskAction
     def run() {
         final File jshintJsFile = RESOURCE_UTIL.extractFileToDirectory(
                 new File(project.buildDir, TMP_DIR), JSHINT_PATH)
         final List<String> args = [jshintJsFile.canonicalPath]
         args.addAll(source.files.collect { it.canonicalPath })
+
         // Allow variable reporter
         if (reporter != '') {
           logger.debug("reporter=${reporter}")
           def reporterArg = makeOptionsArg(["reporter":reporter] + project.jshint.reporterOptions)
           args.add(reporterArg)
         }
+
         def optionsArg = makeOptionsArg(project.jshint.options)
         if (optionsArg != '') {
           args.add(optionsArg)
@@ -77,11 +68,11 @@ class JsHintTask extends SourceTask {
     }
 
     private def makeOptionsArg(LinkedHashMap<String, Object> options) {
-        def optionsArg = ""
+        def optionsArg = ''
         if (options != null && options.size() > 0) {
             options.each() { key, value ->
                 logger.debug("${key} == ${value}")
-                optionsArg = (optionsArg == "") ? "${key}=${value}" : "${optionsArg},${key}=${value}"
+                optionsArg = (optionsArg == '') ? "${key}=${value}" : "${optionsArg},${key}=${value}"
             }
         }
         return optionsArg

@@ -148,6 +148,41 @@ class JsHintTaskTest extends Specification {
         notThrown ExecException
     }
 
+
+    def "passes with reporter options to jshint"() {
+        given:
+        task.ignoreExitCode = false
+        task.checkstyle = true
+        project.jshint.options = [ unused: "false" ]
+        project.jshint.reporterOptions = [ impliedunuseds: "false" ]
+        addFile("validWithUnused.js", "var b = function (someInput) {};")
+
+        when:
+        task.run()
+
+        then:
+        notThrown ExecException
+        def contents = new File(dest as String).text
+        assert ! (contents =~ "<error.*implied-unuseds")
+    }
+
+    def "fails with reporter options to jshint"() {
+        given:
+        task.ignoreExitCode = false
+        task.checkstyle = true
+        project.jshint.options = [ unused: "false" ]
+        project.jshint.reporterOptions = [ impliedunuseds: "true" ]
+        addFile("invalidWithUnused.js", "var b = function (someInput) {};")
+
+        when:
+        task.run()
+
+        then:
+        notThrown ExecException
+        def contents = new File(dest as String).text
+        assert contents =~ "<error.*implied-unuseds"
+    }
+
     def addValidFile() {
         addFile("valid.js", "var a = 5;")
     }

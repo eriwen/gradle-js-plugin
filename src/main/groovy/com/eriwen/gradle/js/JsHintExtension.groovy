@@ -22,4 +22,5 @@ class JsHintExtension {
 
     @Input LinkedHashMap<String, Object> options = []
     @Input LinkedHashMap<String, Object> predef = []
+    @Input LinkedHashMap<String, Object> reporterOptions = []
 }

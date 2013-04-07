@@ -45,17 +45,18 @@ class JsHintTask extends SourceTask {
         args.addAll(source.files.collect { it.canonicalPath })
 
         // Allow variable reporter
-        if (reporter) {
+        if (reporter != '') {
           logger.debug("reporter=${reporter}")
-          args.add("reporter=${reporter}")
+          def reporterArg = makeOptionsArg(["reporter":reporter] + project.jshint.reporterOptions)
+          args.add(reporterArg)
         }
 
         def optionsArg = makeOptionsArg(project.jshint.options)
-        if (optionsArg != "") {
+        if (optionsArg != '') {
           args.add(optionsArg)
         }
         def predefArg = makeOptionsArg(project.jshint.predef)
-        if (predefArg != "") {
+        if (predefArg != '') {
           args.add(predefArg)
         }
 
@@ -67,11 +68,11 @@ class JsHintTask extends SourceTask {
     }
 
     private def makeOptionsArg(LinkedHashMap<String, Object> options) {
-        def optionsArg = ""
+        def optionsArg = ''
         if (options != null && options.size() > 0) {
             options.each() { key, value ->
                 logger.debug("${key} == ${value}")
-                optionsArg = (optionsArg == "") ? "${key}=${value}" : "${optionsArg},${key}=${value}"
+                optionsArg = (optionsArg == '') ? "${key}=${value}" : "${optionsArg},${key}=${value}"
             }
         }
         return optionsArg

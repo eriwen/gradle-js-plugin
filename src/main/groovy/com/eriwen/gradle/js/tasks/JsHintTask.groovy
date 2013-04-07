@@ -31,18 +31,18 @@ class JsHintTask extends SourceTask {
     @OutputFile def dest = new File(project.buildDir, "jshint.log")
     @Input def ignoreExitCode = true
     @Input def outputToStdOut = false
-    @Input def checkstyle = false
+    @Input def reporter = ''
 
     File getDest() {
         project.file(dest)
     }
 
     def makeOptionsArg(LinkedHashMap<String, Object> options) {
-      def optionsArg = ""
+      def optionsArg = ''
       if (options != null && options.size() > 0) {
         options.each() { key, value ->
           logger.debug("${key} == ${value}")
-          optionsArg = (optionsArg == "") ? "${key}=${value}" : "${optionsArg},${key}=${value}"
+          optionsArg = (optionsArg == '') ? "${key}=${value}" : "${optionsArg},${key}=${value}"
         }
       }
       return optionsArg
@@ -54,17 +54,18 @@ class JsHintTask extends SourceTask {
                 new File(project.buildDir, TMP_DIR), JSHINT_PATH)
         final List<String> args = [jshintJsFile.canonicalPath]
         args.addAll(source.files.collect { it.canonicalPath })
-        if (checkstyle) {
-          logger.debug("reporter=checkstyle")
-          def reporterArg = makeOptionsArg(["reporter":"checkstyle"] + project.jshint.reporterOptions)
+        // Allow variable reporter
+        if (reporter != '') {
+          logger.debug("reporter=${reporter}")
+          def reporterArg = makeOptionsArg(["reporter":reporter] + project.jshint.reporterOptions)
           args.add(reporterArg)
         }
         def optionsArg = makeOptionsArg(project.jshint.options)
-        if (optionsArg != "") {
+        if (optionsArg != '') {
           args.add(optionsArg)
         }
         def predefArg = makeOptionsArg(project.jshint.predef)
-        if (predefArg != "") {
+        if (predefArg != '') {
           args.add(predefArg)
         }
 
@@ -73,6 +74,16 @@ class JsHintTask extends SourceTask {
         } else {
             rhino.execute(args, [ignoreExitCode: ignoreExitCode, out: new FileOutputStream(dest as File)])
         }
+    }
 
+    private def makeOptionsArg(LinkedHashMap<String, Object> options) {
+        def optionsArg = ""
+        if (options != null && options.size() > 0) {
+            options.each() { key, value ->
+                logger.debug("${key} == ${value}")
+                optionsArg = (optionsArg == "") ? "${key}=${value}" : "${optionsArg},${key}=${value}"
+            }
+        }
+        return optionsArg
     }
 }

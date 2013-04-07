@@ -1,14 +1,24 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.eriwen:gradle-cobertura-plugin:1.1.0'
+    }
+}
+
 apply plugin: 'groovy'
 apply plugin: 'maven'
 apply plugin: 'signing'
 apply plugin: 'idea'
+apply plugin: 'cobertura'
 
 sourceCompatibility = '1.6'
 targetCompatibility = '1.6'
 
 defaultTasks 'clean', 'build'
 
-version = '1.4.2'
+version = '1.5.0'
 group = 'com.eriwen'
 ext.archivesBaseName = 'gradle-js-plugin'
 ext.isSnapshot = version.endsWith("-SNAPSHOT")
@@ -20,10 +30,10 @@ repositories {
 dependencies {
     groovy localGroovy()
     compile gradleApi()
-    compile ('com.google.javascript:closure-compiler:r1918') {
+    compile ('com.google.javascript:closure-compiler:v20130227') {
         exclude module: "junit"
     }
-    testCompile ('org.spockframework:spock-core:0.6-groovy-1.8') {
+    testCompile ('org.spockframework:spock-core:0.7-groovy-1.8') {
         exclude module: "junit-dep"
         exclude module: "groovy-all"
     }
@@ -58,6 +68,12 @@ task groovydocJar(type: Jar) {
     description = 'An archive of the GroovyDocs for Maven Central'
     classifier = 'javadoc'
     from groovydoc
+}
+
+cobertura {
+    format = 'html'
+    includes = ['**/*.java', '**/*.groovy']
+    excludes = ['**/commonJs/**/*.*']
 }
 
 task wrapper(type: Wrapper) {

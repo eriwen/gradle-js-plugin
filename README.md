@@ -11,7 +11,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.eriwen:gradle-js-plugin:1.4.1'
+        classpath 'com.eriwen:gradle-js-plugin:1.5.0'
     }
 }
 // Invoke the plugin
@@ -79,6 +79,7 @@ gzipJs {
 jshint {
     source = javascript.source.dev.js.files
     dest = file("${buildDir}/jshint.out")
+    reporter = 'checkstyle'
     jshint.options = [expr: "true", unused: "true"]
 }
 ```
@@ -132,9 +133,11 @@ requireJs {
 ### jshint
 - source = Files to assess with JSHint
 - dest = File for JSHint output
+- *(Optional)* reporter = Only 'checkstyle' supported right now. Defaults to plain JSHint output.
 - *(Optional)* ignoreExitCode = Fail build if `false` and jshint finds problems. Default is `true`.
 - *(Optional)* outputToStdOut = `true` will output to STDOUT instead of file. Default is `false`.
 - *(Optional)* jshint.options = Map of options (e.g. `[expr: "true", unused: "true"]`)
+- *(Optional)* jshint.predef = Map of predefined globals so JSHint doesn't complain about them
 
 
 ### jsdoc
@@ -180,6 +183,7 @@ This project is made possible due to the efforts of these fine people:
 * [Josh Newman](https://github.com/jnewman) - AMD and CommonJS work
 * Martin Ziel - Allowing minifyJs task to accept multiple files as input
 * [Joe Fitzgerald](https://github.com/joefitzgerald) - JSHint and RequireJS features
+* [levsa](https://github.com/levsa) - JSHint predef and checkstyle reporter
 
 ## See Also
 The [Gradle CSS Plugin](https://github.com/eriwen/gradle-css-plugin)!

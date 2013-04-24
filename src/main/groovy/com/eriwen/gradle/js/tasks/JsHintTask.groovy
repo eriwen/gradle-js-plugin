@@ -25,6 +25,8 @@ import org.gradle.api.tasks.OutputFile
 class JsHintTask extends SourceTask {
     private static final String JSHINT_PATH = 'jshint-rhino-cs-r12.js'
     private static final String TMP_DIR = "tmp${File.separator}js"
+    private static final String TMP_SOURCES_FILE = TMP_DIR + "${File.separator}jshint-sources.txt"
+    private static final String LINE_SEPARATOR = System.getProperty("line.separator")
     private static final ResourceUtil RESOURCE_UTIL = new ResourceUtil()
     private final RhinoExec rhino = new RhinoExec(project)
 
@@ -32,6 +34,7 @@ class JsHintTask extends SourceTask {
     @Input def ignoreExitCode = true
     @Input def outputToStdOut = false
     @Input def reporter = ''
+    @Input def fileListFromSource = false
 
     File getDest() {
         project.file(dest)
@@ -41,8 +44,7 @@ class JsHintTask extends SourceTask {
     def run() {
         final File jshintJsFile = RESOURCE_UTIL.extractFileToDirectory(
                 new File(project.buildDir, TMP_DIR), JSHINT_PATH)
-        final List<String> args = [jshintJsFile.canonicalPath]
-        args.addAll(source.files.collect { it.canonicalPath })
+        final List<String> args = generateArgsFromSource(jshintJsFile)
 
         // Allow variable reporter
         if (reporter != '') {
@@ -65,6 +67,27 @@ class JsHintTask extends SourceTask {
         } else {
             rhino.execute(args, [ignoreExitCode: ignoreExitCode, out: new FileOutputStream(dest as File)])
         }
+    }
+
+    private def generateArgsFromSource(jshintJsFile) {
+        List<String> args = [jshintJsFile.canonicalPath]
+        if (fileListFromSource) {
+            String sourceFilename = genereateFileWithSources()
+            args.addAll(['-f', sourceFilename])
+        } else {
+            args.addAll(source.files.collect { it.canonicalPath })
+        }
+        return args
+    }
+
+    private def genereateFileWithSources() {
+        def sourcesFile = new File(project.buildDir, TMP_SOURCES_FILE)
+        def writer = sourcesFile.newWriter()
+        source.files.each {
+            writer << it.canonicalPath << LINE_SEPARATOR
+        }
+        writer.close()
+        return sourcesFile.canonicalPath
     }
 
     private def makeOptionsArg(LinkedHashMap<String, Object> options) {

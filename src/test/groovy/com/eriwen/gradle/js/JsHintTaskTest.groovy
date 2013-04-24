@@ -22,6 +22,8 @@ class JsHintTaskTest extends Specification {
         dest = dir.newFile()
         task.source = src
         task.dest = dest
+        System.setProperty("log4j.logger.httpclient.wire.header", "WARN")
+        System.setProperty("log4j.logger.httpclient.wire.content", "WARN")
     }
 
     def "build ignores result by default"() {
@@ -181,6 +183,22 @@ class JsHintTaskTest extends Specification {
         notThrown ExecException
         def contents = new File(dest as String).text
         assert contents =~ "<error.*implied-unuseds"
+    }
+
+    def "accepts fileListFromSource flag"() {
+        given:
+        task.fileListFromSource = true
+        task.reporter = "checkstyle"
+        addFile("valid.js", "var a = 5;")
+        addFile("invalid2.js", "var b = 5")
+
+        when:
+        task.run()
+
+        then:
+        def contents = new File(dest as String).text
+        assert contents =~ "<file name=.*valid.js"
+        assert contents =~ "<file name=.*invalid2.js"
     }
 
     def addValidFile() {

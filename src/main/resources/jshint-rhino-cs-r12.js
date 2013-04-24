@@ -4990,8 +4990,14 @@ var parseOptions = function (optstr) {
 	var lintData;
     var reporterOptStr;
     var reporterOpts = {};
+    var sourcesFromFile = false;
 
     args.forEach(function (arg) {
+        if (arg === "-f") {
+            sourcesFromFile = true;
+            return;
+        }
+
         if (arg.indexOf("=") > -1) {
 			// Check first for reporter option
 			if (arg.split("=")[0] === "reporter") {
@@ -5014,9 +5020,22 @@ var parseOptions = function (optstr) {
         filenames.push(arg);
     });
 
-    if (filenames.length === 0) {
-        printError("Usage: jshint.js file.js");
+    if (filenames.length === 0 || 
+        (sourcesFromFile && filenames.length > 1)) {
+        printError("Usage: jshint.js -f filenames.txt");
+        printError("       jshint.js file.js ...");
         quit(1);
+    }
+
+    if (sourcesFromFile) {
+        var sources = readFile(filenames[0]);
+        sources = sources.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+        filenames = [];
+        sources.split("\n").forEach(function (filename) {
+            if (filename !== "") {
+                filenames.push(filename);
+            }
+        });
     }
 
     if (optstr) {

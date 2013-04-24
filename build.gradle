@@ -18,7 +18,7 @@ targetCompatibility = '1.6'
 
 defaultTasks 'clean', 'build'
 
-version = '1.5.0'
+version = '1.5.1-SNAPSHOT'
 group = 'com.eriwen'
 ext.archivesBaseName = 'gradle-js-plugin'
 ext.isSnapshot = version.endsWith("-SNAPSHOT")

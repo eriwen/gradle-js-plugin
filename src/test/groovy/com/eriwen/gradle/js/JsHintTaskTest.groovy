@@ -106,7 +106,7 @@ class JsHintTaskTest extends Specification {
 
     def "generates checkstyle report when enabled"() {
         given:
-        task.checkstyle = true
+        task.reporter = 'checkstyle'
         addFile("invalid.js", "var b = 5")
 
         when:

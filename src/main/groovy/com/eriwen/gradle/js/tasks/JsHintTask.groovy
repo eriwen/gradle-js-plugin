@@ -37,17 +37,6 @@ class JsHintTask extends SourceTask {
         project.file(dest)
     }
 
-    def makeOptionsArg(LinkedHashMap<String, Object> options) {
-      def optionsArg = ""
-      if (options != null && options.size() > 0) {
-        options.each() { key, value ->
-          logger.debug("${key} == ${value}")
-          optionsArg = (optionsArg == "") ? "${key}=${value}" : "${optionsArg},${key}=${value}"
-        }
-      }
-      return optionsArg
-    }
-
     @TaskAction
     def run() {
         final File jshintJsFile = RESOURCE_UTIL.extractFileToDirectory(

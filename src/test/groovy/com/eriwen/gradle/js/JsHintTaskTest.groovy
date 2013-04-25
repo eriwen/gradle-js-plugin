@@ -65,7 +65,7 @@ class JsHintTaskTest extends Specification {
         given:
         task.ignoreExitCode = false
         task.outputToStdOut = true
-        project.jshint.options = [scripturl: "true", laxcomma: "true"]
+        project.jshint.options = ["scripturl": "true", "laxcomma": "true"]
 
         addValidFile()
 
@@ -122,8 +122,8 @@ class JsHintTaskTest extends Specification {
         given:
         task.ignoreExitCode = false
         task.reporter = "checkstyle"
-        project.jshint.options = [ undef: "true" ]
-        project.jshint.predef = [ someGlobalTwo: 5 ]
+        project.jshint.options = [ "undef": "true" ]
+        project.jshint.predef = [ "someGlobalTwo": 5 ]
         addFile("invalidWithGlobal.js", "var b = someGlobal;")
 
         when:
@@ -137,8 +137,8 @@ class JsHintTaskTest extends Specification {
         given:
         task.ignoreExitCode = false
         task.reporter = "checkstyle"
-        project.jshint.options = [ undef: "true" ]
-        project.jshint.predef = [ someGlobal: 5 ]
+        project.jshint.options = [ "undef": "true" ]
+        project.jshint.predef = [ "someGlobal": 5 ]
         addFile("validWithGlobal.js", "var b = someGlobal;")
 
         when:
@@ -153,8 +153,8 @@ class JsHintTaskTest extends Specification {
         given:
         task.ignoreExitCode = false
         task.reporter = "checkstyle"
-        project.jshint.options = [ unused: "false" ]
-        project.jshint.reporterOptions = [ impliedunuseds: "false" ]
+        project.jshint.options = [ "unused": "false" ]
+        project.jshint.reporterOptions = [ "impliedunuseds": "false" ]
         addFile("validWithUnused.js", "var b = function (someInput) {};")
 
         when:
@@ -170,9 +170,9 @@ class JsHintTaskTest extends Specification {
         given:
         task.ignoreExitCode = false
         task.reporter = "checkstyle"
-        project.jshint.options = [ unused: "false" ]
-        project.jshint.reporterOptions = [ impliedunuseds: "true" ]
-        addFile("invalidWithUnused.js", "var b = function (someInput) {};")
+        project.jshint.options = [ "unused": "false" ]
+        project.jshint.reporterOptions = [ "impliedunuseds": "true" ]
+        addFile("invalidWithUnused.js", "var b = function (someOtherInput) {};")
 
         when:
         task.run()

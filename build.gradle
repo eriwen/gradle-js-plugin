@@ -88,6 +88,13 @@ signing {
     sign configurations.archives
 }
 
+test {
+    testLogging {
+        stackTraceFilters "truncate", "groovy"
+        events "passed", "skipped", "failed"
+    }
+}
+
 // Only *require* signing if we are uploading a non snapshot version
 gradle.taskGraph.whenReady { taskGraph ->
     tasks.withType(org.gradle.plugins.signing.Sign).all {

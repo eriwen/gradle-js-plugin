@@ -50,6 +50,34 @@ class RequireJsTaskTest extends Specification {
         ExecException e = thrown()
     }
 
+    def "runWithInvalidRequireImplementation"() {
+        given:
+        project.requirejs.options = [baseUrl: ".", "paths.jquery": "jam/jquery/dist/jquery", name: "main", out: "main-built.js", "impl": "bad.r.js"]
+        task.ignoreExitCode = false
+        addMainFile()
+        addJamDir()
+
+        when:
+        task.run()
+
+        then:
+        ExecException e = thrown()
+    }
+
+    def "runWithAlternateRequireImplementation"() {
+        given:
+        project.requirejs.options = [baseUrl: ".", "paths.jquery": "jam/jquery/dist/jquery", name: "main", out: "main-built.js", "impl": "src/test/resources/requirejs/r.2.1.4.js"]
+        task.ignoreExitCode = false
+        addMainFile()
+        addJamDir()
+
+        when:
+        task.run()
+
+        then:
+        notThrown ExecException
+    }
+
     def "runWithBuildProfile"() {
         given:
         project.requirejs.buildprofile = new File("${project.projectDir.absolutePath}${File.separator}build.js")

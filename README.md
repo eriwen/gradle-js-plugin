@@ -172,7 +172,7 @@ JSDoc 3 options:
 - *(Must declare this or `requirejs.options`)* requirejs.buildprofile = File reference for config [example](https://github.com/eriwen/gradle-js-plugin/blob/master/src/test/resources/requirejs/build.js)
 - requirejs.options = Map of options [require.js docs](http://requirejs.org/docs/optimization.html#options)
 - *(Optional)* ignoreExitCode = Fail build if `false` and require.js did not run successfully. Default is `false`.
-- *(Optional)* impl = r.js implementation file.  Version 2.1.4 is provided within this plugin.  Specifying this option allows users to specify a version of the require optimizer of their own choosing
+- *(Optional)* impl = r.js implementation file.  Version 2.1.8 is provided within this plugin.  Specifying this option allows users to specify a version of the require optimizer of their own choosing
 
 What, you want more? [Tell me!](https://github.com/eriwen/gradle-js-plugin/issues)
 

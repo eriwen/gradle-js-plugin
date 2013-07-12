@@ -52,7 +52,8 @@ class RequireJsTaskTest extends Specification {
 
     def "runWithInvalidRequireImplementation"() {
         given:
-        project.requirejs.options = [baseUrl: ".", "paths.jquery": "jam/jquery/dist/jquery", name: "main", out: "main-built.js", "impl": "bad.r.js"]
+        project.requirejs.options = [baseUrl: ".", "paths.jquery": "jam/jquery/dist/jquery", name: "main", out: "main-built.js"]
+        project.requirejs.impl = new File("bad.r.js");
         task.ignoreExitCode = false
         addMainFile()
         addJamDir()
@@ -66,7 +67,8 @@ class RequireJsTaskTest extends Specification {
 
     def "runWithAlternateRequireImplementation"() {
         given:
-        project.requirejs.options = [baseUrl: ".", "paths.jquery": "jam/jquery/dist/jquery", name: "main", out: "main-built.js", "impl": "src/test/resources/requirejs/r.2.1.4.js"]
+        project.requirejs.options = [baseUrl: ".", "paths.jquery": "jam/jquery/dist/jquery", name: "main", out: "main-built.js"]
+        project.requirejs.impl = new File("src/test/resources/requirejs/r.2.1.4.js");
         task.ignoreExitCode = false
         addMainFile()
         addJamDir()

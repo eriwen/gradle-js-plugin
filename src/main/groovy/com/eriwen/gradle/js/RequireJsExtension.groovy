@@ -21,6 +21,7 @@ class RequireJsExtension {
     public static final String NAME = 'requirejs'
 
     @Input File buildprofile = null
+    @Input File impl = null
 
     @Input LinkedHashMap<String, Object> options = []
 }

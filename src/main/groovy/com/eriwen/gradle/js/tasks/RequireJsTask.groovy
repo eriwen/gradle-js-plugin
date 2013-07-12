@@ -24,7 +24,6 @@ import org.gradle.api.tasks.OutputFile
 
 class RequireJsTask extends SourceTask {
     private static final String REQUIREJS_PATH = 'r.js'
-    private static final String REQUIREJS_IMPLEMENTATION_OPTION = "impl"
     private static final String TMP_DIR = "tmp${File.separator}js"
     private static final ResourceUtil RESOURCE_UTIL = new ResourceUtil()
     private final RhinoExec rhino = new RhinoExec(project)
@@ -42,11 +41,8 @@ class RequireJsTask extends SourceTask {
         options.putAll(project.requirejs.options)
 
         final File requireJsFile
-        if (options.containsKey(REQUIREJS_IMPLEMENTATION_OPTION)) {
-            requireJsFile = new File(options.get(REQUIREJS_IMPLEMENTATION_OPTION))
-
-            // This option applies to the task itself, and does not need to be passed on to Rhino or the r.js script itself
-            options.remove(REQUIREJS_IMPLEMENTATION_OPTION)
+        if (project.requirejs.impl != null && project.requirejs.impl.class == File) {
+            requireJsFile = new File("${project.requirejs.impl.canonicalPath}")
         } else {
             requireJsFile = RESOURCE_UTIL.extractFileToDirectory(new File(project.buildDir, TMP_DIR), REQUIREJS_PATH)
         }

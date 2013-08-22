@@ -41,6 +41,9 @@ class RequireJsTask extends SourceTask {
     @Input
     def ignoreExitCode = false
 
+    @Input @Optional
+    String rhinoMaxHeapSize
+
     @TaskAction
     def run() {
         LinkedHashMap<String, Object> options = [] // [optimize: "none", logLevel: 2, skipModuleInsertion: false, out: dest]
@@ -74,6 +77,6 @@ class RequireJsTask extends SourceTask {
             }
         }
 
-        rhino.execute(args, [ignoreExitCode: ignoreExitCode, workingDir: project.projectDir.canonicalPath])
+        rhino.execute(args, [ignoreExitCode: ignoreExitCode, workingDir: project.projectDir.canonicalPath, maxHeapSize: rhinoMaxHeapSize])
     }
 }

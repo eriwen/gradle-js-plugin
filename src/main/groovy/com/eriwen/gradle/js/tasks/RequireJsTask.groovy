@@ -43,9 +43,15 @@ class RequireJsTask extends SourceTask {
 
     @TaskAction
     def run() {
-        final File requireJsFile = RESOURCE_UTIL.extractFileToDirectory(new File(project.buildDir, TMP_DIR), REQUIREJS_PATH)
         LinkedHashMap<String, Object> options = [] // [optimize: "none", logLevel: 2, skipModuleInsertion: false, out: dest]
         options.putAll(project.requirejs.options)
+
+        final File requireJsFile
+        if (project.requirejs.impl != null && project.requirejs.impl.class == File) {
+            requireJsFile = new File("${project.requirejs.impl.canonicalPath}")
+        } else {
+            requireJsFile = RESOURCE_UTIL.extractFileToDirectory(new File(project.buildDir, TMP_DIR), REQUIREJS_PATH)
+        }
 
         final List<String> args = [requireJsFile.canonicalPath]
         args.add("-o")

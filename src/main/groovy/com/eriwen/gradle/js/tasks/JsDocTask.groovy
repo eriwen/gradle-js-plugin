@@ -22,12 +22,12 @@ import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 
 class JsDocTask extends SourceTask {
-    private static final String JSDOC_PATH = 'jsdoc.zip'
+    private static final String JSDOC_PATH = 'com/github/jsdoc3/jsdoc.zip'
     private static final String TMP_DIR = "tmp${File.separator}js"
     private static final ResourceUtil RESOURCE_UTIL = new ResourceUtil()
     private final RhinoExec rhino = new RhinoExec(project)
 
-    Iterable<String> modulePaths = ['node_modules', 'rhino_modules', '.']
+    Iterable<String> modulePaths = ['node_modules', 'rhino', 'lib', '']
     Boolean debug = false
 
     @OutputDirectory def destinationDir
@@ -38,22 +38,35 @@ class JsDocTask extends SourceTask {
 
     @TaskAction
     def run() {
-        final File zipFile = RESOURCE_UTIL.extractFileToDirectory(new File(project.buildDir, TMP_DIR), JSDOC_PATH)
+        def targetDirectory = new File(project.buildDir, TMP_DIR)
+        if (targetDirectory.exists() && !targetDirectory.isDirectory()) {
+            throw new IllegalArgumentException("Target directory is a file!")
+        } else if (!targetDirectory.exists()) {
+            targetDirectory.mkdirs()
+        }
+
+        final File zipFile = new File(targetDirectory, 'jsdoc.zip')
+        if (!zipFile.exists()) {
+            final InputStream inputStream = Thread.currentThread().contextClassLoader.getResourceAsStream(JSDOC_PATH)
+            zipFile << inputStream
+            inputStream.close()
+        }
+
         final File jsdocDir = RESOURCE_UTIL.extractZipFile(zipFile)
-        final String workingDir = "${jsdocDir.absolutePath}${File.separator}jsdoc"
 
         final List<String> args = []
         if (debug) {
             args << '-debug'
         }
         modulePaths.each {
-            args.addAll(['-modules', it])
+            args.addAll(['-modules', new File(jsdocDir, it).absolutePath])
         }
-        args.add("${workingDir}${File.separator}jsdoc.js")
+        args.add("${jsdocDir.absolutePath}${File.separator}jsdoc.js")
+        args.add("--dirname=${jsdocDir.toString().replace("\\", "/")}")
         args.addAll(source.files.collect { it.canonicalPath })
         args.addAll(['-d', (destinationDir as File).absolutePath])
         args.addAll(project.jsdoc.options.collect { it })
 
-        rhino.execute(args, [workingDir: workingDir])
+        rhino.execute(args, [workingDir: targetDirectory.absolutePath, configuration: project.configurations.jsdoc])
     }
 }

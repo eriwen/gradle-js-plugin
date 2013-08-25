@@ -46,12 +46,14 @@ class JsPlugin implements Plugin<Project> {
     void configureDependencies(final Project project) {
         project.configurations {
             rhino
+            jsdoc
         }
         project.repositories {
             mavenCentral()
         }
         project.dependencies {
             rhino 'org.mozilla:rhino:1.7R3'
+            jsdoc 'com.github.phasebash:jsdoc3-maven-plugin:1.0.4'
         }
         // TODO: have 'check' depend on jshint
     }

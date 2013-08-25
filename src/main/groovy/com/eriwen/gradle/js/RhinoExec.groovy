@@ -1,6 +1,7 @@
 package com.eriwen.gradle.js
 
 import org.gradle.api.Project
+import org.gradle.api.artifacts.Configuration
 import org.gradle.process.ExecResult
 
 /**
@@ -16,10 +17,11 @@ class RhinoExec {
     void execute(final Iterable<String> execargs, final Map<String, Object> options = [:]) {
         final String workingDirIn = options.get('workingDir', '.')
         final Boolean ignoreExitCode = options.get('ignoreExitCode', false).asBoolean()
+        final def configuration = options.get('configuration', project.configurations.rhino)
         final OutputStream out = options.get('out', System.out) as OutputStream
         def execOptions = {
             main = RHINO_MAIN_CLASS
-            classpath = project.configurations.rhino
+            classpath = configuration
             args = ["-opt", "9"] + execargs
             workingDir = workingDirIn
             ignoreExitValue = ignoreExitCode

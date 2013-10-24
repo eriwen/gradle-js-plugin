@@ -18,7 +18,7 @@ targetCompatibility = '1.6'
 
 defaultTasks 'clean', 'build'
 
-version = '1.5.0'
+version = '1.8.0'
 group = 'com.eriwen'
 ext.archivesBaseName = 'gradle-js-plugin'
 ext.isSnapshot = version.endsWith("-SNAPSHOT")
@@ -77,7 +77,7 @@ cobertura {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '1.4'
+    gradleVersion = '1.8'
 }
 
 artifacts {
@@ -86,6 +86,13 @@ artifacts {
 
 signing {
     sign configurations.archives
+}
+
+test {
+    testLogging {
+        stackTraceFilters "truncate", "groovy"
+        events "passed", "skipped", "failed"
+    }
 }
 
 // Only *require* signing if we are uploading a non snapshot version

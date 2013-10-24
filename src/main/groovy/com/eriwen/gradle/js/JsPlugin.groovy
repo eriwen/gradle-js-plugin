@@ -51,7 +51,7 @@ class JsPlugin implements Plugin<Project> {
             mavenCentral()
         }
         project.dependencies {
-            rhino 'org.mozilla:rhino:1.7R4'
+            rhino 'org.mozilla:rhino:1.7R3'
         }
         // TODO: have 'check' depend on jshint
     }

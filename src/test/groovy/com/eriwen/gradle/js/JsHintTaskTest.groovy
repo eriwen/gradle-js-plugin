@@ -65,7 +65,7 @@ class JsHintTaskTest extends Specification {
         given:
         task.ignoreExitCode = false
         task.outputToStdOut = true
-        project.jshint.options = [scripturl: "true", laxcomma: "true"]
+        project.jshint.options = ["scripturl": "true", "laxcomma": "true"]
 
         addValidFile()
 
@@ -93,7 +93,7 @@ class JsHintTaskTest extends Specification {
 
     def "does not generate checkstyle report when disabled"() {
         given:
-        task.checkstyle = false
+        task.reporter = ""
         addFile("invalid.js", "var b = 5")
 
         when:
@@ -121,9 +121,9 @@ class JsHintTaskTest extends Specification {
     def "fails without predef option to jshint"() {
         given:
         task.ignoreExitCode = false
-        task.checkstyle = true
-        project.jshint.options = [ undef: "true" ]
-        project.jshint.predef = [ someGlobalTwo: 5 ]
+        task.reporter = "checkstyle"
+        project.jshint.options = [ "undef": "true" ]
+        project.jshint.predef = [ "someGlobalTwo": 5 ]
         addFile("invalidWithGlobal.js", "var b = someGlobal;")
 
         when:
@@ -136,9 +136,9 @@ class JsHintTaskTest extends Specification {
     def "passes with predef option to jshint"() {
         given:
         task.ignoreExitCode = false
-        task.checkstyle = true
-        project.jshint.options = [ undef: "true" ]
-        project.jshint.predef = [ someGlobal: 5 ]
+        task.reporter = "checkstyle"
+        project.jshint.options = [ "undef": "true" ]
+        project.jshint.predef = [ "someGlobal": 5 ]
         addFile("validWithGlobal.js", "var b = someGlobal;")
 
         when:
@@ -146,6 +146,59 @@ class JsHintTaskTest extends Specification {
 
         then:
         notThrown ExecException
+    }
+
+
+    def "passes with reporter options to jshint"() {
+        given:
+        task.ignoreExitCode = false
+        task.reporter = "checkstyle"
+        project.jshint.options = [ "unused": "false" ]
+        project.jshint.reporterOptions = [ "impliedunuseds": "false" ]
+        addFile("validWithUnused.js", "var b = function (someInput) {};")
+
+        when:
+        task.run()
+
+        then:
+        notThrown ExecException
+        def contents = new File(dest as String).text
+        assert ! (contents =~ "<error.*implied-unuseds")
+    }
+
+    def "fails with reporter options to jshint"() {
+        given:
+        task.ignoreExitCode = false
+        task.reporter = "checkstyle"
+        project.jshint.options = [ "unused": "false" ]
+        project.jshint.reporterOptions = [ "impliedunuseds": "true" ]
+        addFile("invalidWithUnused.js", "var b = function (someOtherInput) {};")
+
+        when:
+        task.run()
+
+        then:
+        notThrown ExecException
+        def contents = new File(dest as String).text
+        assert contents =~ "<error.*implied-unuseds"
+    }
+
+    def "accepts fileListFromSource flag"() {
+        given:
+        task.ignoreExitCode = false
+        task.fileListFromSource = true
+        task.reporter = "checkstyle"
+        addFile("valid.js", "var a = 5;")
+        addFile("invalid2.js", "var b = 5")
+
+        when:
+        task.run()
+
+        then:
+        thrown ExecException
+        def contents = new File(dest as String).text
+        assert contents =~ "<file name=.*valid.js"
+        assert contents =~ "<file name=.*invalid2.js"
     }
 
     def addValidFile() {

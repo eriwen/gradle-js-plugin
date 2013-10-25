@@ -25,6 +25,8 @@ import org.gradle.api.tasks.OutputFile
 class JsHintTask extends SourceTask {
     private static final String JSHINT_PATH = 'jshint-rhino-cs-r12.js'
     private static final String TMP_DIR = "tmp${File.separator}js"
+    private static final String TMP_SOURCES_FILE = TMP_DIR + "${File.separator}jshint-sources.txt"
+    private static final String LINE_SEPARATOR = System.getProperty("line.separator")
     private static final ResourceUtil RESOURCE_UTIL = new ResourceUtil()
     private final RhinoExec rhino = new RhinoExec(project)
 
@@ -32,6 +34,7 @@ class JsHintTask extends SourceTask {
     @Input def ignoreExitCode = true
     @Input def outputToStdOut = false
     @Input def reporter = ''
+    @Input def fileListFromSource = false
 
     File getDest() {
         project.file(dest)
@@ -41,21 +44,21 @@ class JsHintTask extends SourceTask {
     def run() {
         final File jshintJsFile = RESOURCE_UTIL.extractFileToDirectory(
                 new File(project.buildDir, TMP_DIR), JSHINT_PATH)
-        final List<String> args = [jshintJsFile.canonicalPath]
-        args.addAll(source.files.collect { it.canonicalPath })
+        final List<String> args = generateArgsFromSource(jshintJsFile)
 
         // Allow variable reporter
-        if (reporter) {
+        if (reporter != '') {
           logger.debug("reporter=${reporter}")
-          args.add("reporter=${reporter}")
+          def reporterArg = makeOptionsArg(["reporter":reporter] + project.jshint.reporterOptions)
+          args.add(reporterArg)
         }
 
         def optionsArg = makeOptionsArg(project.jshint.options)
-        if (optionsArg != "") {
+        if (optionsArg != '') {
           args.add(optionsArg)
         }
         def predefArg = makeOptionsArg(project.jshint.predef)
-        if (predefArg != "") {
+        if (predefArg != '') {
           args.add(predefArg)
         }
 
@@ -66,12 +69,33 @@ class JsHintTask extends SourceTask {
         }
     }
 
+    private def generateArgsFromSource(jshintJsFile) {
+        List<String> args = [jshintJsFile.canonicalPath]
+        if (fileListFromSource) {
+            String sourceFilename = genereateFileWithSources()
+            args.addAll(['-f', sourceFilename])
+        } else {
+            args.addAll(source.files.collect { it.canonicalPath })
+        }
+        return args
+    }
+
+    private def genereateFileWithSources() {
+        def sourcesFile = new File(project.buildDir, TMP_SOURCES_FILE)
+        def writer = sourcesFile.newWriter()
+        source.files.each {
+            writer << it.canonicalPath << LINE_SEPARATOR
+        }
+        writer.close()
+        return sourcesFile.canonicalPath
+    }
+
     private def makeOptionsArg(LinkedHashMap<String, Object> options) {
-        def optionsArg = ""
+        def optionsArg = ''
         if (options != null && options.size() > 0) {
             options.each() { key, value ->
                 logger.debug("${key} == ${value}")
-                optionsArg = (optionsArg == "") ? "${key}=${value}" : "${optionsArg},${key}=${value}"
+                optionsArg = (optionsArg == '') ? "${key}=${value}" : "${optionsArg},${key}=${value}"
             }
         }
         return optionsArg

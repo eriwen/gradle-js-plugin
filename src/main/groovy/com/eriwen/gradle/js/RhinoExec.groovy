@@ -17,6 +17,8 @@ class RhinoExec {
         final String workingDirIn = options.get('workingDir', '.')
         final Boolean ignoreExitCode = options.get('ignoreExitCode', false).asBoolean()
         final OutputStream out = options.get('out', System.out) as OutputStream
+        final String maxHeapSizeVal =  options.get('maxHeapSize', null)
+
         def execOptions = {
             main = RHINO_MAIN_CLASS
             classpath = project.configurations.rhino
@@ -24,6 +26,9 @@ class RhinoExec {
             workingDir = workingDirIn
             ignoreExitValue = ignoreExitCode
             standardOutput = out
+            if (maxHeapSizeVal) {
+                maxHeapSize = maxHeapSizeVal
+            }
         }
 
         ExecResult result = project.javaexec(execOptions)

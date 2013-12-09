@@ -17,6 +17,7 @@ package com.eriwen.gradle.js.tasks
 
 
 import com.eriwen.gradle.js.JsMinifier
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.SourceTask
 import org.gradle.api.tasks.TaskAction
@@ -25,7 +26,7 @@ class MinifyJsTask extends SourceTask {
     private static final JsMinifier MINIFIER = new JsMinifier()
 
     @OutputFile def dest
-    @OutputFile def sourceMap
+    @Optional @OutputFile def sourceMap
 
     File getDest() {
         project.file(dest)

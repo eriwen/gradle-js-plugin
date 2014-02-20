@@ -23,7 +23,7 @@ import org.gradle.api.tasks.SourceTask
 import org.gradle.api.tasks.OutputFile
 
 class JsHintTask extends SourceTask {
-    private static final String JSHINT_PATH = 'jshint-rhino-cs-r12.js'
+    private static final String JSHINT_PATH = 'jshint-rhino-2.4.3.js'
     private static final String TMP_DIR = "tmp${File.separator}js"
     private static final ResourceUtil RESOURCE_UTIL = new ResourceUtil()
     private final RhinoExec rhino = new RhinoExec(project)

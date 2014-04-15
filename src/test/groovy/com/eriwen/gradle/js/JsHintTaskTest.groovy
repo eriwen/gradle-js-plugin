@@ -17,6 +17,7 @@ class JsHintTaskTest extends Specification {
 
     def setup() {
         project.apply(plugin: JsPlugin)
+        project.repositories.mavenCentral()
         task = project.tasks.jshint
         src = dir.newFolder()
         dest = dir.newFile()

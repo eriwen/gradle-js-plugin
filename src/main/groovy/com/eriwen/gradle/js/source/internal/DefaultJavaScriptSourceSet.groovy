@@ -7,6 +7,8 @@ import org.gradle.api.Project
 import org.gradle.api.file.FileCollection
 import org.gradle.api.file.SourceDirectorySet
 import org.gradle.api.internal.file.DefaultSourceDirectorySet
+import org.gradle.api.internal.file.FileResolver
+import org.gradle.internal.reflect.Instantiator
 import org.gradle.util.ConfigureUtil
 import org.gradle.util.GUtil
 
@@ -18,11 +20,11 @@ class DefaultJavaScriptSourceSet implements JavaScriptSourceSet {
     private final JavaScriptProcessingChain processing
     private final FileCollection processed
     
-    DefaultJavaScriptSourceSet(String name, Project project) {
+    DefaultJavaScriptSourceSet(String name, Project project, Instantiator instantiator, FileResolver fileResolver) {
         this.name = name
         this.displayName = GUtil.toWords(name)
-        this.js = new DefaultSourceDirectorySet(name, String.format("%s JavaScript source", displayName), InternalGradle.toFileResolver(project))
-        this.processing = InternalGradle.toInstantiator(project).newInstance(DefaultJavaScriptProcessingChain, project, this)
+        this.js = new DefaultSourceDirectorySet(name, String.format("%s JavaScript source", displayName), fileResolver)
+        this.processing = instantiator.newInstance(DefaultJavaScriptProcessingChain, project, this, instantiator)
         this.processed = project.files({ processing.empty ? js : processing.last().outputs.files })
     }
 

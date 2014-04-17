@@ -3,7 +3,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.eriwen:gradle-cobertura-plugin:1.1.0'
+        classpath 'com.eriwen:gradle-cobertura-plugin:1.1.1'
     }
 }
 
@@ -56,6 +56,13 @@ idea.project.ipr.withXml { provider ->
     // Set gradle home
     def gradleSettings = node.appendNode('component', [name: 'GradleSettings'])
     gradleSettings.appendNode('option', [name: 'SDK_HOME', value: gradle.gradleHomeDir.absolutePath])
+
+    // Add gradle IDE support
+    def gradleUISettings = node.appendNode('component', [name: 'GradleUISettings'])
+    gradleUISettings.appendNode('setting', [name: 'root'])
+
+    def gradleUISettings2 = node.appendNode('component', [name: 'GradleUISettings2'])
+    gradleUISettings2.appendNode('setting', [name: 'root'])
 }
 
 task sourceJar(type: Jar) {

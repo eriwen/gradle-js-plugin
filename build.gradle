@@ -28,7 +28,7 @@ repositories {
 }
 
 dependencies {
-    groovy localGroovy()
+    compile localGroovy()
     compile gradleApi()
     compile ('com.google.javascript:closure-compiler:v20130227') {
         exclude module: "junit"

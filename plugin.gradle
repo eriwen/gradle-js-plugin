@@ -4,7 +4,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.eriwen:gradle-js-plugin:1.9.0'
+        classpath 'com.eriwen:gradle-js-plugin:1.10.0'
     }
 }
 buildscript {
@@ -55,7 +55,7 @@ minifyJs {
 }
 
 javascript.source.custom.js.files.eachWithIndex { jsFile, idx ->
-    tasks.add(name: "dominify${idx}", type: com.eriwen.gradle.js.tasks.MinifyJsTask) {
+    tasks.create(name: "dominify${idx}", type: com.eriwen.gradle.js.tasks.MinifyJsTask) {
         source = jsFile
         dest = "${buildDir}/${jsFile.name}"
     }

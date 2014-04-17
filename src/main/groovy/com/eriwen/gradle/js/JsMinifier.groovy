@@ -4,11 +4,9 @@ import com.google.javascript.jscomp.CommandLineRunner
 import com.google.javascript.jscomp.CompilationLevel
 import com.google.javascript.jscomp.Compiler
 import com.google.javascript.jscomp.CompilerOptions
-import com.google.javascript.jscomp.JSSourceFile
+import com.google.javascript.jscomp.SourceFile
 import com.google.javascript.jscomp.Result
 import com.google.javascript.jscomp.WarningLevel
-import java.nio.charset.Charset
-import org.gradle.api.file.FileCollection
 import org.gradle.api.GradleException
 
 /**
@@ -27,13 +25,13 @@ class JsMinifier {
         CompilationLevel.valueOf(compilationLevel).setOptionsForCompilationLevel(options)
         WarningLevel level = WarningLevel.valueOf(warningLevel)
         level.setOptionsForWarningLevel(options)
-        List<JSSourceFile> externs = CommandLineRunner.getDefaultExterns()
+        List<SourceFile> externs = CommandLineRunner.getDefaultExterns()
         if (externsFiles.size()) {
-            externs.addAll(externsFiles.collect() { JSSourceFile.fromFile(it) })
+            externs.addAll(externsFiles.collect() { SourceFile.fromFile(it) })
         }
-        List<JSSourceFile> inputs = new ArrayList<JSSourceFile>()
+        List<SourceFile> inputs = new ArrayList<SourceFile>()
         inputFiles.each { inputFile -> 
-          inputs.add(JSSourceFile.fromFile(inputFile))
+          inputs.add(SourceFile.fromFile(inputFile))
         }
         Result result = compiler.compile(externs, inputs, options)
         if (result.success) {

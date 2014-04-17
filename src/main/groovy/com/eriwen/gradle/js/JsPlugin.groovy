@@ -18,8 +18,21 @@ package com.eriwen.gradle.js
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import com.eriwen.gradle.js.tasks.*
+import org.gradle.api.internal.file.FileResolver
+import org.gradle.internal.reflect.Instantiator
+
+import javax.inject.Inject
 
 class JsPlugin implements Plugin<Project> {
+
+    private final Instantiator instantiator;
+    private final FileResolver fileResolver;
+
+    @Inject
+    public JsPlugin(Instantiator instantiator, FileResolver fileResolver) {
+        this.instantiator = instantiator;
+        this.fileResolver = fileResolver;
+    }
 
     void apply(final Project project) {
         project.extensions.create(ClosureCompilerExtension.NAME, ClosureCompilerExtension)
@@ -27,7 +40,7 @@ class JsPlugin implements Plugin<Project> {
         project.extensions.create(JsHintExtension.NAME, JsHintExtension)
         project.extensions.create(RequireJsExtension.NAME, RequireJsExtension)
         project.extensions.create(Props2JsExtension.NAME, Props2JsExtension)
-        project.extensions.create(JavaScriptExtension.NAME, JavaScriptExtension, project)
+        project.extensions.create(JavaScriptExtension.NAME, JavaScriptExtension, project, instantiator, fileResolver)
 
         configureDependencies(project)
         applyTasks(project)

@@ -11,7 +11,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.eriwen:gradle-js-plugin:1.9.0'
+        classpath 'com.eriwen:gradle-js-plugin:1.11.0'
     }
 }
 // Invoke the plugin
@@ -188,6 +188,8 @@ This project is made possible due to the efforts of these fine people:
 * [Joe Fitzgerald](https://github.com/joefitzgerald) - JSHint and RequireJS features
 * [levsa](https://github.com/levsa) - JSHint predef and checkstyle reporter
 * [Martin Snyder](https://github.com/MartinSnyder) - requireJs impl option
+* [Aaron Arnett](https://github.com/a3rnett) - Remove explicit MavenCentral dependency
+* [sv99](https://github.com/sv99) - Improve Gradle version compatibility
 
 ## See Also
 The [Gradle CSS Plugin](https://github.com/eriwen/gradle-css-plugin)!

@@ -18,7 +18,7 @@ targetCompatibility = '1.6'
 
 defaultTasks 'clean', 'build'
 
-version = '1.10.0'
+version = '1.11.0'
 group = 'com.eriwen'
 ext.archivesBaseName = 'gradle-js-plugin'
 ext.isSnapshot = version.endsWith("-SNAPSHOT")
@@ -84,7 +84,7 @@ cobertura {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '1.9'
+    gradleVersion = '1.12'
 }
 
 artifacts {

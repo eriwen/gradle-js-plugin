@@ -54,6 +54,7 @@ class JsPlugin implements Plugin<Project> {
         project.task('jsdoc', type: JsDocTask, group: 'Documentation', description: 'Produce HTML documentation with JSDoc 3') {}
         project.task('props2js', type: Props2JsTask, group: 'Build', description: 'Convert Java properties files for use with JavaScript') {}
         project.task('requireJs', type: RequireJsTask, group: 'Build', description: 'Run the r.js Optimizer to produce Require.js output') {}
+        project.task('html2js', type: Html2jsTask, group: 'Build', description: 'Bundle HTML templates into AngularJS compatible javascript files') {}
     }
 
     void configureDependencies(final Project project) {

@@ -125,4 +125,49 @@ class JsPluginFunctionalTest extends FunctionalSpec {
         file("build/all-min.js").text.indexOf('function fn2(){console.log("2")}') > -1
         file("build/all-min.js").text.indexOf('function fn3(){console.log("3")}') > -1
     }
+
+    def "html2js combine with combineJs"() {
+        given:
+        buildFile << """
+            javascript.source {
+                templates {
+                    js {
+                        srcDir "src/app"
+                        include "*.html"
+                    }
+                }
+                app {
+                    js {
+                        srcDir "src/app"
+                        include "*.js"
+                    }
+                }
+            }
+
+            html2js {
+                source = javascript.source.templates.js.files
+                moduleName = 'templates'
+                base = "src/app"
+                dest = file("\$buildDir/templates.js")
+            }
+
+            combineJs {
+                source = javascript.source.app.js.files + html2js
+                dest = file("\$buildDir/all.js")
+            }
+        """
+
+        and:
+        file("src/app/app.js") << 'function fn1() { console.log("1"); }'
+        file("src/app/app.html") << "<div>foo</div>"
+
+        when:
+        run "combineJs"
+
+        then:
+        file("build/all.js").text.indexOf('function fn1() { console.log("1"); }') > -1
+        file("build/all.js").text.indexOf('<div>foo</div>') > -1
+
+    }
+
 }

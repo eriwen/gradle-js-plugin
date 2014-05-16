@@ -33,6 +33,7 @@ dependencies {
     compile ('com.google.javascript:closure-compiler:v20131014') {
         exclude module: "junit"
     }
+    compile ('io.jdev.html2js:html2js:0.1')
     testCompile ('org.spockframework:spock-core:0.7-groovy-1.8') {
         exclude module: "junit-dep"
         exclude module: "groovy-all"

@@ -1,9 +1,11 @@
 language: groovy
-install: ./gradlew assemble
+install: ./gradlew resolveAllDependencies assemble
 script: ./gradlew clean build
 notifications:
   email: false
 branches:
   only:
     - master
-
+env:
+  global:
+  - TERM=dumb

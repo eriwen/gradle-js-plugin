@@ -41,12 +41,12 @@ class Html2jsTask extends SourceTask {
 
         TemplateBundler bundler = new TemplateBundler()
         bundler.module = moduleName
-        if(base) bundler.base = project.file(base)
+        if(base) bundler.base = project.file(base).canonicalFile
         if(quoteChar) bundler.quoteChar = quoteChar as String
         if(indentString) bundler.indentString = indentString as String
         if(useStrict != null) bundler.useStrict = useStrict
         if(fileHeader) bundler.fileHeader = fileHeader as String
 
-        bundler.bundleTemplates(getDest(), source.files)
+        bundler.bundleTemplates(getDest().canonicalFile, source.files.canonicalFile)
     }
 }

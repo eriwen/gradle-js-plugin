@@ -99,6 +99,7 @@ test {
     testLogging {
         stackTraceFilters "truncate", "groovy"
         events "passed", "skipped", "failed"
+		exceptionFormat = 'full'
     }
 }
 
@@ -162,3 +163,9 @@ def getPomConfiguration() {
     }
 }
 
+// download dependencies all at once, keeps downloads out of travis output
+task resolveAllDependencies {
+	doLast {
+		configurations.all { it.resolve() }
+	}
+}

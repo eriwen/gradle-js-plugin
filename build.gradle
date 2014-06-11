@@ -1,20 +1,24 @@
 buildscript {
     repositories {
+        jcenter()
         mavenCentral()
     }
     dependencies {
         classpath 'com.eriwen:gradle-cobertura-plugin:1.1.1'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:0.3'
     }
 }
 
 apply plugin: 'groovy'
 apply plugin: 'maven'
+apply plugin: 'maven-publish'
 apply plugin: 'signing'
 apply plugin: 'idea'
 apply plugin: 'cobertura'
+apply plugin: 'bintray'
 
-sourceCompatibility = '1.6'
-targetCompatibility = '1.6'
+sourceCompatibility = 1.6
+targetCompatibility = 1.6
 
 defaultTasks 'clean', 'build'
 
@@ -31,21 +35,21 @@ dependencies {
     compile localGroovy()
     compile gradleApi()
     compile ('com.google.javascript:closure-compiler:v20131014') {
-        exclude module: "junit"
+        exclude module: 'junit'
     }
     compile ('io.jdev.html2js:html2js:0.1')
     testCompile ('org.spockframework:spock-core:0.7-groovy-1.8') {
-        exclude module: "junit-dep"
-        exclude module: "groovy-all"
+        exclude module: 'junit-dep'
+        exclude module: 'groovy-all'
     }
 }
 
 idea.module {
     ext.gradleCacheVariable = 'GRADLE_CACHE'
-    downloadJavadoc = true
+    ext.downloadJavadoc = true
     ext.downloadSource = true
-    outputDir = file("intellij/out")
-    testOutputDir = file("intellij/testOut")
+    outputDir = file('intellij/out')
+    testOutputDir = file('intellij/testOut')
 }
 
 idea.project.ipr.withXml { provider ->
@@ -64,6 +68,10 @@ idea.project.ipr.withXml { provider ->
 
     def gradleUISettings2 = node.appendNode('component', [name: 'GradleUISettings2'])
     gradleUISettings2.appendNode('setting', [name: 'root'])
+}
+
+compileGroovy {
+    options.compilerArgs = ['-Xlint:deprecation', '-Xlint:unchecked']
 }
 
 task sourceJar(type: Jar) {
@@ -92,15 +100,49 @@ artifacts {
     archives groovydocJar, sourceJar
 }
 
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            if (plugins.hasPlugin('war')) {
+                from components.web
+            } else {
+                from components.java
+            }
+
+            artifact sourceJar {
+                classifier 'sources'
+            }
+
+            artifact groovydocJar {
+                classifier 'javadoc'
+            }
+        }
+    }
+}
+
 signing {
     sign configurations.archives
 }
 
+bintray {
+    user = System.properties['bintrayUsername']
+    key = System.properties['bintrayApiKey']
+    publications = ['mavenJava']
+    pkg {
+        repo = 'gradle-plugins'
+        name = 'gradle-js-plugin'
+        desc = 'Gradle plugin for working with JS.'
+        licenses = ['Apache-2.0']
+        labels = ['gradle', 'js']
+    }
+}
+
 test {
     testLogging {
-        stackTraceFilters "truncate", "groovy"
-        events "passed", "skipped", "failed"
-		exceptionFormat = 'full'
+        stackTraceFilters 'truncate', 'groovy'
+        events 'passed', 'skipped', 'failed'
+        exceptionFormat = 'full'
     }
 }
 
@@ -166,7 +208,7 @@ def getPomConfiguration() {
 
 // download dependencies all at once, keeps downloads out of travis output
 task resolveAllDependencies {
-	doLast {
-		configurations.all { it.resolve() }
-	}
+    doLast {
+        configurations.all { it.resolve() }
+    }
 }

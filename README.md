@@ -4,6 +4,14 @@ Aiming to be the *simplest* way to manage your JavaScript in a build.
 # Quick Start
 Wrangling your JS in a [Gradle](http://gradle.org) build is easy! Just add this to your *build.gradle* file:
 
+### Gradle 2.1+
+```groovy
+plugins {
+  id "com.eriwen.gradle.js" version "1.12.1"
+}
+```
+
+### Gradle 2.0-
 ```groovy
 // Pull the plugin from Maven Central
 buildscript {

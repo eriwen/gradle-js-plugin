@@ -24,7 +24,10 @@ buildscript {
 }
 // Invoke the plugin
 apply plugin: 'js'
+```
 
+
+```groovy
 // Declare your sources
 javascript.source {
     dev {

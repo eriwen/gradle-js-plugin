@@ -13,17 +13,16 @@ plugins {
 
 ### Gradle 2.0-
 ```groovy
-// Pull the plugin from Maven Central
 buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.eriwen:gradle-js-plugin:1.12.1'
-    }
+  repositories {
+    jcenter()
+  }
+  dependencies {
+    classpath "com.eriwen:gradle-js-plugin:1.12.1"
+  }
 }
-// Invoke the plugin
-apply plugin: 'js'
+
+apply plugin: "com.eriwen.gradle.js"
 ```
 
 

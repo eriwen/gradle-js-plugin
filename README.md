@@ -1,4 +1,4 @@
-please take a look at the original code in [Eric Wendelins](https://github.com/erwen) repository [here](https://github.com/eriwen/gradle-js-plugin).
+please take a look at the original code in [Eric Wendelins](https://github.com/eriwen) repository [here](https://github.com/eriwen/gradle-js-plugin).
 
 # differences to the original code:
 

@@ -11,6 +11,6 @@ combineJs {
     source = javascript.source.dev.js.files
     dest = file("${buildDir}/all.js")
 }
+```
 
 leave out encoding to use your systems default.
-```

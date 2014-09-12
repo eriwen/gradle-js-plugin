@@ -49,6 +49,7 @@ javascript.source {
 ```groovy
 // Configure the built-in task
 combineJs {
+    encoding = "UTF-8"
     source = javascript.source.dev.js.files
     dest = file("${buildDir}/all.js")
 }

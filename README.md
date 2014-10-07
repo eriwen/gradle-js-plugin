@@ -119,7 +119,7 @@ props2js {
 ```groovy
 requireJs {
     source = javascript.source.dev.js.files
-    dest = "${buildDir}/out.js"
+    dest = file("${buildDir}/out.js")
     requirejs.buildprofile = new File("src/main/resources/requirejs-config.js")
 }
 ```

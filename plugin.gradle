@@ -1,28 +1,23 @@
 buildscript {
-    repositories {
-        mavenLocal()
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.eriwen:gradle-js-plugin:1.12.1'
-    }
-}
-buildscript {
     configurations.classpath.resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
 }
 
-repositories {
-    mavenLocal()
-    mavenCentral()
+plugins {
+    id "com.eriwen.gradle.js" version "1.12.1"
 }
 
 apply plugin: 'com.eriwen.gradle.js'
+
+repositories {
+    mavenLocal()
+}
 
 javascript.source {
     custom {
         js {
             srcDir "src/test/resources"
-            include "file*.js"
+            include "*.js"
+            exclude "externs.js"
         }
     }
 }

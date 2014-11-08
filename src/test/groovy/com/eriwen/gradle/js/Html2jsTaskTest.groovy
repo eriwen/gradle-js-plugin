@@ -82,7 +82,9 @@ class Html2jsTaskTest extends Specification {
 
     private static boolean assertExpectedResult(String result, String expectedModule, String expectedPathPrefix) {
         if(expectedModule) {
-            assert result.indexOf("angular.module('$expectedModule', ['${expectedPathPrefix}bar.html', '${expectedPathPrefix}foo.html']);") > -1
+            def m = result =~ /angular.module\('${expectedModule}'.*\['(.*)', '(.*)'.*/
+            def modules = [m[0][1], m[0][2]]
+            assert modules.sort() == ["${expectedPathPrefix}bar.html", "${expectedPathPrefix}foo.html"]
         }
         assert result.indexOf('"<div id=\\"foo\\">foo\\n" +' + System.lineSeparator() + '    "</div>"') > -1
         assert result.indexOf('"<div id=\'bar\'>bar\\n" +' + System.lineSeparator() + '    "</div>"') > -1

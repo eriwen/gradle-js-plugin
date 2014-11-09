@@ -22,12 +22,13 @@ import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 
 class JsDocTask extends SourceTask {
-    private static final String JSDOC_PATH = 'jsdoc.zip'
+    private static final String JSDOC_NAME = 'jsdoc-releases-3.3'
+    private static final String JSDOC_PATH = "${JSDOC_NAME}.zip"
     private static final String TMP_DIR = "tmp${File.separator}js"
     private static final ResourceUtil RESOURCE_UTIL = new ResourceUtil()
     private final RhinoExec rhino = new RhinoExec(project)
 
-    Iterable<String> modulePaths = ['node_modules', 'rhino_modules', '.']
+    Iterable<String> modulePaths = ['lib', 'node_modules', 'rhino', '.' ]
     Boolean debug = false
 
     @OutputDirectory def destinationDir
@@ -40,7 +41,7 @@ class JsDocTask extends SourceTask {
     def run() {
         final File zipFile = RESOURCE_UTIL.extractFileToDirectory(new File(project.buildDir, TMP_DIR), JSDOC_PATH)
         final File jsdocDir = RESOURCE_UTIL.extractZipFile(zipFile)
-        final String workingDir = "${jsdocDir.absolutePath}${File.separator}jsdoc"
+        final String workingDir = "${jsdocDir.absolutePath}${File.separator}${JSDOC_NAME}"
 
         final List<String> args = []
         if (debug) {
@@ -54,6 +55,6 @@ class JsDocTask extends SourceTask {
         args.addAll(['-d', (destinationDir as File).absolutePath])
         args.addAll(project.jsdoc.options.collect { it })
 
-        rhino.execute(args, [workingDir: workingDir])
+        rhino.execute(args, [workingDir: workingDir, classpath: project.files("${workingDir}${File.separator}rhino${File.separator}js.jar")])
     }
 }

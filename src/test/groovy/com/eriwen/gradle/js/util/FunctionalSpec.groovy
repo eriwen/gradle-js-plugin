@@ -2,12 +2,11 @@ package com.eriwen.gradle.js.util
 
 import spock.lang.Specification
 import org.junit.Rule
-import org.gradle.GradleLauncher
-import org.gradle.StartParameter
-import org.gradle.api.execution.TaskExecutionListener
+
 import org.gradle.api.Task
-import org.gradle.api.tasks.TaskState
-import org.gradle.BuildResult
+import org.gradle.testfixtures.ProjectBuilder
+import org.gradle.tooling.BuildLauncher
+import org.gradle.tooling.GradleConnector
 
 abstract class FunctionalSpec extends Specification {
 
@@ -15,32 +14,20 @@ abstract class FunctionalSpec extends Specification {
 
     List<ExecutedTask> executedTasks = []
 
-    GradleLauncher launcher(String... args) {
-        StartParameter startParameter = GradleLauncher.createStartParameter(args)
-        startParameter.setProjectDir(dir.dir)
+    def output = new ByteArrayOutputStream()
 
-        if (settingsFile.exists()) {
-            startParameter.settingsFile = settingsFile
-        } else {
-            startParameter.useEmptySettings()
-        }
+    def launcher(String... args) {
+        def connection = GradleConnector.newConnector()
+            .forProjectDirectory(dir.dir).connect()
+        BuildLauncher buildLauncher = connection.newBuild();
 
-        GradleLauncher launcher = GradleLauncher.newInstance(startParameter)
-        executedTasks.clear()
-        launcher.addListener(new TaskExecutionListener() {
-            void beforeExecute(Task task) {}
-
-            void afterExecute(Task task, TaskState taskState) {
-                getExecutedTasks() << new ExecutedTask(task, new IncrementalTaskState(taskState))
-            }
-        })
-        launcher
+        buildLauncher.forTasks(args)
+        buildLauncher.setStandardOutput(output)
+        buildLauncher
     }
 
-    BuildResult run(String... args) {
+    def run(String... args) {
         def result = launcher(args).run()
-        result.rethrowFailure()
-        result
     }
 
     File file(String path) {
@@ -64,16 +51,16 @@ abstract class FunctionalSpec extends Specification {
         file("settings.gradle")
     }
 
+    boolean wasExecuted(String taskName) {
+        return output.toString().contains("${taskName}${System.lineSeparator()}")
+    }
+
+    boolean wasUpToDate(String taskName) {
+        return output.toString().contains("${taskName} UP-TO-DATE${System.lineSeparator()}")
+    }
+
     ExecutedTask task(String name) {
         executedTasks.find { it.task.name == name }
-    }
-
-    boolean wasExecuted(String taskPath) {
-        executedTasks.any { it.task.path == taskPath }
-    }
-
-    boolean wasUpToDate(String taskPath) {
-        executedTasks.find { it.task.path == taskPath }?.state?.upToDate
     }
 
     File unzip(File zip, File destination) {
@@ -82,7 +69,22 @@ abstract class FunctionalSpec extends Specification {
     }
 
     String applyPlugin(Class pluginClass) {
-        "apply plugin: project.class.classLoader.loadClass('$pluginClass.name')"
+        def version = System.getProperty('version')
+        """
+            buildscript {
+                repositories {
+                    mavenLocal()
+                    mavenCentral()
+                    flatDir(dirs: "../../../../build/libs")
+                }
+                dependencies {
+                    classpath "com.eriwen:gradle-js-plugin:${version}"
+                    classpath ('io.jdev.html2js:html2js:0.1')
+                    classpath ('com.google.javascript:closure-compiler:v20131014')
+                }
+            }
+            apply plugin: com.eriwen.gradle.js.JsPlugin
+        """
     }
 
     String copyResources(String srcDir, String destination) {

@@ -32,6 +32,7 @@ class JsHintTask extends SourceTask {
     @Input def ignoreExitCode = true
     @Input def outputToStdOut = false
     @Input def reporter = ''
+    @Input def checkstyle = false
 
     File getDest() {
         project.file(dest)
@@ -59,6 +60,7 @@ class JsHintTask extends SourceTask {
           args.add(predefArg)
         }
 
+        println 'args ' + args
         if (outputToStdOut) {
             rhino.execute(args, [ignoreExitCode: ignoreExitCode])
         } else {

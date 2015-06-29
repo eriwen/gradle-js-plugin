@@ -55,15 +55,15 @@ class JsPluginFunctionalTest extends FunctionalSpec {
         launcher("copyProcessed").run()
 
         then:
-        task("customTest").state.executed
-        task("secondTask").state.executed
+        wasExecuted 'customTest'
+        wasExecuted 'secondTask'
 
         when:
         launcher("copyProcessed").run()
 
         then:
-        task("customTest").state.upToDate
-        task("secondTask").state.upToDate
+        wasUpToDate 'customTest'
+        wasUpToDate 'secondTask'
     }
 
     def "tasks operation"() {
@@ -89,7 +89,6 @@ class JsPluginFunctionalTest extends FunctionalSpec {
         """
         and:
         file("src/custom/js/file1.js") << "function fn1() { console.log('1'); }"
-        and:
         file("src/custom/js/file2.js") << "function fn2() { console.log('2'); }"
 
         when:
@@ -117,7 +116,8 @@ class JsPluginFunctionalTest extends FunctionalSpec {
         run "minifyJs"
 
         then:
-        !wasUpToDate(":minifyJs")
+        println 'before call -------------'
+        wasExecuted ":minifyJs"
 
         and:
         // NOTE: File order is not guaranteed

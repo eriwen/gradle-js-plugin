@@ -1,6 +1,11 @@
 language: groovy
+jdk:
+  - oraclejdk8
 install: ./gradlew resolveAllDependencies assemble
-script: ./gradlew clean build
+before_script:
+ - "echo $JAVA_OPTS"
+ - "export JAVA_OPTS=-Xmx512m"
+script: ./gradlew clean build -s
 notifications:
   email: false
 branches:

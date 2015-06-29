@@ -79,6 +79,8 @@ abstract class FunctionalSpec extends Specification {
                 }
                 dependencies {
                     classpath "com.eriwen:gradle-js-plugin:${version}"
+                    classpath ('io.jdev.html2js:html2js:0.1')
+                    classpath ('com.google.javascript:closure-compiler:v20131014')
                 }
             }
             apply plugin: com.eriwen.gradle.js.JsPlugin

@@ -75,7 +75,7 @@ abstract class FunctionalSpec extends Specification {
                 repositories {
                     mavenLocal()
                     mavenCentral()
-                    flatDir(dirs: "../../../../build/lbs")
+                    flatDir(dirs: "../../../../build/libs")
                 }
                 dependencies {
                     classpath "com.eriwen:gradle-js-plugin:${version}"

@@ -52,17 +52,10 @@ abstract class FunctionalSpec extends Specification {
     }
 
     boolean wasExecuted(String taskName) {
-        println '3'*40
-        println output.toString()
-        println '3'*40
         return output.toString().contains(taskName + "\n")
     }
 
     boolean wasUpToDate(String taskName) {
-        println '4'*40
-        println output.toString()
-        println '4'*40
-        return output.toString().contains(taskName + "\n")
         return output.toString().contains(taskName + " UP-TO-DATE\n")
     }
 
@@ -76,6 +69,7 @@ abstract class FunctionalSpec extends Specification {
     }
 
     String applyPlugin(Class pluginClass) {
+        def version = System.getProperty('version')
         """
             buildscript {
                 repositories {
@@ -84,7 +78,7 @@ abstract class FunctionalSpec extends Specification {
                     flatDir(dirs: "../../../../build/lbs")
                 }
                 dependencies {
-                    classpath "com.eriwen:gradle-js-plugin:1.12.1"
+                    classpath "com.eriwen:gradle-js-plugin:${version}"
                 }
             }
             apply plugin: com.eriwen.gradle.js.JsPlugin

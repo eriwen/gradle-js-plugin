@@ -4,21 +4,22 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.eriwen:gradle-cobertura-plugin:1.1.1'
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:0.3'
+        classpath "net.saliman:gradle-cobertura-plugin:2.2.8"
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.1'
     }
 }
 
 apply plugin: 'groovy'
+apply plugin: 'java-gradle-plugin'
 apply plugin: 'maven'
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
 apply plugin: 'idea'
-apply plugin: 'cobertura'
-//apply plugin: 'bintray'
+apply plugin: 'net.saliman.cobertura'
+apply plugin: 'com.jfrog.bintray'
 
-//sourceCompatibility = 1.7
-//targetCompatibility = 1.7
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 defaultTasks 'clean', 'build'
 
@@ -33,17 +34,19 @@ repositories {
 
 dependencies {
     compile localGroovy()
-    //compile 'org.codehaus.groovy:groovy-all:2.4.3'
-    compile gradleApi()
+    compile 'org.codehaus.groovy:groovy-all:2.3.10'
+
     compile ('com.google.javascript:closure-compiler:v20131014') {
         exclude module: 'junit'
     }
-    compile ('io.jdev.html2js:html2js:0.1')
-    testCompile ('org.spockframework:spock-core:1.0-groovy-2.3')
-//     {
-//         exclude module: 'junit-dep'
-//         exclude module: 'groovy-all'
-//     }
+    compile ('io.jdev.html2js:html2js:0.1') {
+        exclude module: 'groovy-all'
+    }
+
+    testCompile ('org.spockframework:spock-core:1.0-groovy-2.3') {
+        exclude module: 'junit-dep'
+        exclude module: 'groovy-all'
+    }
 }
 
 idea.module {
@@ -72,9 +75,9 @@ idea.project.ipr.withXml { provider ->
     gradleUISettings2.appendNode('setting', [name: 'root'])
 }
 
-// compileGroovy {
-//     options.compilerArgs = ['-Xlint:deprecation', '-Xlint:unchecked']
-// }
+compileGroovy {
+   options.compilerArgs = ['-Xlint:deprecation', '-Xlint:unchecked']
+}
 
 task sourceJar(type: Jar) {
     description = 'An archive of the source code for Maven Central'
@@ -89,9 +92,9 @@ task groovydocJar(type: Jar) {
 }
 
 cobertura {
-    format = 'html'
-    includes = ['**/*.java', '**/*.groovy']
-    excludes = ['**/commonJs/**/*.*']
+    coverageFormats = ['html']
+    coverageIncludes = ['**/*.java', '**/*.groovy']
+    coverageExcludes = ['**/commonJs/**/*.*']
 }
 
 task wrapper(type: Wrapper) {
@@ -127,20 +130,21 @@ signing {
     sign configurations.archives
 }
 
-// bintray {
-//     user = System.properties['bintrayUsername']
-//     key = System.properties['bintrayApiKey']
-//     publications = ['mavenJava']
-//     pkg {
-//         repo = 'gradle-plugins'
-//         name = 'gradle-js-plugin'
-//         desc = 'Gradle plugin for working with JS.'
-//         licenses = ['Apache-2.0']
-//         labels = ['gradle', 'js']
-//     }
-// }
+bintray {
+    user = System.properties['bintrayUsername']
+    key = System.properties['bintrayApiKey']
+    publications = ['maven']
+    pkg {
+        repo = 'gradle-plugins'
+        name = 'gradle-js-plugin'
+        desc = 'Gradle plugin for working with JS.'
+        licenses = ['Apache-2.0']
+        labels = ['gradle', 'js']
+    }
+}
 
 test {
+    systemProperties['version'] = version
     testLogging {
         stackTraceFilters 'truncate', 'groovy'
         events 'passed', 'skipped', 'failed'

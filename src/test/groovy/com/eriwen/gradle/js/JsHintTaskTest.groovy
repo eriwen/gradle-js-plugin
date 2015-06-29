@@ -6,6 +6,7 @@ import org.gradle.testfixtures.ProjectBuilder
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
+import spock.lang.IgnoreRest
 
 class JsHintTaskTest extends Specification {
     @Rule TemporaryFolder dir = new TemporaryFolder()
@@ -117,7 +118,6 @@ class JsHintTaskTest extends Specification {
         def contents = new File(dest as String).text
         assert contents =~ "<checkstyle"
     }
-   
 
     def "fails without predef option to jshint"() {
         given:

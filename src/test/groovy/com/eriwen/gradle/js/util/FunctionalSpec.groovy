@@ -52,11 +52,11 @@ abstract class FunctionalSpec extends Specification {
     }
 
     boolean wasExecuted(String taskName) {
-        return output.toString().contains(taskName + "\n")
+        return output.toString().contains("${taskName}${System.lineSeparator()}")
     }
 
     boolean wasUpToDate(String taskName) {
-        return output.toString().contains(taskName + " UP-TO-DATE\n")
+        return output.toString().contains("${taskName} UP-TO-DATE${System.lineSeparator()}")
     }
 
     ExecutedTask task(String name) {

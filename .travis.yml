@@ -1,4 +1,6 @@
 language: groovy
+jdk:
+  - oraclejdk8
 install: ./gradlew resolveAllDependencies assemble
 script: ./gradlew clean build
 notifications:

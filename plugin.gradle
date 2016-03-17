@@ -1,15 +1,17 @@
 buildscript {
-    configurations.classpath.resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
-}
-
-plugins {
-    id "com.eriwen.gradle.js" version "1.12.1"
+    repositories {
+        mavenLocal()
+    }
+    dependencies {
+        classpath 'com.eriwen:gradle-js-plugin:2.12.0-SNAPSHOT'
+    }
 }
 
 apply plugin: 'com.eriwen.gradle.js'
 
 repositories {
     mavenLocal()
+    mavenCentral()
 }
 
 javascript.source {
@@ -34,7 +36,7 @@ task combine(type: com.eriwen.gradle.js.tasks.CombineJsTask) {
 
 requireJs {
     source = javascript.source.custom.js.files
-    dest = "$buildDir/require.js"
+    dest = file("$buildDir/main.js")
     requirejs.buildprofile = new File("src/test/resources/requirejs/build.js")
 }
 
@@ -47,6 +49,11 @@ minifyJs {
         compilationLevel = 'SIMPLE_OPTIMIZATIONS'
         externs = files("src/test/resources/externs.js")
     }
+}
+
+task mini(type: com.eriwen.gradle.js.tasks.ClosureMinifyTask) {
+    source = javascript.source.custom.js.files
+    dest = "${buildDir}/minified"
 }
 
 javascript.source.custom.js.files.eachWithIndex { jsFile, idx ->

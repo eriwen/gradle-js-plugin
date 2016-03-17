@@ -5,8 +5,10 @@ buildscript {
     }
     dependencies {
         classpath 'com.eriwen:gradle-cobertura-plugin:1.1.1'
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:0.3'
     }
+}
+plugins {
+    id "com.jfrog.bintray" version "1.6"
 }
 
 apply plugin: 'groovy'
@@ -15,20 +17,31 @@ apply plugin: 'maven-publish'
 apply plugin: 'signing'
 apply plugin: 'idea'
 apply plugin: 'cobertura'
-apply plugin: 'bintray'
 
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
 
 defaultTasks 'clean', 'build'
 
-version = '1.12.1'
+version = '2.12.0-SNAPSHOT'
 group = 'com.eriwen'
 ext.archivesBaseName = 'gradle-js-plugin'
 ext.isSnapshot = version.endsWith("-SNAPSHOT")
 
 repositories {
     mavenCentral()
+}
+
+task createClasspathManifest {
+    def outputDir = sourceSets.test.output.resourcesDir
+
+    inputs.files sourceSets.main.runtimeClasspath
+    outputs.dir outputDir
+
+    doLast {
+        outputDir.mkdirs()
+        file("$outputDir/plugin-classpath.txt").text = sourceSets.main.runtimeClasspath.join("\n")
+    }
 }
 
 dependencies {
@@ -38,7 +51,9 @@ dependencies {
         exclude module: 'junit'
     }
     compile ('io.jdev.html2js:html2js:0.1')
-    testCompile ('org.spockframework:spock-core:0.7-groovy-1.8') {
+    testCompile gradleTestKit()
+    testCompile files(createClasspathManifest)
+    testCompile ('org.spockframework:spock-core:0.7-groovy-2.0') {
         exclude module: 'junit-dep'
         exclude module: 'groovy-all'
     }
@@ -90,10 +105,6 @@ cobertura {
     format = 'html'
     includes = ['**/*.java', '**/*.groovy']
     excludes = ['**/commonJs/**/*.*']
-}
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '2.1'
 }
 
 artifacts {

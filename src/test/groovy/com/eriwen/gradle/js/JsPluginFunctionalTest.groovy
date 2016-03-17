@@ -1,18 +1,15 @@
 package com.eriwen.gradle.js
 
+import org.gradle.testkit.runner.BuildResult
+import org.gradle.testkit.runner.GradleRunner
 import com.eriwen.gradle.js.util.FunctionalSpec
+import org.gradle.testkit.runner.TaskOutcome
 
 class JsPluginFunctionalTest extends FunctionalSpec {
-
-    def setup() {
-        buildFile << applyPlugin(JsPlugin)
-    }
-
     def "basic processing chain"() {
         given:
         buildFile << """
             class TestTask extends SourceTask {
-
                 @OutputDirectory
                 File destination
 
@@ -49,21 +46,22 @@ class JsPluginFunctionalTest extends FunctionalSpec {
             }
         """
         and:
-        file("src/custom/js/stuff.js") << ""
+        tempProjectDir.newFolder('src', 'custom', 'js')
+        tempProjectDir.newFile('src/custom/js/stuff.js')
 
         when:
-        launcher("copyProcessed").run()
+        BuildResult result = build('copyProcessed')
 
         then:
-        task("customTest").state.executed
-        task("secondTask").state.executed
+        result.task(":customTest").outcome == TaskOutcome.SUCCESS
+        result.task(":secondTask").outcome == TaskOutcome.SUCCESS
 
         when:
-        launcher("copyProcessed").run()
+        BuildResult secondResult = build('copyProcessed')
 
         then:
-        task("customTest").state.upToDate
-        task("secondTask").state.upToDate
+        secondResult.task(":customTest").outcome == TaskOutcome.UP_TO_DATE
+        secondResult.task(":secondTask").outcome == TaskOutcome.UP_TO_DATE
     }
 
     def "tasks operation"() {
@@ -88,42 +86,38 @@ class JsPluginFunctionalTest extends FunctionalSpec {
             }
         """
         and:
-        file("src/custom/js/file1.js") << "function fn1() { console.log('1'); }"
-        and:
-        file("src/custom/js/file2.js") << "function fn2() { console.log('2'); }"
+        tempProjectDir.newFolder('src', 'custom', 'js')
+        tempProjectDir.newFile("src/custom/js/file1.js") << "function fn1() { console.log('1'); }"
+        tempProjectDir.newFile("src/custom/js/file2.js") << "function fn2() { console.log('2'); }"
 
         when:
-        run "minifyJs"
+        BuildResult result = build('minifyJs')
 
         then:
-        file("build/all-min.js").text.indexOf('function fn1(){console.log("1")}') > -1
-        file("build/all-min.js").text.indexOf('function fn2(){console.log("2")}') > -1
+        File minifiedJs = new File(projectDir, 'build/all-min.js')
+        minifiedJs.exists()
+        minifiedJs.text.indexOf('function fn1(){console.log("1")}') > -1
+        minifiedJs.text.indexOf('function fn2(){console.log("2")}') > -1
 
         and:
-        wasExecuted ":combineJs" //Test dependency inference
-        wasExecuted ":minifyJs"
+        result.task(':combineJs').outcome == TaskOutcome.SUCCESS
+        result.task(':minifyJs').outcome == TaskOutcome.SUCCESS
 
         when:
-        run "minifyJs"
+        BuildResult secondResult = build('minifyJs')
 
         then:
-        wasUpToDate ":combineJs" //Test proper sourceSet detection
-        wasUpToDate ":minifyJs"
+        secondResult.task(':combineJs').outcome == TaskOutcome.UP_TO_DATE
+        secondResult.task(':minifyJs').outcome == TaskOutcome.UP_TO_DATE
 
         when:
-        file("src/custom/js/file3.js") << "function fn3() { console.log('3'); }"
+        tempProjectDir.newFile("src/custom/js/file3.js") << "function fn3() { console.log('3'); }"
 
         and:
-        run "minifyJs"
+        BuildResult thirdResult = build('minifyJs')
 
         then:
-        !wasUpToDate(":minifyJs")
-
-        and:
-        // NOTE: File order is not guaranteed
-        file("build/all-min.js").text.indexOf('function fn1(){console.log("1")}') > -1
-        file("build/all-min.js").text.indexOf('function fn2(){console.log("2")}') > -1
-        file("build/all-min.js").text.indexOf('function fn3(){console.log("3")}') > -1
+        thirdResult.task(':minifyJs').outcome == TaskOutcome.SUCCESS
     }
 
     def "html2js combine with combineJs"() {
@@ -158,16 +152,17 @@ class JsPluginFunctionalTest extends FunctionalSpec {
         """
 
         and:
-        file("src/app/app.js") << 'function fn1() { console.log("1"); }'
-        file("src/app/app.html") << "<div>foo</div>"
+        tempProjectDir.newFolder('src', 'app')
+        tempProjectDir.newFile("src/app/app.js") << "function fn1() { console.log('1'); }"
+        tempProjectDir.newFile('src/app/app.html') << '<div>foo</div>'
 
         when:
-        run "combineJs"
+        build(':combineJs')
 
         then:
-        file("build/all.js").text.indexOf('function fn1() { console.log("1"); }') > -1
-        file("build/all.js").text.indexOf('<div>foo</div>') > -1
-
+        File combinedJs = new File(projectDir, 'build/all.js')
+        combinedJs.exists()
+        combinedJs.text.indexOf("function fn1() { console.log('1'); }") > -1
+        combinedJs.text.indexOf('<div>foo</div>') > -1
     }
-
 }

@@ -94,7 +94,7 @@ class JsHintTaskTest extends Specification {
 
     def "does not generate checkstyle report when disabled"() {
         given:
-        task.checkstyle = false
+        task.reporter = ''
         addFile("invalid.js", "var b = 5")
 
         when:
@@ -122,7 +122,7 @@ class JsHintTaskTest extends Specification {
     def "fails without predef option to jshint"() {
         given:
         task.ignoreExitCode = false
-        task.checkstyle = true
+        task.reporter = 'checkstyle'
         project.jshint.options = [ undef: "true" ]
         project.jshint.predef = [ someGlobalTwo: 5 ]
         addFile("invalidWithGlobal.js", "var b = someGlobal;")
@@ -137,7 +137,7 @@ class JsHintTaskTest extends Specification {
     def "passes with predef option to jshint"() {
         given:
         task.ignoreExitCode = false
-        task.checkstyle = true
+        task.reporter = 'checkstyle'
         project.jshint.options = [ undef: "true" ]
         project.jshint.predef = [ someGlobal: 5 ]
         addFile("validWithGlobal.js", "var b = someGlobal;")

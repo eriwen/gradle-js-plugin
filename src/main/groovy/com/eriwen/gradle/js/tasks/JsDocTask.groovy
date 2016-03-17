@@ -28,7 +28,7 @@ class JsDocTask extends SourceTask {
     private static final ResourceUtil RESOURCE_UTIL = new ResourceUtil()
     private final RhinoExec rhino = new RhinoExec(project)
 
-    Iterable<String> modulePaths = ['lib', 'node_modules', 'rhino', '.' ]
+    Iterable<String> modulePaths = ['lib', 'node_modules', 'rhino', '.']
     Boolean debug = false
 
     @OutputDirectory def destinationDir
@@ -39,7 +39,7 @@ class JsDocTask extends SourceTask {
 
     @TaskAction
     def run() {
-        final File zipFile = RESOURCE_UTIL.extractFileToDirectory(new File(project.buildDir, TMP_DIR), JSDOC_PATH)
+        final File zipFile = extractJsDoc(new File(project.buildDir, TMP_DIR), JSDOC_PATH)
         final File jsdocDir = RESOURCE_UTIL.extractZipFile(zipFile)
         final String workingDir = "${jsdocDir.absolutePath}${File.separator}${JSDOC_NAME}"
 
@@ -56,5 +56,20 @@ class JsDocTask extends SourceTask {
         args.addAll(project.jsdoc.options.collect { it })
 
         rhino.execute(args, [workingDir: workingDir, classpath: project.files("${workingDir}${File.separator}rhino${File.separator}js.jar")])
+    }
+
+    // Cannot for the life of me figure out why Thread.currentThread().contextClassLoader no longer works for loading jsdoc.zip
+    File extractJsDoc(final File targetDirectory, final String resourcePath) {
+        if (!targetDirectory.exists()) {
+            targetDirectory.mkdirs()
+        }
+
+        final File file = new File(targetDirectory, resourcePath)
+        if (!file.exists()) {
+            final InputStream inputStream = getClass().getClassLoader().getResourceAsStream(resourcePath)
+            file << inputStream
+            inputStream.close()
+        }
+        return file
     }
 }

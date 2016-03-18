@@ -1,12 +1,3 @@
-buildscript {
-    repositories {
-        jcenter()
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.eriwen:gradle-cobertura-plugin:1.1.1'
-    }
-}
 plugins {
     id "com.jfrog.bintray" version "1.6"
 }
@@ -16,7 +7,7 @@ apply plugin: 'maven'
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
 apply plugin: 'idea'
-apply plugin: 'cobertura'
+apply plugin: 'jacoco'
 
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
@@ -29,7 +20,7 @@ ext.archivesBaseName = 'gradle-js-plugin'
 ext.isSnapshot = version.endsWith("-SNAPSHOT")
 
 repositories {
-    mavenCentral()
+    jcenter()
 }
 
 task createClasspathManifest {
@@ -45,15 +36,16 @@ task createClasspathManifest {
 }
 
 dependencies {
-    compile localGroovy()
     compile gradleApi()
-    compile ('com.google.javascript:closure-compiler:v20131014') {
+    compile('com.google.javascript:closure-compiler:v20131014') {
         exclude module: 'junit'
     }
-    compile ('io.jdev.html2js:html2js:0.1')
+    compile('io.jdev.html2js:html2js:0.1') {
+        exclude module: 'groovy-all'
+    }
     testCompile gradleTestKit()
     testCompile files(createClasspathManifest)
-    testCompile ('org.spockframework:spock-core:0.7-groovy-2.0') {
+    testCompile('org.spockframework:spock-core:1.0-groovy-2.4') {
         exclude module: 'junit-dep'
         exclude module: 'groovy-all'
     }
@@ -101,20 +93,13 @@ task groovydocJar(type: Jar) {
     from groovydoc
 }
 
-cobertura {
-    format = 'html'
-    includes = ['**/*.java', '**/*.groovy']
-    excludes = ['**/commonJs/**/*.*']
-}
-
 artifacts {
     archives groovydocJar, sourceJar
 }
 
-
 publishing {
     publications {
-        mavenJava(MavenPublication) {
+        maven(MavenPublication) {
             if (plugins.hasPlugin('war')) {
                 from components.web
             } else {
@@ -139,7 +124,7 @@ signing {
 bintray {
     user = System.properties['bintrayUsername']
     key = System.properties['bintrayApiKey']
-    publications = ['mavenJava']
+    publications = ['maven']
     pkg {
         repo = 'gradle-plugins'
         name = 'gradle-js-plugin'
@@ -150,6 +135,7 @@ bintray {
 }
 
 test {
+    systemProperties['version'] = version
     testLogging {
         stackTraceFilters 'truncate', 'groovy'
         events 'passed', 'skipped', 'failed'

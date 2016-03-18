@@ -11,19 +11,26 @@ import org.gradle.api.internal.file.FileResolver
 import org.gradle.internal.reflect.Instantiator
 import org.gradle.util.ConfigureUtil
 import org.gradle.util.GUtil
+import org.gradle.util.GradleVersion
 
 class DefaultJavaScriptSourceSet implements JavaScriptSourceSet {
 
     private final String name
     private final String displayName
-    private final DefaultSourceDirectorySet js
+    private final SourceDirectorySet js
     private final JavaScriptProcessingChain processing
     private final FileCollection processed
     
     DefaultJavaScriptSourceSet(String name, Project project, Instantiator instantiator, FileResolver fileResolver) {
         this.name = name
         this.displayName = GUtil.toWords(name)
-        this.js = new DefaultSourceDirectorySet(name, String.format("%s JavaScript source", displayName), fileResolver)
+        if (GradleVersion.current().compareTo(GradleVersion.version("2.12")) >= 0) {
+            Class fileTreeFactory = Class.forName("org.gradle.api.internal.file.collections.DefaultDirectoryFileTreeFactory")
+            def directoryFileTreeFactory = fileTreeFactory.getConstructor().newInstance()
+            this.js = new DefaultSourceDirectorySet(name, String.format("%s JavaScript source", displayName), fileResolver, directoryFileTreeFactory)
+        } else {
+            this.js = new DefaultSourceDirectorySet(name, String.format("%s JavaScript source", displayName), fileResolver)
+        }
         this.processing = instantiator.newInstance(DefaultJavaScriptProcessingChain, project, this, instantiator)
         this.processed = project.files({ processing.empty ? js : processing.last().outputs.files })
     }

@@ -7,7 +7,7 @@ Wrangling your JS in a [Gradle](http://gradle.org) build is easy! Just add this 
 ### Gradle 2.1+
 ```groovy
 plugins {
-  id "com.eriwen.gradle.js" version "1.12.1"
+  id "com.eriwen.gradle.js" version "2.12.0"
 }
 ```
 

@@ -51,11 +51,6 @@ minifyJs {
     }
 }
 
-task mini(type: com.eriwen.gradle.js.tasks.ClosureMinifyTask) {
-    source = javascript.source.custom.js.files
-    dest = "${buildDir}/minified"
-}
-
 javascript.source.custom.js.files.eachWithIndex { jsFile, idx ->
     tasks.create(name: "dominify${idx}", type: com.eriwen.gradle.js.tasks.MinifyJsTask) {
         source = jsFile

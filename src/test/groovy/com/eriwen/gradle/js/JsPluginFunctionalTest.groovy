@@ -1,7 +1,6 @@
 package com.eriwen.gradle.js
 
 import org.gradle.testkit.runner.BuildResult
-import org.gradle.testkit.runner.GradleRunner
 import com.eriwen.gradle.js.util.FunctionalSpec
 import org.gradle.testkit.runner.TaskOutcome
 

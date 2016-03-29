@@ -1,5 +1,6 @@
 plugins {
     id "com.jfrog.bintray" version "1.6"
+    id "com.gradle.plugin-publish" version "0.9.4"
 }
 
 apply plugin: 'groovy'
@@ -117,6 +118,24 @@ publishing {
     }
 }
 
+pluginBundle {
+    website = 'https://github.com/eriwen/gradle-js-plugin/'
+    vcsUrl = 'https://github.com/eriwen/gradle-js-plugin/'
+    description = 'Gradle plugin for working with JS'
+    tags = ['javascript', 'jshint', 'requirejs']
+
+    plugins {
+        jsPlugin {
+            id = 'com.eriwen.gradle.js'
+            displayName = 'Gradle JavaScript Plugin'
+        }
+    }
+    mavenCoordinates {
+        groupId = 'com.eriwen'
+        artifactId = 'gradle-js-plugin'
+    }
+}
+
 signing {
     sign configurations.archives
 }
@@ -160,7 +179,7 @@ install.repositories.mavenInstaller {
 uploadArchives {
     repositories.mavenDeployer {
         if (signing.signatory) {
-            beforeDeployment { signPom(it) }
+            beforeDeployment { signing.signPom(it) }
         }
         name = 'mavenCentralReleaseDeployer'
         repository(url: 'https://oss.sonatype.org/service/local/staging/deploy/maven2/') {

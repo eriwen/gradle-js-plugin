@@ -48,6 +48,11 @@ class JsPlugin implements Plugin<Project> {
 
     void applyTasks(final Project project) {
         project.task('combineJs', type: CombineJsTask, group: 'Build', description: 'Combine many JavaScript files into one') {}
+        project.tasks.whenTaskAdded { task ->
+            if (task instanceof MinifyJsTask) {
+                task.extensions.create(ClosureCompilerExtension.NAME, ClosureCompilerExtension)
+            }
+        }
         project.task('minifyJs', type: MinifyJsTask, group: 'Build', description: 'Minify JavaScript using Closure Compiler') {}
         project.task('gzipJs', type: GzipJsTask, group: 'Build', description: 'GZip a given JavaScript file') {}
         project.task('jshint', type: JsHintTask, group: 'Verification', description: 'Analyze JavaScript sources with JSHint') {}

@@ -164,4 +164,60 @@ class JsPluginFunctionalTest extends FunctionalSpec {
         combinedJs.text.indexOf("function fn1() { console.log('1'); }") > -1
         combinedJs.text.indexOf('<div>foo</div>') > -1
     }
+
+    def "per-task Closure Compiler settings"() {
+        given:
+        buildFile << """
+            javascript.source {
+                custom {
+                    js {
+                        srcDir "src/custom/js"
+                    }
+                }
+            }
+
+            task compileDev (type: com.eriwen.gradle.js.tasks.MinifyJsTask) {
+                source = javascript.source.custom.js.files
+                dest = "\$buildDir/out-dev.js" //Test flexible outputs
+                closure {
+                    warningLevel = 'VERBOSE'
+                    compilerOptions.defineReplacements = ['DEBUG': true]
+                }
+            }
+
+            task compileProd (type: com.eriwen.gradle.js.tasks.MinifyJsTask) {
+                source = javascript.source.custom.js.files
+                dest = "\$buildDir/out-prod.js" //Test flexible outputs
+                closure {
+                    warningLevel = 'VERBOSE'
+                    compilerOptions.defineReplacements = ['DEBUG': false]
+                }
+            }
+        """
+        and:
+        tempProjectDir.newFolder('src', 'custom', 'js')
+        tempProjectDir.newFile("src/custom/js/file1.js") << "/** @define {boolean} */var DEBUG = true; DEBUG && console.log('hello, world!');"
+
+        when:
+        BuildResult result = build('compileProd')
+
+        then:
+        File minifiedJs = new File(projectDir, 'build/out-prod.js')
+        minifiedJs.exists()
+        minifiedJs.text.indexOf("console.log") == -1
+
+        and:
+        result.task(':compileProd').outcome == TaskOutcome.SUCCESS
+
+        when:
+        BuildResult secondResult = build('compileDev')
+
+        then:
+        secondResult.task(":compileDev").outcome == TaskOutcome.SUCCESS
+        File minifiedJsDev = new File(projectDir, 'build/out-dev.js')
+        minifiedJsDev.exists()
+        minifiedJsDev.text.length() > 0
+        minifiedJsDev.text.indexOf("console.log") >= 0
+    }
+
 }

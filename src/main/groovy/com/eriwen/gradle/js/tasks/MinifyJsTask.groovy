@@ -15,7 +15,6 @@
  */
 package com.eriwen.gradle.js.tasks
 
-
 import com.eriwen.gradle.js.JsMinifier
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputFile
@@ -34,8 +33,14 @@ class MinifyJsTask extends SourceTask {
 
     @TaskAction
     def run() {
-        Set<File> externsFiles = project.closure.externs ? project.closure.externs.files : [] as Set<File>
+        def buildSettings
+        if (this.closure) {
+            buildSettings = this.closure
+        } else {
+            buildSettings = project.closure
+        }
+        Set<File> externsFiles = buildSettings.externs ? buildSettings.externs.files : [] as Set<File>
         MINIFIER.minifyJsFile(source.files, externsFiles, dest as File, sourceMap as File,
-                project.closure.compilerOptions, project.closure.warningLevel, project.closure.compilationLevel)
+                buildSettings.compilerOptions, buildSettings.warningLevel, buildSettings.compilationLevel)
     }
 }

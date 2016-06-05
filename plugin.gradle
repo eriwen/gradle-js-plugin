@@ -1,6 +1,14 @@
-plugins {
-  id "com.eriwen.gradle.js" version "2.12.0"
+buildscript {
+    repositories {
+        mavenLocal()
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.eriwen:gradle-js-plugin:2.14.0-SNAPSHOT'
+    }
 }
+
+apply plugin: 'com.eriwen.gradle.js'
 
 repositories {
     jcenter()

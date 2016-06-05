@@ -49,7 +49,11 @@ class DefaultJavaScriptSourceSet implements JavaScriptSourceSet {
     }
     
     JavaScriptSourceSet configure(Closure closure) {
-        ConfigureUtil.configureSelf(closure, this)
+        if (GradleVersion.current().compareTo(GradleVersion.version("2.14")) >= 0) {
+            ConfigureUtil.configureSelf(closure, this)
+        } else {
+            ConfigureUtil.configure(closure, this, false)
+        }
     }
 
     JavaScriptProcessingChain getProcessing() {

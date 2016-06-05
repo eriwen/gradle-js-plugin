@@ -1,0 +1,27 @@
+apply plugin: 'idea'
+
+idea.module {
+    ext.gradleCacheVariable = 'GRADLE_CACHE'
+    ext.downloadJavadoc = true
+    ext.downloadSource = true
+    outputDir = file('intellij/out')
+    testOutputDir = file('intellij/testOut')
+}
+
+idea.project.ipr.withXml { provider ->
+    def node = provider.asNode()
+    // Use git
+    def vcsConfig = node.component.find { it.'@name' == 'VcsDirectoryMappings' }
+    vcsConfig.mapping[0].'@vcs' = 'Git'
+
+    // Set gradle home
+    def gradleSettings = node.appendNode('component', [name: 'GradleSettings'])
+    gradleSettings.appendNode('option', [name: 'SDK_HOME', value: gradle.gradleHomeDir.absolutePath])
+
+    // Add gradle IDE support
+    def gradleUISettings = node.appendNode('component', [name: 'GradleUISettings'])
+    gradleUISettings.appendNode('setting', [name: 'root'])
+
+    def gradleUISettings2 = node.appendNode('component', [name: 'GradleUISettings2'])
+    gradleUISettings2.appendNode('setting', [name: 'root'])
+}

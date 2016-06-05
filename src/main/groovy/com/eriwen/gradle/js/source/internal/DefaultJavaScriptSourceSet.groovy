@@ -49,7 +49,7 @@ class DefaultJavaScriptSourceSet implements JavaScriptSourceSet {
     }
     
     JavaScriptSourceSet configure(Closure closure) {
-        ConfigureUtil.configure(closure, this, false)
+        ConfigureUtil.configureSelf(closure, this)
     }
 
     JavaScriptProcessingChain getProcessing() {

@@ -1,4 +1,5 @@
 plugins {
+    id 'com.gradle.build-scan' version '1.0'
     id "com.gradle.plugin-publish" version "0.9.4"
     id "com.jfrog.bintray" version "1.6"
 }
@@ -18,6 +19,11 @@ version = '2.14.1'
 group = 'com.eriwen'
 ext.archivesBaseName = 'gradle-js-plugin'
 ext.isSnapshot = version.endsWith("-SNAPSHOT")
+
+buildScan {
+    licenseAgreementUrl = 'https://gradle.com/terms-of-service'
+    licenseAgree = 'yes'
+}
 
 repositories {
     jcenter()

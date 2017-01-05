@@ -1,9 +1,8 @@
 plugins {
-    id 'com.gradle.build-scan' version '1.0'
+    id 'com.gradle.build-scan' version '1.4'
     id "com.gradle.plugin-publish" version "0.9.4"
     id "com.jfrog.bintray" version "1.6"
 }
-
 apply plugin: 'groovy'
 apply plugin: 'maven'
 apply plugin: 'maven-publish'
@@ -140,6 +139,39 @@ test {
         stackTraceFilters 'truncate', 'groovy'
         events 'passed', 'skipped', 'failed'
         exceptionFormat = 'full'
+    }
+}
+
+jacoco {
+    toolVersion = "0.7.6.201602180812"
+    reportsDir = file("$buildDir/customJacocoReportDir")
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled false
+        csv.enabled false
+        html.destination "${buildDir}/jacocoHtml"
+    }
+}
+
+jacocoTestCheck {
+    violationRules {
+        rule {
+            element = 'PACKAGE'
+            includes = ['com.eriwen.gradle.*']
+
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.6
+            }
+            limit {
+                counter = 'CLASS'
+                value = 'MISSEDCOUNT'
+                maximum = 0
+            }
+        }
     }
 }
 

@@ -1,5 +1,5 @@
 plugins {
-    id 'com.gradle.build-scan' version '1.4'
+    id 'com.gradle.build-scan' version '1.6'
     id "com.gradle.plugin-publish" version "0.9.4"
     id "com.jfrog.bintray" version "1.6"
 }
@@ -155,7 +155,7 @@ jacocoTestReport {
     }
 }
 
-jacocoTestCheck {
+jacocoTestCoverageVerification {
     violationRules {
         rule {
             element = 'PACKAGE'

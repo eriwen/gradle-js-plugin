@@ -66,7 +66,7 @@ task jsProd(type: com.eriwen.gradle.js.tasks.CombineJsTask) {
 }
 ```
 
-### Minifying files with [Google Closure Compiler](http://code.google.com/closure/compiler/) ([options](#minifyjs-uses-the-google-closure-compiler))
+### Minifying files with [Google Closure Compiler](https://github.com/google/closure-compiler) ([options](#minifyjs-uses-the-google-closure-compiler))
 ```groovy
 minifyJs {
     source = combineJs
@@ -130,13 +130,13 @@ requireJs {
 - source = Collection of file paths of files to merge
 - dest = File for combined output
 
-### minifyJs (Uses the [Google Closure Compiler](http://code.google.com/closure/compiler/))
+### minifyJs (Uses the [Google Closure Compiler](https://github.com/google/closure-compiler))
 - source = File to minify
 - dest = File for minified output
 - *(Optional)* sourcemap = Source map file
 - *(Optional)* closure.compilationLevel = 'WHITESPACE_ONLY', 'SIMPLE_OPTIMIZATIONS' (default), or 'ADVANCED_OPTIMIZATIONS' (are you *hardcore*?)
 - *(Optional)* closure.warningLevel = 'QUIET', 'DEFAULT' (default), or 'VERBOSE'
-- *(Optional)* closure.compilerOptions = [CompilerOptions](http://code.google.com/p/closure-compiler/source/browse/trunk/src/com/google/javascript/jscomp/CompilerOptions.java?r=1918) object
+- *(Optional)* closure.compilerOptions = [CompilerOptions](https://github.com/google/closure-compiler/blob/master/src/com/google/javascript/jscomp/CompilerOptions.java) object
 - *(Optional)* closure.externs = [FileCollection](http://gradle.org/docs/current/javadoc/org/gradle/api/file/FileCollection.html) object
 
 ### gzipJs

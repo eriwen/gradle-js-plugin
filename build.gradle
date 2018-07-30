@@ -1,7 +1,7 @@
 plugins {
-    id 'com.gradle.build-scan' version '1.8'
-    id "com.gradle.plugin-publish" version "0.9.4"
-    id "com.jfrog.bintray" version "1.6"
+    id 'com.gradle.build-scan' version '1.15.1'
+    id "com.gradle.plugin-publish" version "0.10.0"
+    id "com.jfrog.bintray" version "1.8.4"
 }
 apply plugin: 'groovy'
 apply plugin: 'maven'
@@ -9,13 +9,14 @@ apply plugin: 'maven-publish'
 apply plugin: 'signing'
 apply plugin: 'jacoco'
 apply plugin: 'project-report'
+apply plugin: 'eclipse'
 
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
 
 defaultTasks 'clean', 'build'
 
-version = '2.14.1'
+version = '2.14.2'
 group = 'com.eriwen'
 ext.archivesBaseName = 'gradle-js-plugin'
 ext.isSnapshot = version.endsWith("-SNAPSHOT")
@@ -43,7 +44,7 @@ task createClasspathManifest {
 
 dependencies {
     compile gradleApi()
-    compile('com.google.javascript:closure-compiler:v20160208') {
+    compile('com.google.javascript:closure-compiler:v20180716') {
         exclude module: 'junit'
     }
     compile('io.jdev.html2js:html2js:0.1') {
@@ -51,7 +52,7 @@ dependencies {
     }
     testCompile gradleTestKit()
     testCompile files(createClasspathManifest)
-    testCompile('org.spockframework:spock-core:1.0-groovy-2.4') {
+    testCompile('org.spockframework:spock-core:1.1-groovy-2.4') {
         exclude module: 'junit-dep'
         exclude module: 'groovy-all'
     }
@@ -143,7 +144,7 @@ test {
 }
 
 jacoco {
-    toolVersion = "0.7.6.201602180812"
+    toolVersion = "0.8.1"
     reportsDir = file("$buildDir/customJacocoReportDir")
 }
 
@@ -151,7 +152,7 @@ jacocoTestReport {
     reports {
         xml.enabled false
         csv.enabled false
-        html.destination "${buildDir}/jacocoHtml"
+        html.destination file("${buildDir}/jacocoHtml")
     }
 }
 

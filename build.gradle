@@ -1,7 +1,7 @@
 plugins {
-    id 'com.gradle.build-scan' version '1.15.1'
-    id "com.gradle.plugin-publish" version "0.10.0"
-    id "com.jfrog.bintray" version "1.8.4"
+    id 'com.gradle.build-scan' version '2.2.1'
+    id 'com.gradle.plugin-publish' version '0.10.1'
+    id 'com.jfrog.bintray' version '1.8.4'
 }
 apply plugin: 'groovy'
 apply plugin: 'maven'
@@ -17,13 +17,13 @@ targetCompatibility = 1.6
 defaultTasks 'clean', 'build'
 
 version = '2.14.2'
-group = 'com.eriwen'
+group   = 'com.eriwen'
 ext.archivesBaseName = 'gradle-js-plugin'
-ext.isSnapshot = version.endsWith("-SNAPSHOT")
+ext.isSnapshot       = version.endsWith("-SNAPSHOT")
 
 buildScan {
-    licenseAgreementUrl = 'https://gradle.com/terms-of-service'
-    licenseAgree = 'yes'
+    termsOfServiceUrl   = 'https://gradle.com/terms-of-service'
+    termsOfServiceAgree = 'yes'
 }
 
 repositories {
@@ -44,7 +44,7 @@ task createClasspathManifest {
 
 dependencies {
     compile gradleApi()
-    compile('com.google.javascript:closure-compiler:v20180716') {
+    compile('com.google.javascript:closure-compiler:v20190301') {
         exclude module: 'junit'
     }
     compile('io.jdev.html2js:html2js:0.1') {
@@ -52,7 +52,7 @@ dependencies {
     }
     testCompile gradleTestKit()
     testCompile files(createClasspathManifest)
-    testCompile('org.spockframework:spock-core:1.1-groovy-2.4') {
+    testCompile('org.spockframework:spock-core:1.3-groovy-2.5') {
         exclude module: 'junit-dep'
         exclude module: 'groovy-all'
     }
@@ -144,7 +144,7 @@ test {
 }
 
 jacoco {
-    toolVersion = "0.8.1"
+    toolVersion = "0.8.3"
     reportsDir = file("$buildDir/customJacocoReportDir")
 }
 

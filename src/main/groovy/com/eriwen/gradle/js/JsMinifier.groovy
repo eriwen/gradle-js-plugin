@@ -1,5 +1,7 @@
 package com.eriwen.gradle.js
 
+import static java.nio.charset.StandardCharsets.UTF_8
+
 import org.gradle.api.GradleException
 
 import com.google.javascript.jscomp.CommandLineRunner
@@ -28,11 +30,11 @@ class JsMinifier {
         level.setOptionsForWarningLevel(options)
         List<SourceFile> externs = CommandLineRunner.getBuiltinExterns(options.environment)
         if (externsFiles.size()) {
-            externs.addAll(externsFiles.collect() { SourceFile.fromFile(it) })
+            externs.addAll(externsFiles.collect() { SourceFile.fromPath(it.toPath(), UTF_8) })
         }
         List<SourceFile> inputs = new ArrayList<SourceFile>()
         inputFiles.each { inputFile ->
-          inputs.add(SourceFile.fromFile(inputFile))
+          inputs.add(SourceFile.fromPath(inputFile.toPath(), UTF_8))
         }
         Result result = compiler.compile(externs, inputs, options)
         if (result.success) {

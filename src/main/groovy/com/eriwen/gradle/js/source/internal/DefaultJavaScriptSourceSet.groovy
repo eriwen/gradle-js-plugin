@@ -1,7 +1,5 @@
 package com.eriwen.gradle.js.source.internal
 
-import com.eriwen.gradle.js.source.JavaScriptProcessingChain
-import com.eriwen.gradle.js.source.JavaScriptSourceSet
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.file.FileCollection
@@ -13,6 +11,9 @@ import org.gradle.util.ConfigureUtil
 import org.gradle.util.GUtil
 import org.gradle.util.GradleVersion
 
+import com.eriwen.gradle.js.source.JavaScriptProcessingChain
+import com.eriwen.gradle.js.source.JavaScriptSourceSet
+
 class DefaultJavaScriptSourceSet implements JavaScriptSourceSet {
 
     private final String name
@@ -20,7 +21,7 @@ class DefaultJavaScriptSourceSet implements JavaScriptSourceSet {
     private final SourceDirectorySet js
     private final JavaScriptProcessingChain processing
     private final FileCollection processed
-    
+
     DefaultJavaScriptSourceSet(String name, Project project, Instantiator instantiator, FileResolver fileResolver) {
         this.name = name
         this.displayName = GUtil.toWords(name)
@@ -35,19 +36,23 @@ class DefaultJavaScriptSourceSet implements JavaScriptSourceSet {
         this.processed = project.files({ processing.empty ? js : processing.last().outputs.files })
     }
 
+    @Override
     String getName() {
         name
     }
-    
+
+    @Override
     SourceDirectorySet getJs() {
         js
     }
 
+    @Override
     SourceDirectorySet js(Action<SourceDirectorySet> action) {
         action.execute(js)
         js
     }
-    
+
+    @Override
     JavaScriptSourceSet configure(Closure closure) {
         if (GradleVersion.current().compareTo(GradleVersion.version("2.14")) >= 0) {
             ConfigureUtil.configureSelf(closure, this)
@@ -56,15 +61,18 @@ class DefaultJavaScriptSourceSet implements JavaScriptSourceSet {
         }
     }
 
+    @Override
     JavaScriptProcessingChain getProcessing() {
         processing
     }
 
+    @Override
     JavaScriptProcessingChain processing(Action<JavaScriptProcessingChain> action) {
         action.execute(processing)
         processing
     }
 
+    @Override
     FileCollection getProcessed() {
         processed
     }

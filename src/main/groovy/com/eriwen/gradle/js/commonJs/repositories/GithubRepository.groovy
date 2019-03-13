@@ -14,9 +14,10 @@
  */
 package com.eriwen.gradle.js.commonJs.repositories
 
-import groovy.json.JsonSlurper
-import com.eriwen.gradle.js.commonJs.Repository
 import com.eriwen.gradle.js.commonJs.Package
+import com.eriwen.gradle.js.commonJs.Repository
+
+import groovy.json.JsonSlurper
 
 class GithubRepository implements Repository {
     private Package pack
@@ -29,11 +30,13 @@ class GithubRepository implements Repository {
         this.repoName = this.pack.repositories[0].url.split('/')[-3]
     }
 
+    @Override
     File getTar(int index=0) {
         Object tag = getTagByName(pack.version)
         return new File((tag.getAt("zipball_url") as String).toURL().getText())
     }
 
+    @Override
     File getZip(int index=0) {
         Object tag = getTagByName(pack.version)
         return new File((tag.getAt("tarball_url") as String).toURL().getText())

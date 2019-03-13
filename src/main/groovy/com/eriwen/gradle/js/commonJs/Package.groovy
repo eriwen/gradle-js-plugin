@@ -26,7 +26,7 @@ class Package {
 
     private String path
     private String delegate
-    private Object data;
+    private Object data
     private List repositories
 
     /**
@@ -38,9 +38,10 @@ class Package {
         this.data = new JsonSlurper().parseText(this.delegate)
     }
 
+    @Override
     def getProperty(String name) {
         if (name == 'repositories') {
-            return this.repositories != null ? this.repositories : this.getRepositories();
+            return this.repositories != null ? this.repositories : this.getRepositories()
         }
         else if (name == 'folder') {
             return this.getFolder()

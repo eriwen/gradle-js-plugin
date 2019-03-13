@@ -15,25 +15,27 @@
  */
 package com.eriwen.gradle.js
 
+import javax.inject.Inject
+
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import com.eriwen.gradle.js.tasks.*
 import org.gradle.api.internal.file.FileResolver
 import org.gradle.internal.reflect.Instantiator
 
-import javax.inject.Inject
+import com.eriwen.gradle.js.tasks.*
 
 class JsPlugin implements Plugin<Project> {
 
-    private final Instantiator instantiator;
-    private final FileResolver fileResolver;
+    private final Instantiator instantiator
+    private final FileResolver fileResolver
 
     @Inject
     public JsPlugin(Instantiator instantiator, FileResolver fileResolver) {
-        this.instantiator = instantiator;
-        this.fileResolver = fileResolver;
+        this.instantiator = instantiator
+        this.fileResolver = fileResolver
     }
 
+    @Override
     void apply(final Project project) {
         project.extensions.create(ClosureCompilerExtension.NAME, ClosureCompilerExtension)
         project.extensions.create(JsDocExtension.NAME, JsDocExtension)

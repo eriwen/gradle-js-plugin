@@ -1,7 +1,7 @@
 plugins {
-    id 'com.gradle.build-scan' version '1.8'
-    id "com.gradle.plugin-publish" version "0.9.4"
-    id "com.jfrog.bintray" version "1.6"
+    id 'com.gradle.build-scan' version '2.2.1'
+    id "com.gradle.plugin-publish" version "0.10.1"
+    id "com.jfrog.bintray" version "1.8.4"
 }
 apply plugin: 'groovy'
 apply plugin: 'maven'
@@ -10,8 +10,8 @@ apply plugin: 'signing'
 apply plugin: 'jacoco'
 apply plugin: 'project-report'
 
-sourceCompatibility = 1.6
-targetCompatibility = 1.6
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
 
 defaultTasks 'clean', 'build'
 
@@ -21,8 +21,8 @@ ext.archivesBaseName = 'gradle-js-plugin'
 ext.isSnapshot = version.endsWith("-SNAPSHOT")
 
 buildScan {
-    licenseAgreementUrl = 'https://gradle.com/terms-of-service'
-    licenseAgree = 'yes'
+    termsOfServiceUrl = 'https://gradle.com/terms-of-service'
+    termsOfServiceAgree = 'yes'
 }
 
 repositories {
@@ -143,7 +143,7 @@ test {
 }
 
 jacoco {
-    toolVersion = "0.7.6.201602180812"
+    toolVersion = "0.8.3"
     reportsDir = file("$buildDir/customJacocoReportDir")
 }
 
@@ -151,7 +151,7 @@ jacocoTestReport {
     reports {
         xml.enabled false
         csv.enabled false
-        html.destination "${buildDir}/jacocoHtml"
+        html.destination file("${buildDir}/jacocoHtml")
     }
 }
 

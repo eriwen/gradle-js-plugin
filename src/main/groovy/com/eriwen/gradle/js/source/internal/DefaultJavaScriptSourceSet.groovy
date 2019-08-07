@@ -24,7 +24,9 @@ class DefaultJavaScriptSourceSet implements JavaScriptSourceSet {
     DefaultJavaScriptSourceSet(String name, Project project, Instantiator instantiator, FileResolver fileResolver) {
         this.name = name
         this.displayName = GUtil.toWords(name)
-        if (GradleVersion.current().compareTo(GradleVersion.version("2.12")) >= 0) {
+        if (GradleVersion.current().compareTo(GradleVersion.version("5.0")) >= 0) {
+            this.js = project.objects.sourceDirectorySet(name, String.format("%s JavaScript source", displayName))
+        } else if (GradleVersion.current().compareTo(GradleVersion.version("2.12")) >= 0) {
             Class fileTreeFactory = Class.forName("org.gradle.api.internal.file.collections.DefaultDirectoryFileTreeFactory")
             def directoryFileTreeFactory = fileTreeFactory.getConstructor().newInstance()
             this.js = new DefaultSourceDirectorySet(name, String.format("%s JavaScript source", displayName), fileResolver, directoryFileTreeFactory)

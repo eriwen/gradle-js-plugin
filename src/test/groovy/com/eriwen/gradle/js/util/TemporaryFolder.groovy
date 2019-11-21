@@ -1,6 +1,6 @@
 package com.eriwen.gradle.js.util
 
-import org.apache.commons.lang.StringUtils
+import org.apache.commons.lang3.StringUtils
 import org.junit.rules.MethodRule
 import org.junit.runner.Description
 import org.junit.runners.model.FrameworkMethod

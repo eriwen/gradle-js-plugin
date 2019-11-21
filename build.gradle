@@ -1,7 +1,7 @@
 plugins {
-    id 'com.gradle.build-scan' version '2.0.2'
-    id "com.gradle.plugin-publish" version "0.9.4"
-    id "com.jfrog.bintray" version "1.6"
+    id "com.gradle.build-scan" version "2.4.2"
+    id "com.gradle.plugin-publish" version "0.10.1"
+    id "com.jfrog.bintray" version "1.8.4"
 }
 apply plugin: 'groovy'
 apply plugin: 'maven'
@@ -15,7 +15,7 @@ targetCompatibility = 1.6
 
 defaultTasks 'clean', 'build'
 
-version = '2.14.1'
+version = '2.14.2'
 group = 'com.eriwen'
 ext.archivesBaseName = 'gradle-js-plugin'
 ext.isSnapshot = version.endsWith("-SNAPSHOT")
@@ -55,7 +55,7 @@ dependencies {
         exclude module: 'junit-dep'
         exclude module: 'groovy-all'
     }
-    testCompile 'commons-lang:commons-lang:2.6'
+    testCompile 'org.apache.commons:commons-lang3:3.9'
 }
 
 compileGroovy {
@@ -64,13 +64,13 @@ compileGroovy {
 
 task sourceJar(type: Jar) {
     description = 'An archive of the source code for Maven Central'
-    classifier = 'sources'
+    archiveClassifier  = 'sources'
     from sourceSets.main.groovy
 }
 
 task groovydocJar(type: Jar) {
     description = 'An archive of the GroovyDocs for Maven Central'
-    classifier = 'javadoc'
+    archiveClassifier  = 'javadoc'
     from groovydoc
 }
 
@@ -177,7 +177,7 @@ jacocoTestCoverageVerification {
 
 // Only *require* signing if we are uploading a non snapshot version
 gradle.taskGraph.whenReady { taskGraph ->
-    tasks.withType(org.gradle.plugins.signing.Sign).all {
+    tasks.withType(Sign).all {
         required = taskGraph.hasTask(":uploadArchives") && !isSnapshot
     }
 }

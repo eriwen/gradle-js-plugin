@@ -1,12 +1,12 @@
 package com.eriwen.gradle.js.util
 
-import org.apache.commons.lang.StringUtils
+import java.util.concurrent.atomic.AtomicInteger
+
+import org.apache.commons.lang3.StringUtils
 import org.junit.rules.MethodRule
 import org.junit.runner.Description
 import org.junit.runners.model.FrameworkMethod
 import org.junit.runners.model.Statement
-
-import java.util.concurrent.atomic.AtomicInteger
 
 class TemporaryFolder implements MethodRule {
 

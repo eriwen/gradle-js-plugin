@@ -1,7 +1,8 @@
 package com.eriwen.gradle.js
 
 class SourcesTest extends ProjectTest {
-    
+
+    @Override
     def setup() {
         apply plugin: JsPlugin
     }

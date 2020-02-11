@@ -43,7 +43,7 @@ task createClasspathManifest {
 
 dependencies {
     compile gradleApi()
-    compile('com.google.javascript:closure-compiler:v20200101') {
+    compile('com.google.javascript:closure-compiler:v20200204') {
         exclude module: 'junit'
     }
     compile('io.jdev.html2js:html2js:0.1') {

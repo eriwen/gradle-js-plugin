@@ -239,8 +239,8 @@ def getPomConfiguration() {
 task resolveAllDependencies {
     doLast {
         rootProject.allprojects { project ->
-            configurations = project.buildscript.configurations + project.configurations
-            configurations.findAll { c -> c.canBeResolved }
+            def configs = project.buildscript.configurations + project.configurations
+            configs.findAll { c -> c.canBeResolved }
                     .forEach { c -> c.resolve() }
         }
     }

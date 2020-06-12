@@ -1,6 +1,6 @@
 language: groovy
 jdk:
-  - oraclejdk8
+  - openjdk8
 install: ./gradlew resolveAllDependencies assemble
 before_script:
   - "echo $JAVA_OPTS"

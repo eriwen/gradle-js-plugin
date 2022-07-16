@@ -1,4 +1,6 @@
-# Gradle Javascript Plugin! [![Build Status](https://secure.travis-ci.org/eriwen/gradle-js-plugin.png)](http://travis-ci.org/eriwen/gradle-js-plugin)
+# This plugin is no longer maintained! Please consider the [Gradle Node Plugin](https://github.com/node-gradle/gradle-node-plugin).
+
+# Gradle Javascript Plugin!
 Aiming to be the *simplest* way to manage your JavaScript in a build.
 
 # Quick Start

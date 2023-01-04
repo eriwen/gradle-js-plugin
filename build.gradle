@@ -238,6 +238,10 @@ def getPomConfiguration() {
 // download dependencies all at once, keeps downloads out of travis output
 task resolveAllDependencies {
     doLast {
-        configurations.all { it.resolve() }
+        rootProject.allprojects { project ->
+            def configs = project.buildscript.configurations + project.configurations
+            configs.findAll { c -> c.canBeResolved }
+                    .forEach { c -> c.resolve() }
+        }
     }
 }

@@ -1,10 +1,14 @@
 idealib/
 build/
+bin/
 out/
 .gradle/
+.settings/
 *.iml
 *.ipr
 *.iws
 .idea/
 intellij
 gradle.properties
+.classpath
+.project

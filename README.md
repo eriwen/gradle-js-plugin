@@ -126,6 +126,27 @@ requireJs {
     requirejs.buildprofile = new File("src/main/resources/requirejs-config.js")
 }
 ```
+Multiple [r.js](http://requirejs.org/) optimization tasks are possible with different config files.  The key is to
+update the ```requirejs.buildprofile``` and ```requirejs.options``` values in ```doFirst()``` on each task:
+```groovy
+task (optimizeJs, type: RequireJsTask) {
+    source = file("src/main/scripts/requirejs-config-js.js")
+    dest = file("build/js/main.js")
+    doFirst {
+        requirejs.buildprofile = optimizeJs.source.singleFile
+        requirejs.options = []
+    }
+}
+
+task (optimizeCss, type: RequireJsTask) {
+    source = file("src/main/scripts/requirejs-config-css.js")
+    dest = file("build/css/main.css")
+    doFirst {
+        requirejs.buildprofile = optimizeCss.source.singleFile
+        requirejs.options = []
+    }
+}
+```
 
 # Built-in Tasks and Options
 ### combineJs
